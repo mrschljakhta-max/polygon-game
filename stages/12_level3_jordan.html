@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RX-01 — Місія Джордана</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,Helvetica,sans-serif}
+  body{display:grid;place-items:center;color:#fff}
+  .stage{position:relative;width:min(100vw,calc(100vh * 1.667));aspect-ratio:1672/1003;overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 45%,rgba(255,178,35,.08),transparent 42%),
+      linear-gradient(135deg,#111 0 12%,#050505 12% 14%,#0d0d0d 14% 35%,#050505 35% 37%,#0a0a0a 37% 100%);
+    box-shadow:0 0 80px #000 inset}
+  .stage:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;background-image:repeating-linear-gradient(170deg,transparent 0 18px,rgba(255,255,255,.03) 19px 20px);mix-blend-mode:screen}
+  .panel,.phrase,.cta{position:absolute;opacity:0;pointer-events:none}
+  .panel{filter:drop-shadow(0 14px 16px rgba(0,0,0,.72));transform:translateY(24px) scale(.985)}
+  #panel1{left:1.2%;top:1.7%;width:97%;z-index:3}
+  #panel2{left:1.2%;top:48.5%;width:51.6%;z-index:4}
+  #panel3{left:46.5%;top:44.7%;width:51%;z-index:5}
+  .phrase{z-index:20;filter:drop-shadow(0 10px 18px rgba(0,0,0,.9));transform:scale(.72) rotate(-2deg)}
+  #phrase1{left:57.5%;top:24.5%;width:34%;}
+  #phrase2{left:2.8%;top:79.0%;width:30%;transform:scale(.72) rotate(-2deg)}
+  #phrase3{left:68.0%;top:77.5%;width:29%;transform:scale(.72) rotate(1.5deg)}
+  .show-panel{animation:panelIn .72s cubic-bezier(.16,.88,.25,1) forwards}
+  .show-phrase{animation:phraseIn .62s cubic-bezier(.2,1.35,.35,1) forwards}
+  @keyframes panelIn{0%{opacity:0;transform:translateY(30px) scale(.97);filter:blur(5px) drop-shadow(0 12px 18px #000)}100%{opacity:1;transform:none;filter:blur(0) drop-shadow(0 14px 16px rgba(0,0,0,.72))}}
+  @keyframes phraseIn{0%{opacity:0;transform:scale(.55) rotate(-5deg)}60%{opacity:1;transform:scale(1.02) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  .flash{position:absolute;inset:0;z-index:30;background:#f3b000;opacity:0;pointer-events:none}
+  .flash.go{animation:flash .35s ease-out}
+  @keyframes flash{0%{opacity:.35}100%{opacity:0}}
+  .cta{left:50%;bottom:2.2%;transform:translate(-50%,18px);z-index:40;border:0;padding:13px 26px 12px;min-width:240px;
+    background:#f4b400;color:#080808;font-weight:1000;font-size:clamp(16px,1.5vw,24px);letter-spacing:.08em;clip-path:polygon(5% 0,100% 0,94% 100%,0 100%);cursor:pointer;pointer-events:auto;
+    box-shadow:0 0 0 3px #111,0 7px 0 #6c4a00;text-transform:uppercase}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.visible{animation:ctaIn .55s cubic-bezier(.2,1.25,.3,1) forwards}
+  @keyframes ctaIn{to{opacity:1;transform:translate(-50%,0)}}
+  .skip{position:absolute;right:1.6%;bottom:1.4%;z-index:50;background:transparent;border:0;color:#aaa;font-size:12px;letter-spacing:.08em;cursor:pointer}
+  .skip:hover{color:#fff}
+  .tag{position:absolute;left:1.7%;bottom:1.5%;z-index:50;color:#eab000;font-size:11px;font-weight:800;letter-spacing:.17em;opacity:.7}
+  @media (max-aspect-ratio:1/1){.stage{width:100vw;height:auto}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <img id="panel1" class="panel" src="../assets/asset_0041_de5cbe6655e95d40.png" alt="Петрович готує нашийник з радіомаячком для Джордана">
+  <img id="panel2" class="panel" src="../assets/asset_0042_03b54585bf40644f.png" alt="Петрович застібає маяк на нашийнику Джордана">
+  <img id="panel3" class="panel" src="../assets/asset_0043_c658fb48bfaf9607.png" alt="Джордан готовий до пошуку">
+  <img id="phrase1" class="phrase" src="../assets/asset_0044_6134065f1d72121a.png" alt="Ну що, Джордан. Тепер ти — навчальна ціль.">
+  <img id="phrase2" class="phrase" src="../assets/asset_0045_16c0aba285abfb1b.png" alt="Маяк на місці. Частота відома.">
+  <img id="phrase3" class="phrase" src="../assets/asset_0046_b197de57ffa23a52.png" alt="А тепер дивись, чи встигнеш за ним.">
+  <div class="flash" id="flash"></div>
+  <button class="cta" id="cta">ВИЙТИ НА СЛІД</button>
+  <button class="skip" id="skip">ПРОПУСТИТИ</button>
+  <div class="tag">RX-01 · МІСІЯ ДЖОРДАНА</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const sequence=[
+  [250,'panel1'],
+  [1750,'phrase1'],
+  [3900,'panel2'],
+  [5250,'phrase2'],
+  [7350,'panel3'],
+  [8700,'phrase3'],
+  [10750,'cta']
+];
+let timers=[];
+function pop(id){
+  const el=$(id);
+  if(!el)return;
+  if(id==='cta') el.classList.add('visible');
+  else if(id.startsWith('panel')) el.classList.add('show-panel');
+  else el.classList.add('show-phrase');
+  $('flash').classList.remove('go'); void $('flash').offsetWidth; $('flash').classList.add('go');
+}
+function start(){
+  timers.forEach(clearTimeout);timers=[];
+  ['panel1','panel2','panel3'].forEach(id=>$(id).className='panel');
+  ['phrase1','phrase2','phrase3'].forEach(id=>$(id).className='phrase');
+  $('cta').className='cta';
+  sequence.forEach(([t,id])=>timers.push(setTimeout(()=>pop(id),t)));
+}
+function revealAll(){
+  timers.forEach(clearTimeout);timers=[];
+  ['panel1','panel2','panel3'].forEach(id=>$(id).classList.add('show-panel'));
+  ['phrase1','phrase2','phrase3'].forEach(id=>$(id).classList.add('show-phrase'));
+  $('cta').classList.add('visible');
+}
+$('skip').addEventListener('click',revealAll);
+$('cta').addEventListener('click',()=>{
+  document.body.style.transition='opacity .45s ease';document.body.style.opacity='0';
+  setTimeout(()=>{try{parent.RX01_STAGE_DONE('jordanIntro')}catch(e){};try{parent.postMessage({type:'RX01_JORDAN_INTRO_DONE'},'*')}catch(e){}},520);
+});
+window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();revealAll()} if(e.code==='Enter'&&$('cta').classList.contains('visible')) $('cta').click();});
+start();
+</script>
+</body>
+</html>

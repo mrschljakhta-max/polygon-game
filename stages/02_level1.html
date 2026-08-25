@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>RX-01 — Рівень 1 · TEST</title>
+<style>
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,sans-serif}
+body{touch-action:manipulation;user-select:none}
+#rotate{display:none;position:fixed;inset:0;z-index:9999;background:#070907;color:#f3c43c;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:900;font-size:26px}
+@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}#app{display:none}}
+#app{position:fixed;inset:0;display:grid;place-items:center;background:#060606}
+#stage{position:relative;width:min(100vw,150vh);height:min(100vh,66.6667vw);aspect-ratio:3/2;overflow:hidden;background:#000;box-shadow:0 0 50px #000}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;inset:0;background:rgba(0,0,0,.62);transition:.5s}
+.phase{position:absolute;inset:0;z-index:30}
+.hidden{display:none!important}
+#comic iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.nextOverlay{position:absolute;right:3%;bottom:3%;z-index:40}
+.btn{border:3px solid #111;background:#f0b91c;color:#111;font-weight:1000;padding:14px 26px;font-size:clamp(14px,1.5vw,23px);transform:skew(-6deg);box-shadow:5px 5px 0 #111;cursor:pointer}
+#introPetro{display:flex;align-items:center;justify-content:center;padding:3%}
+#introPetro img{max-width:93%;max-height:82%;filter:drop-shadow(0 16px 20px #000)}
+#workBtn{position:absolute;right:8%;bottom:7%}
+#tutorial{z-index:25}
+#tutInstructor{position:absolute;left:2.6%;top:25%;width:20%;height:55%;object-fit:contain;filter:drop-shadow(0 10px 10px #000);z-index:28}
+#tutBubble{position:absolute;left:2.2%;top:4%;width:24%;min-height:16%;background:#f4e8bd;border:5px solid #111;padding:1.7%;font-weight:900;font-size:clamp(12px,1.25vw,21px);line-height:1.18;clip-path:polygon(4% 0,96% 3%,100% 20%,97% 100%,5% 96%,0 76%,2% 18%);box-shadow:12px 12px 0 rgba(0,0,0,.65);z-index:29}
+#tutBubble b{color:#b87800}
+#tutNext{position:absolute;left:6.5%;bottom:3.5%;z-index:29}
+.hl{position:absolute;border:5px solid #f1b900;box-shadow:0 0 30px #ffcf32,0 0 0 9999px rgba(0,0,0,.67),inset 0 0 24px rgba(255,207,50,.45);animation:pulse 1s infinite alternate;pointer-events:none;z-index:27}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+#hud{position:absolute;inset:0;z-index:10;pointer-events:none}
+.plaque{position:absolute;height:8.5%;background-image:url('../assets/p12_0011_5fbb8016d174e429.png');background-size:100% 100%;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center;color:#efe5c6;font-weight:1000;font-style:italic;text-shadow:2px 3px #000;font-size:clamp(12px,1.45vw,23px);letter-spacing:.04em}
+#levelPlaque{left:1.5%;top:1.2%;width:26%} #taskPlaque{left:34%;top:1.2%;width:32%} #errorPlaque{right:1.5%;top:1.2%;width:26%}
+#instructor{position:absolute;left:2.1%;top:22%;width:20%;height:57%;object-fit:contain;filter:drop-shadow(0 9px 12px #000);transition:.18s}
+#phrase{position:absolute;left:20%;top:10%;width:24%;max-height:23%;object-fit:contain;filter:drop-shadow(0 7px 8px #000);opacity:0;transform:scale(.78) rotate(-2deg);transition:.18s;z-index:18}
+#phrase.show{opacity:1;transform:scale(1) rotate(-2deg)}
+#displayOverlay{position:absolute;left:30.6%;top:31.4%;width:34%;height:29%;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:2.2%;color:#071006;font-family:'Courier New',monospace;text-shadow:0 1px 0 rgba(210,255,170,.5),0 0 1px #071207;z-index:14;pointer-events:none;filter:contrast(1.35);white-space:nowrap;overflow:hidden;padding:0 3%}
+#entry{font-size:70px;font-weight:1000;line-height:1;color:#061006;letter-spacing:.02em;white-space:nowrap;flex:0 1 auto}
+#entryUnit{font-size:30px;font-weight:1000;color:#061006;align-self:center;margin-top:1.3%;white-space:nowrap;flex:0 0 auto}
+.hit{position:absolute;z-index:20;background:transparent;border:0;cursor:pointer;pointer-events:auto}
+.hit:active{background:rgba(255,205,30,.18)}
+#uHz{left:29.71224%;top:66.35840%;width:4.93815%;height:9.10449%}
+#ukHz{left:36.50195%;top:66.51270%;width:4.11523%;height:8.17871%}
+#uMHz{left:42.88086%;top:66.82129%;width:4.32096%;height:8.64160%}
+#uGHz{left:49.25911%;top:66.82129%;width:4.42383%;height:8.02441%}
+#lock{left:57.07812%;top:66.35840%;width:6.58464%;height:12.34570%}
+#k7{left:71.48177%;top:40.43164%;width:4.11523%;height:5.55566%}
+#k8{left:77.75716%;top:40.43164%;width:3.60091%;height:5.40137%}
+#k9{left:83.00391%;top:40.27734%;width:4.52669%;height:6.01855%}
+#k4{left:71.27604%;top:48.76562%;width:4.21810%;height:6.32715%}
+#k5{left:77.24284%;top:49.38281%;width:4.21810%;height:5.24707%}
+#k6{left:83.31250%;top:49.07422%;width:4.11523%;height:5.86426%}
+#k1{left:71.27604%;top:58.17871%;width:4.73242%;height:5.70996%}
+#k2{left:77.34570%;top:58.17871%;width:4.11523%;height:6.01855%}
+#k3{left:83.10677%;top:58.17871%;width:4.01237%;height:5.55566%}
+#kdot{left:71.58464%;top:67.28418%;width:3.90951%;height:5.40137%}
+#k0{left:77.44857%;top:66.82129%;width:3.90951%;height:6.01855%}
+#kback{left:83.41536%;top:66.82129%;width:3.90951%;height:6.17285%}
+#taskBox{position:absolute;left:2%;bottom:2.2%;width:25.5%;min-height:11%;z-index:16;background:rgba(10,11,9,.93);border:3px solid #d39a16;border-left:8px solid #f0b91c;color:#f1e7c3;padding:1.1% 1.3%;font-weight:900;font-size:clamp(10px,1.05vw,17px);line-height:1.25;box-shadow:7px 7px 0 rgba(0,0,0,.65),inset 0 0 18px rgba(211,154,22,.12)}#taskBox .taskTitle{color:#f0b91c;font-size:.78em;letter-spacing:.11em;margin-bottom:.35em}#taskBox .taskBody{color:#f7efd7} #gameOver{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#f2c329;text-align:center}
+#gameOver h1{font-size:clamp(34px,6vw,90px);margin:.2em} #gameOver p{font-size:clamp(16px,2vw,30px);font-weight:900}
+@media(max-width:850px) and (orientation:landscape){
+ #instructor{width:17.5%;left:1%;top:27%;height:52%} #tutInstructor{width:17.5%;left:1%;top:26%;height:51%}
+ #phrase{left:17.5%;width:24%;top:8%;max-height:24%} #tutBubble{left:1.5%;top:2.5%;width:26%;font-size:10px;padding:1.4%} #tutNext{left:5%;bottom:2%}
+ .plaque{height:8%;font-size:11px}
+}
+
+/* Плавна перша поява Петровича після коміксової заставки */
+#introPetro.petrovychFadeIn{
+  opacity:0;
+  animation:petrovychSceneFade 2.2s ease-out .18s forwards;
+}
+#introPetro.petrovychFadeIn img{
+  opacity:0;
+  filter:brightness(.35) drop-shadow(0 16px 20px #000);
+  animation:petrovychArtFade 2.35s ease-out .28s forwards;
+}
+@keyframes petrovychSceneFade{
+  0%{opacity:0}
+  100%{opacity:1}
+}
+@keyframes petrovychArtFade{
+  0%{opacity:0;filter:brightness(.35) drop-shadow(0 16px 20px #000);transform:scale(.985)}
+  55%{opacity:.72;filter:brightness(.72) drop-shadow(0 16px 20px #000)}
+  100%{opacity:1;filter:brightness(1) drop-shadow(0 16px 20px #000);transform:scale(1)}
+}
+
+</style>
+</head>
+<body>
+<div id="rotate">ПОВЕРНИ ТЕЛЕФОН ГОРИЗОНТАЛЬНО<br>RX-01 ПРАЦЮЄ У LANDSCAPE</div>
+<div id="app"><div id="stage">
+<img class="bg" src="../assets/p12_0012_c4a1388aa806b684.png">
+<div id="shade" class="shade"></div>
+
+<div id="comic" class="phase hidden">
+  <button id="comicNext" type="button" style="display:none"></button>
+</div>
+
+<div id="introPetro" class="phase petrovychFadeIn">
+  <img src="../assets/p12_0013_12b556c02e27c450.png">
+  <button class="btn" id="workBtn">ПРАЦЮЄМО</button>
+</div>
+
+<div id="tutorial" class="phase hidden">
+  <img id="tutInstructor" src="../assets/p12_0014_8a9f2b53c4cb74b5.png">
+  <div id="tutBubble"></div>
+  <button class="btn" id="tutNext">ДАЛІ</button>
+  <div id="tutorialHL" class="hl"></div>
+</div>
+
+<div id="hud" class="hidden">
+  <div class="plaque" id="levelPlaque">РІВЕНЬ 1</div>
+  <div class="plaque" id="taskPlaque">ЗАВДАННЯ 01 / 10</div>
+  <div class="plaque" id="errorPlaque">ПОМИЛОК: 0</div>
+</div>
+
+<img id="instructor" class="hidden" src="../assets/p12_0014_8a9f2b53c4cb74b5.png">
+<img id="phrase" class="hidden">
+<div id="taskBox" class="hidden"><div class="taskTitle">ЗАВДАННЯ</div><div class="taskBody" id="taskBody"></div></div>
+
+<div id="displayOverlay" class="hidden">
+  <div id="entry"></div>
+  <div id="entryUnit"></div>
+</div>
+
+<button class="hit hidden" id="uHz" data-unit="Hz"></button>
+<button class="hit hidden" id="ukHz" data-unit="kHz"></button>
+<button class="hit hidden" id="uMHz" data-unit="MHz"></button>
+<button class="hit hidden" id="uGHz" data-unit="GHz"></button>
+<button class="hit hidden" id="lock"></button>
+
+<button class="hit key hidden" id="k7" data-key="7"></button><button class="hit key hidden" id="k8" data-key="8"></button><button class="hit key hidden" id="k9" data-key="9"></button>
+<button class="hit key hidden" id="k4" data-key="4"></button><button class="hit key hidden" id="k5" data-key="5"></button><button class="hit key hidden" id="k6" data-key="6"></button>
+<button class="hit key hidden" id="k1" data-key="1"></button><button class="hit key hidden" id="k2" data-key="2"></button><button class="hit key hidden" id="k3" data-key="3"></button>
+<button class="hit key hidden" id="kdot" data-key="."></button><button class="hit key hidden" id="k0" data-key="0"></button><button class="hit key hidden" id="kback" data-key="back"></button>
+
+<div id="gameOver" class="hidden"><h1>РІВЕНЬ 1 — ЗАЛІК</h1><p id="finalText"></p><button class="btn" onclick="parent.postMessage({type:'RX01_LEVEL1_DONE'},'*')">ДАЛІ</button></div>
+</div></div>
+
+<script>
+const TASKS=[{"from": 2.45, "fromUnit": "GHz", "toUnit": "MHz", "answer": "2450", "mode": "auto"}, {"from": 868, "fromUnit": "MHz", "toUnit": "kHz", "answer": "868000", "mode": "auto"}, {"from": 125000, "fromUnit": "kHz", "toUnit": "MHz", "answer": "125", "mode": "auto"}, {"from": 2.412, "fromUnit": "GHz", "toUnit": "MHz", "answer": "2412", "mode": "manual"}, {"from": 0.868, "fromUnit": "GHz", "toUnit": "MHz", "answer": "868", "mode": "manual"}, {"from": 450, "fromUnit": "MHz", "toUnit": "GHz", "answer": "0.45", "mode": "manual"}, {"from": 2.45, "fromUnit": "GHz", "toUnit": "kHz", "answer": "2450000", "mode": "manual"}, {"from": 915000, "fromUnit": "kHz", "toUnit": "GHz", "answer": "0.915", "mode": "manual"}, {"from": 2450000000, "fromUnit": "Hz", "toUnit": "MHz", "answer": "2450", "mode": "manual"}, {"from": 2.4375, "fromUnit": "GHz", "toUnit": "kHz", "answer": "2437500", "mode": "manual"}];
+const PHRASES={"1": "../assets/p12_0015_bf0bfd2143eca012.png", "2": "../assets/p12_0016_32248001f473b0c7.png", "3": "../assets/p12_0017_9d80ec319c21aec6.png", "4": "../assets/p12_0018_486a30930511b118.png", "5": "../assets/p12_0019_8c3ef82c9125b5b7.png", "6": "../assets/p12_0020_09959855a7e5d349.png", "7": "../assets/p12_0021_b6226729f9a29af6.png", "8": "../assets/p12_0022_380206337108555b.png", "9": "../assets/p12_0023_4ab50159318f8096.png", "10": "../assets/p12_0024_a0b1f465accbee84.png", "11": "../assets/p12_0025_d38a501a4d638b4f.png", "12": "../assets/p12_0026_426d806c59f8d2eb.png", "13": "../assets/p12_0027_3a64df99ee59b23f.png", "14": "../assets/p12_0028_964170e9ec4f5e16.png", "15": "../assets/p12_0029_8554653ba3d18b88.png", "16": "../assets/p12_0030_fb3501d4cb9cf3d4.png", "17": "../assets/p12_0031_ba32ea2621299276.png", "18": "../assets/p12_0032_412a9863d36dcdda.png", "19": "../assets/p12_0033_831bc2ff2e761c0e.png", "20": "../assets/p12_0034_e0ae2197d90036ae.png", "21": "../assets/p12_0035_345f0ca931d0ef36.png", "22": "../assets/p12_0036_579ad4349c845081.png", "23": "../assets/p12_0037_86b25c0cea0714bf.png", "24": "../assets/p12_0038_bc6ca35d3c4c8792.png", "25": "../assets/p12_0039_e8c9b16b3c0e8b71.png", "26": "../assets/p12_0040_6c89b236f70f2e9e.png", "27": "../assets/p12_0041_5ca0c06902521085.png", "28": "../assets/p12_0042_01f3a018957b8513.png", "29": "../assets/p12_0043_3c733f7a8c8c2c8a.png", "30": "../assets/p12_0044_e7905aedd22d6475.png", "31": "../assets/p12_0045_efec5ecd1bcdbe75.png", "32": "../assets/p12_0046_fef0b51ebc582abe.png", "33": "../assets/p12_0047_2b1940eec1e1ef94.png", "34": "../assets/p12_0048_453ed7a31bf41b05.png", "35": "../assets/p12_0049_17e9219797ade81a.png", "36": "../assets/p12_0050_0b2e694743c3dff2.png", "37": "../assets/p12_0051_b763fe2af12948b4.png", "38": "../assets/p12_0052_f25659beb4fa0a07.png", "39": "../assets/p12_0053_91757d4e8c99b7f0.png", "40": "../assets/p12_0054_da47b479a4287fba.png", "41": "../assets/p12_0055_eb7f743f2fe8dd90.png", "42": "../assets/p12_0056_eb121fcb4f9c95ad.png", "43": "../assets/p12_0057_7d8e9973e632c3f0.png", "44": "../assets/p12_0058_f42cd5c95c4b9abe.png", "45": "../assets/p12_0059_8cb78a3d22755394.png", "46": "../assets/p12_0060_a950593deda513de.png", "47": "../assets/p12_0061_d68df2ef93d30dd9.png", "48": "../assets/p12_0062_a1d436acbf8d9a75.png", "49": "../assets/p12_0063_6963a2859bd02393.png", "50": "../assets/p12_0064_be5d7906bbfe46e5.png", "51": "../assets/p12_0065_1cae7caa40ec99bf.png", "52": "../assets/p12_0066_1d9ec0e2d6fcb933.png", "53": "../assets/p12_0067_23eaebebb3a2da46.png", "54": "../assets/p12_0068_f4d7ce79ccea0bea.png", "55": "../assets/p12_0069_7bfd3582ff29e301.png", "56": "../assets/p12_0070_c10d33f47616213d.png", "57": "../assets/p12_0071_a7f95da92071e863.png", "58": "../assets/p12_0072_14cf45c21f47fd47.png", "59": "../assets/p12_0073_af39e4adc7cb5f94.png", "60": "../assets/p12_0074_0fceccf6aa907ff8.png", "61": "../assets/p12_0075_ae43c406ff02ff73.png", "62": "../assets/p12_0076_f15c9b6ebfa08cc4.png", "63": "../assets/p12_0077_c9fd99b38be67e9a.png", "64": "../assets/p12_0078_b138d69a67b52c34.png", "65": "../assets/p12_0079_9758d2f9fc3a99de.png", "66": "../assets/p12_0080_e4989b2d16cc0219.png", "67": "../assets/p12_0081_ae842f019aaf983a.png", "68": "../assets/p12_0082_2beef2da9c9832f7.png", "69": "../assets/p12_0083_b2849507b4857e25.png", "70": "../assets/p12_0084_86d9f5768f64f9a9.png", "71": "../assets/p12_0085_a3d87928b4530269.png", "72": "../assets/p12_0086_8dddfc3fb683a181.png"};
+const GROUPS={success:[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],think:[19, 20, 21, 22, 23, 24, 25, 26, 27, 28],mist:[29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42],repeat:[43, 44, 45, 46, 47, 48, 49, 50, 51, 52],hint:[53, 54, 55, 56, 57, 58, 59, 60],victory:[61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72]};
+const EMO={"01_neutral": "../assets/p12_0014_8a9f2b53c4cb74b5.png", "02_command": "../assets/p12_0087_47f319ec4ea0381c.png", "03_approval": "../assets/p12_0088_9dbffa15836adb10.png", "04_think": "../assets/p12_0089_3914834e8434d0f6.png", "05_displeased": "../assets/p12_0090_fc8c07f27522be7b.png", "06_angry": "../assets/p12_0091_4494bc88abe8df1a.png", "07_hint": "../assets/p12_0092_69b9347013345bb0.png", "08_victory": "../assets/p12_0093_d98edc8a97ff1582.png"};
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+window.addEventListener("DOMContentLoaded",()=>{const sh=document.querySelector("#shade");if(sh)sh.style.background="rgba(0,0,0,.62)";});
+const stage=$("#stage"), shade=$("#shade"), comic=$("#comic"), introPetro=$("#introPetro"), tutorial=$("#tutorial");
+const hud=$("#hud"), instructor=$("#instructor"), phrase=$("#phrase"), display=$("#displayOverlay");
+let taskIndex=0, errors=0, selectedUnit="", input="", locked=false, phraseTimer=null, wrongStreak=0;
+
+function fsAndLandscape(){
+ try{document.documentElement.requestFullscreen?.();screen.orientation?.lock?.('landscape').catch(()=>{})}catch(e){}
+}
+$("#comicNext").onclick=()=>{comic.classList.add("hidden");introPetro.classList.remove("hidden");fsAndLandscape();};
+$("#workBtn").onclick=()=>{introPetro.classList.add("hidden");shade.style.background="rgba(0,0,0,0)";tutorial.classList.remove("hidden");runTutorial();};
+
+const tutSteps=[
+  {emo:"01_neutral",text:"Так, операторе. <b>Швидкий інструктаж</b> — і до роботи.",hl:[30.6,31.4,34,29]},
+  {emo:"07_hint",text:"Це <b>дисплей</b>. Тут бачиш частоту та одиницю, в якій вона зараз відображається.",hl:[30.6,31.4,34,29]},
+  {emo:"07_hint",text:"Ці чотири кнопки змінюють одиниці: <b>Hz → kHz → MHz → GHz</b>. Частота та сама — змінюється її запис.",hl:[29.4,66.4,29,11]},
+  {emo:"04_think",text:"Клавіатура — для ручного введення. Цифри, крапка і стирання. <b>Тут навіть талант не потрібен.</b>",hl:[70.8,39.7,19.8,36.5]},
+  {emo:"07_hint",text:"А це <b>LOCK</b>. Натиснув — відповідь пішла на перевірку. Тому спочатку думай. Потім тисни.",hl:[56.7,64.3,9.1,16.5]},
+  {emo:"02_command",text:"І запам’ятай головне: я не прошу вгадувати. Я прошу <b>розуміти, що ти робиш.</b>",hl:[29.4,31.0,61.0,50.0]}
+];
+let ts=0;
+function runTutorial(){
+ ts=0;showTut();
+}
+function showTut(){
+ const s=tutSteps[ts]; $("#tutInstructor").src=EMO[s.emo]; $("#tutBubble").innerHTML=s.text;
+ const h=$("#tutorialHL"); h.style.left=s.hl[0]+"%";h.style.top=s.hl[1]+"%";h.style.width=s.hl[2]+"%";h.style.height=s.hl[3]+"%";
+ $("#tutNext").textContent=ts===tutSteps.length-1?"ДО РОБОТИ":"ДАЛІ";
+}
+$("#tutNext").onclick=()=>{ if(ts<tutSteps.length-1){ts++;showTut();}else{startGame();} };
+
+function startGame(){
+ tutorial.classList.add("hidden");shade.style.background="rgba(0,0,0,0)";
+ [hud,instructor,display,$("#taskBox"),...$$(".hit"),phrase].forEach(x=>x.classList.remove("hidden"));
+ loadTask();
+}
+
+function pick(group){
+ const arr=GROUPS[group], id=arr[Math.floor(Math.random()*arr.length)];return PHRASES[id];
+}
+function react(group,emo){
+ instructor.src=EMO[emo];
+ phrase.src=pick(group); phrase.classList.remove("hidden");requestAnimationFrame(()=>phrase.classList.add("show"));
+ clearTimeout(phraseTimer);phraseTimer=setTimeout(()=>phrase.classList.remove("show"),2700);
+}
+function fmt(n){return String(n).replace(".",",")}
+const UNIT_FACTOR={Hz:1,kHz:1e3,MHz:1e6,GHz:1e9};
+let physicalHz=0;
+function compactNumber(n){
+  if(!Number.isFinite(n)) return "0";
+  if(Math.abs(n)>=1000 && Number.isInteger(n)) return Math.round(n).toLocaleString("uk-UA");
+  return Number(n.toPrecision(12)).toString().replace(".",",");
+}
+function fitLCDText(){
+  const box=$("#displayOverlay"), value=$("#entry"), unit=$("#entryUnit");
+  if(!box||!value||!unit)return;
+
+  const available=Math.max(80,box.clientWidth*0.94);
+  const maxValue=Math.max(26,Math.min(70,box.clientHeight*0.34));
+  const minValue=18;
+
+  let lo=minValue,hi=maxValue,best=minValue;
+  for(let i=0;i<12;i++){
+    const mid=(lo+hi)/2;
+    value.style.fontSize=mid+"px";
+    unit.style.fontSize=Math.max(13,mid*0.43)+"px";
+    if(value.scrollWidth+unit.scrollWidth+box.clientWidth*0.035<=available){
+      best=mid;lo=mid;
+    }else{
+      hi=mid;
+    }
+  }
+  value.style.fontSize=best+"px";
+  unit.style.fontSize=Math.max(13,best*0.43)+"px";
+}
+function renderLCD(){
+  const factor=UNIT_FACTOR[selectedUnit]||1;
+  const value=input!=="" ? Number(input) : physicalHz/factor;
+  $("#entry").textContent=compactNumber(value);
+  $("#entryUnit").textContent=selectedUnit;
+  requestAnimationFrame(fitLCDText);
+}
+function loadTask(){
+ locked=false;wrongStreak=0;input="";
+ const t=TASKS[taskIndex];
+ physicalHz=t.from*UNIT_FACTOR[t.fromUnit];
+ selectedUnit=t.fromUnit;
+ $("#taskPlaque").textContent=`ЗАВДАННЯ ${String(taskIndex+1).padStart(2,"0")} / 10`;
+ $("#errorPlaque").textContent=`ПОМИЛОК: ${errors}`;
+ $("#taskBody").textContent=`${fmt(t.from)} ${t.fromUnit} → переведи у ${t.toUnit} та підтвердь LOCK`;
+ renderLCD();
+ instructor.src=EMO["02_command"];
+ react("hint","02_command");
+}
+$$("[data-unit]").forEach(b=>b.onclick=()=>{
+ if(locked)return;
+ if(input!==""){
+   const typed=Number(input.replace(",","."));
+   if(Number.isFinite(typed)) physicalHz=typed*UNIT_FACTOR[selectedUnit];
+   input="";
+ }
+ selectedUnit=b.dataset.unit;
+ renderLCD();
+ const t=TASKS[taskIndex];
+ if(selectedUnit===t.toUnit) react("success","03_approval"); else react("think","04_think");
+});
+$$("[data-key]").forEach(b=>b.onclick=()=>{
+ if(locked)return;
+ const k=b.dataset.key;
+ if(k==="back") input=input.slice(0,-1);
+ else if(k==="." && input.includes(".")) return;
+ else if(input.length<12) input+=k;
+ renderLCD();
+ if(input.length>=2) react("think","04_think");
+});
+$("#lock").onclick=()=>{
+ if(locked)return;
+ const t=TASKS[taskIndex];
+ const shownValue=input!=="" ? Number(input.replace(",",".")) : physicalHz/UNIT_FACTOR[selectedUnit];
+ const okUnit=selectedUnit===t.toUnit;
+ const okValue=Math.abs(shownValue-Number(t.answer))<1e-8;
+ if(okUnit && okValue){
+   locked=true;wrongStreak=0;react(taskIndex===9?"victory":"success",taskIndex===9?"08_victory":"03_approval");
+   setTimeout(()=>{if(taskIndex===9)finish();else{taskIndex++;loadTask();}},2300);
+ } else {
+   errors++;wrongStreak++;$("#errorPlaque").textContent=`ПОМИЛОК: ${errors}`;
+   if(wrongStreak===1)react("mist","05_displeased"); else react("repeat","06_angry");
+ }
+};
+window.addEventListener("resize",()=>requestAnimationFrame(fitLCDText));
+window.addEventListener("orientationchange",()=>setTimeout(fitLCDText,120));
+function finish(){
+ $("#finalText").textContent=`ЗАВДАНЬ: 10 / 10 · ПОМИЛОК: ${errors}`;
+ $("#gameOver").classList.remove("hidden");
+}
+</script>
+</body></html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>RX-01 — Рівень 3 · Стартовий інструктаж</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,sans-serif}
+body{touch-action:manipulation;user-select:none}
+#app{position:fixed;inset:0;display:grid;place-items:center;background:#060606}
+#stage{position:relative;width:min(100vw,150vh);height:min(100vh,66.6667vw);aspect-ratio:3/2;overflow:hidden;background:#000;box-shadow:0 0 50px #000}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shade{display:none}
+.dim{position:absolute;background:rgba(0,0,0,.67);z-index:26;pointer-events:none;transition:.35s ease}
+#dimTop{left:0;top:0;width:100%;height:0}
+#dimBottom{left:0;bottom:0;width:100%;height:0}
+#dimLeft{left:0;top:0;width:0;height:0}
+#dimRight{right:0;top:0;width:0;height:0}
+#tutorial{position:absolute;inset:0;z-index:30}
+#tutInstructor{position:absolute;left:2.6%;top:25%;width:20%;height:55%;object-fit:contain;filter:drop-shadow(0 10px 10px #000);z-index:28;transition:opacity .22s ease,transform .22s ease}
+#tutPhrase{position:absolute;left:2.2%;top:3.4%;width:28%;max-height:22%;object-fit:contain;z-index:29;filter:drop-shadow(0 8px 8px rgba(0,0,0,.62));transition:opacity .2s ease,transform .2s ease}
+#tutNext{position:absolute;left:6.5%;bottom:3.5%;z-index:29}
+.btn{border:3px solid #111;background:#f0b91c;color:#111;font-weight:1000;padding:14px 26px;font-size:clamp(14px,1.5vw,23px);transform:skew(-6deg);box-shadow:5px 5px 0 #111;cursor:pointer}
+.hl{position:absolute;border:5px solid #f1b900;box-shadow:0 0 30px #ffcf32,inset 0 0 24px rgba(255,207,50,.28);animation:pulse 1s infinite alternate;pointer-events:none;z-index:27;transition:left .35s ease,top .35s ease,width .35s ease,height .35s ease}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+#counter{position:absolute;right:2.4%;top:2.2%;z-index:29;color:#f1c53c;font:900 clamp(11px,1vw,17px) "Courier New",monospace;background:rgba(0,0,0,.62);border:1px solid #9e771b;padding:7px 10px}
+.fade{opacity:0;transform:scale(.94)}
+#done{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;color:#f2c329;text-align:center;font-weight:900;font-size:clamp(28px,5vw,76px);letter-spacing:.04em}
+#done.show{display:flex}
+@media(max-width:850px) and (orientation:landscape){
+ #tutInstructor{width:17.5%;left:1%;top:26%;height:51%}
+ #tutPhrase{left:1.5%;top:2.5%;width:29%;max-height:23%}
+ #tutNext{left:5%;bottom:2%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <img class="bg" src="../assets/asset_0014_fc9bbcc3f62d8a20.png">
+    <div id="shade" class="shade"></div>
+    <div id="dimTop" class="dim"></div>
+    <div id="dimBottom" class="dim"></div>
+    <div id="dimLeft" class="dim"></div>
+    <div id="dimRight" class="dim"></div>
+
+    <div id="tutorial">
+      <img id="tutInstructor" src="../assets/asset_0015_8a9f2b53c4cb74b5.png">
+      <img id="tutPhrase" src="../assets/asset_0016_a407307aaf8886ba.png">
+      <button class="btn" id="tutNext">ДАЛІ</button>
+      <div id="tutorialHL" class="hl"></div>
+      <div id="counter">1 / 5</div>
+    </div>
+
+    <div id="done">ДО РОБОТИ</div>
+  </div>
+</div>
+
+<script>
+const STEPS=[{"emo": 0, "phrase": 0, "hl": [29.4, 31.0, 61.0, 50.0]}, {"emo": 1, "phrase": 1, "hl": [68.5, 8.5, 22.0, 30.5]}, {"emo": 2, "phrase": 2, "hl": [70.7, 10.0, 18.0, 28.5]}, {"emo": 3, "phrase": 3, "hl": [85.7, 11.5, 3.8, 20.2]}, {"emo": 4, "phrase": 4, "hl": [55.8, 64.5, 9.0, 16.5]}];
+const EMO=["../assets/asset_0015_8a9f2b53c4cb74b5.png", "../assets/asset_0017_69b9347013345bb0.png", "../assets/asset_0017_69b9347013345bb0.png", "../assets/asset_0017_69b9347013345bb0.png", "../assets/asset_0018_47f319ec4ea0381c.png"];
+const PHR=["../assets/asset_0016_a407307aaf8886ba.png", "../assets/asset_0019_634612d0dfc5aa62.png", "../assets/asset_0020_27549d22aaaaf487.png", "../assets/asset_0021_2e27423a5e86740b.png", "../assets/asset_0022_112dee02401afac1.png"];
+let ts=0;
+
+const $=s=>document.querySelector(s);
+
+function showTut(){
+  const s=STEPS[ts];
+  const ins=$("#tutInstructor"), phr=$("#tutPhrase"), h=$("#tutorialHL");
+  ins.classList.add("fade"); phr.classList.add("fade");
+  setTimeout(()=>{
+    ins.src=EMO[s.emo];
+    phr.src=PHR[s.phrase];
+    ins.classList.remove("fade");
+    phr.classList.remove("fade");
+  },120);
+
+  const L=s.hl[0], T=s.hl[1], W=s.hl[2], H=s.hl[3];
+  h.style.left=L+"%";
+  h.style.top=T+"%";
+  h.style.width=W+"%";
+  h.style.height=H+"%";
+
+  // Darken only OUTSIDE the yellow frame.
+  const R=100-(L+W), B=100-(T+H);
+  $("#dimTop").style.left="0";
+  $("#dimTop").style.top="0";
+  $("#dimTop").style.width="100%";
+  $("#dimTop").style.height=T+"%";
+
+  $("#dimBottom").style.left="0";
+  $("#dimBottom").style.bottom="0";
+  $("#dimBottom").style.width="100%";
+  $("#dimBottom").style.height=B+"%";
+
+  $("#dimLeft").style.left="0";
+  $("#dimLeft").style.top=T+"%";
+  $("#dimLeft").style.width=L+"%";
+  $("#dimLeft").style.height=H+"%";
+
+  $("#dimRight").style.right="0";
+  $("#dimRight").style.top=T+"%";
+  $("#dimRight").style.width=R+"%";
+  $("#dimRight").style.height=H+"%";
+
+  $("#counter").textContent=(ts+1)+" / "+STEPS.length;
+  $("#tutNext").textContent=ts===STEPS.length-1?"ДО РОБОТИ":"ДАЛІ";
+}
+
+$("#tutNext").onclick=()=>{
+  if(ts<STEPS.length-1){
+    ts++;
+    showTut();
+  }else{
+    $("#tutorial").style.display="none";
+    ["#dimTop","#dimBottom","#dimLeft","#dimRight"].forEach(id=>$(id).style.display="none");
+    $("#done").classList.add("show");setTimeout(()=>{try{parent.RX01_STAGE_DONE("tutorial")}catch(e){};try{parent.postMessage({type:"RX01_LEVEL3_TUTORIAL_DONE"},"*")}catch(e){}},900);
+  }
+};
+
+showTut();
+</script>
+</body>
+</html>

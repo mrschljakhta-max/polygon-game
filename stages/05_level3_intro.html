@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RX-01 — Рівень 3 — Стартова заставка</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,sans-serif}
+body{display:grid;place-items:center}
+.stage{position:relative;width:min(100vw,177.683vh);height:min(56.281vw,100vh);aspect-ratio:1672/941;background:#000;overflow:hidden}
+.page{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .55s ease}
+.page.active{opacity:1;visibility:visible;pointer-events:auto}
+.piece{position:absolute;opacity:0;filter:drop-shadow(0 10px 24px rgba(0,0,0,.45));transition:opacity .65s ease,transform .85s cubic-bezier(.16,.84,.24,1)}
+.piece img{display:block;width:100%;height:100%}
+#piece1{left:-.478%;top:-.850%;width:100.957%;height:60.149%;transform:translateY(-12%) scale(1.015)}
+#piece2{left:-.478%;top:51.860%;width:51.854%;height:48.565%;transform:translateX(-15%) translateY(7%) scale(1.015)}
+#piece3{left:45.096%;top:45.802%;width:55.144%;height:54.410%;transform:translateX(15%) translateY(7%) scale(1.015)}
+.piece.show{opacity:1;transform:none!important}
+.note,.uiImg{position:absolute;opacity:0;transform:translateY(12px) scale(.965);transition:opacity .48s ease,transform .48s ease;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));z-index:20}
+.note img,.uiImg img{display:block;width:100%;height:auto}
+.note.show,.uiImg.show{opacity:1;transform:none}
+#note1{left:4.4%;top:5.2%;width:28%}
+#note2{right:3.8%;top:7.0%;width:29%}
+#note3{left:3.0%;top:57.0%;width:18.5%}
+#note4{left:49.5%;top:75.5%;width:20.0%}
+#note5{right:2.4%;top:58.5%;width:10.8%}
+#next{left:50%;bottom:3.4%;width:25%;transform:translateX(-50%) translateY(12px) scale(.965);cursor:pointer}
+#next.show{transform:translateX(-50%)}
+#next:hover,#start:hover{filter:drop-shadow(0 0 16px rgba(255,190,30,.65))}
+.full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
+.full.show{opacity:1}
+#finalText{right:3.8%;top:5.3%;width:37%}
+#level3{right:6.5%;bottom:14.8%;width:24%}
+#start{right:5.0%;bottom:3.8%;width:29%;cursor:pointer}
+.fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:100;transition:opacity .5s ease}
+.fade.show{opacity:1}
+@media(max-width:900px) and (orientation:portrait){
+  body:before{content:'Поверніть телефон горизонтально';position:fixed;inset:0;display:grid;place-items:center;background:#080808;color:#f5c62f;font-weight:900;z-index:9999;text-align:center;padding:30px}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="fade" id="fade"></div>
+  <section class="page active" id="page1">
+    <div class="piece" id="piece1"><img src="../assets/asset_0001_e0c2a1a3c2e232c8.png" alt=""></div>
+    <div class="piece" id="piece2"><img src="../assets/asset_0002_85df55365c4298ff.png" alt=""></div>
+    <div class="piece" id="piece3"><img src="../assets/asset_0003_545a0d60d2800b95.png" alt=""></div>
+    <div class="note" id="note1"><img src="../assets/asset_0004_a693550e75588551.png" alt=""></div>
+    <div class="note" id="note2"><img src="../assets/asset_0005_799af9a21ea32750.png" alt=""></div>
+    <div class="note" id="note3"><img src="../assets/asset_0006_8fb8b866667831a3.png" alt=""></div>
+    <div class="note" id="note4"><img src="../assets/asset_0007_e127856dd504d967.png" alt=""></div>
+    <div class="note" id="note5"><img src="../assets/asset_0008_c0702a279df51914.png" alt=""></div>
+    <div class="uiImg" id="next" role="button" tabindex="0" aria-label="Далі"><img src="../assets/asset_0009_34645243beb9bc64.png" alt="Далі"></div>
+  </section>
+  <section class="page" id="page2">
+    <img class="full" id="finalBg" src="../assets/asset_0010_a725f38b47a8e234.png" alt="">
+    <div class="note" id="finalText"><img src="../assets/asset_0011_9447d96529decf1d.png" alt=""></div>
+    <div class="uiImg" id="level3"><img src="../assets/asset_0012_9ba5242af51c7327.png" alt="Рівень 3"></div>
+    <div class="uiImg" id="start" role="button" tabindex="0" aria-label="Вийти на слід"><img src="../assets/asset_0013_ab7cfdbfd3e867b4.png" alt="Вийти на слід"></div>
+  </section>
+</div>
+<script>
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const q=id=>document.getElementById(id);
+const show=id=>q(id).classList.add('show');
+let switched=false;
+async function intro(){
+  await wait(250); show('piece1');
+  await wait(2000); show('note1');
+  await wait(2000); show('note2');
+  await wait(2000); show('piece2');
+  await wait(2000); show('note3');
+  await wait(2000); show('piece3');
+  await wait(2000); show('note4');
+  await wait(2000); show('note5');
+  await wait(800); show('next');
+}
+async function page2(){
+  if(switched)return; switched=true;
+  q('fade').classList.add('show');
+  await wait(500);
+  q('page1').classList.remove('active');
+  q('page2').classList.add('active');
+  q('fade').classList.remove('show');
+  await wait(250); show('finalBg');
+  await wait(2000); show('finalText');
+  await wait(2000); show('level3');
+  await wait(2000); show('start');
+}
+function activate(el,fn){el.addEventListener('click',fn);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}})}
+activate(q('next'),page2);
+activate(q('start'),()=>{window.parent?.postMessage({type:'RX01_LEVEL3_INTRO_DONE'},'*');});
+window.addEventListener('load',intro);
+</script>
+</body>
+</html>

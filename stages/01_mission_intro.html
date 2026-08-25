@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RX-01 — коміксова заставка</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#050505;overflow:hidden}
+body{font-family:Arial,sans-serif}
+.stage{
+  position:fixed; inset:0; margin:auto;
+  width:min(100vw,calc(100vh * 1.7777778));
+  height:min(100vh,calc(100vw / 1.7777778));
+  background:#050505;
+  overflow:hidden;
+}
+.grid{position:absolute;inset:0;display:grid;grid-template-columns:27.35fr 23.15fr 24.55fr 24.95fr;background:#050505}
+.panel{position:relative;overflow:hidden;background:#050505;border-right:5px solid #090909;visibility:hidden;opacity:0;transform:translateX(-36px) scale(.985);transition:opacity .32s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.panel:last-child{border-right:0}
+.panel.show{visibility:visible;opacity:1;transform:none}
+.panel>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.caption{position:absolute;z-index:3;visibility:hidden;opacity:0;transform:scale(.82);transition:opacity .22s ease,transform .32s cubic-bezier(.2,1.2,.3,1);filter:drop-shadow(0 6px 5px rgba(0,0,0,.45))}
+.caption.show{visibility:visible;opacity:1;transform:scale(1)}
+.caption img{display:block;width:100%;height:auto}
+.polygon{left:2.5%;top:2.2%;width:92%}
+.krr{left:2%;top:27%;width:94%}
+.first{left:4%;bottom:6%;width:91%}
+.contact{left:8%;top:58%;width:84%}
+.today{left:4%;top:8%;width:92%}
+.click{left:11%;bottom:4%;width:78%}
+.replay{position:absolute;right:1.2%;bottom:1.2%;z-index:20;visibility:hidden;opacity:0;border:1px solid #e9c443;background:rgba(0,0,0,.72);color:#f4d85d;font:700 12px system-ui;padding:8px 11px;cursor:pointer;transition:opacity .3s}
+.replay.show{visibility:visible;opacity:1}.replay{font-size:16px;font-weight:900;padding:11px 20px;background:#e9c443;color:#111;border:2px solid #111;box-shadow:5px 5px 0 #111}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="grid">
+    <section class="panel" id="p1">
+      <img class="bg" src="../assets/p12_0001_75ac8f55381f6d4f.png" alt="Полігон">
+      <div class="caption polygon" id="polygon"><img src="../assets/p12_0002_291aae677fbf1554.png" alt="Полігон 07:02"></div>
+      <div class="caption krr" id="krr"><img src="../assets/p12_0003_c2364a798163c06e.png" alt="КРРР—ШШШШШ!"></div>
+    </section>
+    <section class="panel" id="p2">
+      <img class="bg" src="../assets/p12_0004_1a7ca5a121643e2b.png" alt="RX-01">
+      <div class="caption first" id="first"><img src="../assets/p12_0005_7b1da80d0ebb29a4.png" alt="Перший виїзд!"></div>
+    </section>
+    <section class="panel" id="p3">
+      <img class="bg" src="../assets/p12_0006_3d3f9a54d7658dc1.png" alt="Інструктор">
+      <div class="caption contact" id="contact"><img src="../assets/p12_0007_34a9f29a7dcdadfb.png" alt="На зв'язок!!!"></div>
+    </section>
+    <section class="panel" id="p4">
+      <img class="bg" src="../assets/p12_0008_b3e4af93c493ff55.png" alt="Робота з RX-01">
+      <div class="caption today" id="today"><img src="../assets/p12_0009_c05e2a04d5681c71.png" alt="Сьогодні працюєш сам — я поруч."></div>
+      <div class="caption click" id="click"><img src="../assets/p12_0010_5d139dc50b67217f.png" alt="Клац!"></div>
+    </section>
+  </div>
+  <button class="replay" id="replay">ДАЛІ →</button>
+</div>
+<script>
+const seq = [
+  ['p1',0], ['polygon',500], ['krr',1500],
+  ['p2',3500], ['first',4000],
+  ['p3',6000], ['contact',6500],
+  ['p4',8500], ['today',9000], ['click',10000]
+];
+let timers=[];
+function run(){
+  timers.forEach(clearTimeout); timers=[];
+  document.querySelectorAll('.panel,.caption,#replay').forEach(el=>el.classList.remove('show'));
+  seq.forEach(([id,t])=>timers.push(setTimeout(()=>document.getElementById(id).classList.add('show'),t)));
+  timers.push(setTimeout(()=>document.getElementById('replay').classList.add('show'),11500));
+}
+document.getElementById('replay').addEventListener('click',()=>{
+  try { parent.postMessage({type:'RX01_INTRO_DONE'}, '*'); } catch(e) {}
+});
+run();
+</script>
+</body>
+</html>

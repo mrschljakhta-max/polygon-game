@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RX-01 — Рівень 3 — Прототип пеленгатора</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden;font-family:Arial,Helvetica,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:min(100vw,calc(100vh*1537/1023));height:min(100vh,calc(100vw*1023/1537));aspect-ratio:1537/1023;background:#000;overflow:hidden}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none}
+.hit{position:absolute;background:transparent;border:0;padding:0;cursor:pointer;z-index:20;touch-action:none}
+.hit:focus-visible{outline:2px solid rgba(255,215,50,.95);outline-offset:2px}
+#leftHit{left:71.01822%;top:32.92180%;width:3.28432%;height:3.61877%;}
+#rightHit{left:82.18478%;top:33.14174%;width:3.13793%;height:3.28935%;}
+#lockHit{left:56.42225%;top:66.47507%;width:7.51724%;height:12.39003%;}
+
+#azimuthDisplay{
+  position:absolute;left:75.61614%;top:33.47019%;width:5.03578%;height:2.96090%;
+  z-index:15;display:flex;align-items:center;justify-content:center;
+  color:#9dff43;font-family:"Courier New",monospace;font-weight:900;
+  font-size:clamp(10px,1.5vw,25px);letter-spacing:.06em;
+  text-shadow:0 0 5px rgba(115,255,46,.75);pointer-events:none;
+  transition:color .18s ease,text-shadow .18s ease,filter .18s ease;
+}
+#azimuthDisplay.signal{color:#ffd83d;text-shadow:0 0 5px rgba(255,216,61,.95),0 0 12px rgba(255,174,0,.55)}
+#azimuthDisplay.hot{color:#ffe866;text-shadow:0 0 6px #ffe866,0 0 16px rgba(255,174,0,.85)}
+#azimuthDisplay.peak{color:#fff4a8;text-shadow:0 0 7px #fff4a8,0 0 18px #ffd11a,0 0 28px rgba(255,153,0,.9);filter:brightness(1.18)}
+#signalMeter{
+  position:absolute;left:86.41770%;top:12.74682%;width:2.04359%;height:17.87292%;
+  z-index:15;display:grid;grid-template-rows:repeat(10,1fr);gap:3px;padding:5px 4px;pointer-events:none;
+  background:rgba(4,10,5,.34);border:1px solid rgba(127,183,49,.28);box-shadow:inset 0 0 8px rgba(0,0,0,.65)
+}
+.seg{min-height:2px;border:1px solid rgba(128,174,64,.42);background:rgba(29,48,19,.28);box-shadow:inset 0 0 3px rgba(0,0,0,.75);transition:background .12s ease,box-shadow .12s ease,border-color .12s ease}
+.seg.on{background:#f4c52d;border-color:#ffe56a;box-shadow:0 0 5px rgba(255,210,46,.88),inset 0 0 3px rgba(255,255,210,.45)}
+.seg.hot{background:#ffd82f;box-shadow:0 0 7px rgba(255,211,34,1),0 0 13px rgba(255,143,0,.55)}
+.seg.peak{background:#fff18a;border-color:#fff9c9;box-shadow:0 0 8px #ffe84b,0 0 16px rgba(255,154,0,.8)}
+
+#scopeOverlay{
+  position:absolute;left:70.73780%;top:10.24145%;
+  width:14.86532%;height:22.33431%;z-index:14;pointer-events:none;
+}
+#scopeSvg{width:100%;height:100%;overflow:visible}
+#beam{stroke:#9cff38;stroke-width:1.4;opacity:.85;filter:drop-shadow(0 0 3px rgba(141,255,49,.9))}
+#beamDot{fill:#a7ff3c;opacity:.9;filter:drop-shadow(0 0 5px rgba(141,255,49,1))}
+#centerDot{fill:#a7ff3c;opacity:.85}
+#signalDot{fill:#ffd83d;opacity:0;filter:drop-shadow(0 0 4px #ffd83d) drop-shadow(0 0 9px rgba(255,153,0,.8));transition:opacity .18s ease,r .18s ease}
+#signalDot.visible{opacity:.42}#signalDot.hot{opacity:.78}#signalDot.peak{opacity:1}
+#signalHalo{fill:none;stroke:#ffd83d;stroke-width:1.3;opacity:0}
+#signalHalo.peak{animation:targetPulse 1s ease-out infinite}
+@keyframes targetPulse{0%{r:6;opacity:.85}100%{r:24;opacity:0}}
+#peakPulse{fill:none;stroke:#a7ff3c;stroke-width:1.2;opacity:0}
+#scopeOverlay.peak #peakPulse{animation:pulse 1s ease-out infinite}
+@keyframes pulse{0%{r:4;opacity:.8}100%{r:22;opacity:0}}
+
+#miniHud{
+  position:absolute;left:2.2%;bottom:2.3%;z-index:30;
+  background:rgba(7,10,6,.76);border:1px solid rgba(220,166,32,.65);
+  color:#e8d68f;padding:9px 12px;font:700 12px/1.35 "Courier New",monospace;
+  border-radius:5px;pointer-events:none;min-width:210px;
+}
+#miniHud b{color:#fff0a0}
+#feedback{margin-top:4px;color:#b8ff73}
+#hint{color:#d2bf83}
+#successFlash{position:absolute;inset:0;z-index:40;background:rgba(120,255,55,0);pointer-events:none}
+#successFlash.show{animation:flash .45s ease}
+@keyframes flash{0%{background:rgba(120,255,55,0)}40%{background:rgba(120,255,55,.12)}100%{background:rgba(120,255,55,0)}}
+
+@media(max-width:800px){
+ #miniHud{font-size:9px;padding:6px 8px;min-width:160px}
+}
+
+#taskPanel{
+  position:absolute;left:30.8061%;top:32.7028%;width:32.9148%;height:28.2893%;
+  z-index:12;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:4%;pointer-events:none;color:#17220c;font-family:"Courier New",monospace;font-weight:900;
+}
+#taskTitle{font-size:clamp(15px,2.15vw,36px);letter-spacing:.07em}
+#taskText{margin-top:6%;font-size:clamp(11px,1.45vw,24px);line-height:1.25}
+#taskProgress{margin-top:7%;font-size:clamp(9px,1vw,17px);letter-spacing:.18em}
+#taskState{margin-top:5%;font-size:clamp(9px,1vw,17px)}
+#petroBox{
+  position:absolute;left:2.2%;bottom:2%;z-index:35;width:27%;
+  background:rgba(8,8,6,.86);border:2px solid #d2a62b;border-radius:6px;
+  padding:10px 12px;color:#f4df95;font:900 clamp(9px,1vw,16px)/1.3 Arial;
+  box-shadow:0 4px 15px #000;pointer-events:none
+}
+#petroBox b{color:#ffd43b}
+#taskToast{
+  position:absolute;left:50%;top:7%;transform:translateX(-50%);
+  z-index:50;background:rgba(8,8,6,.93);border:2px solid #d2a62b;
+  color:#ffe184;padding:10px 18px;border-radius:5px;
+  font:900 clamp(12px,1.4vw,22px) Arial;opacity:0;transition:.2s;pointer-events:none
+}
+#taskToast.show{opacity:1}
+
+#petroBox{display:none!important}
+#rxHud{position:absolute;inset:0;z-index:70;pointer-events:none}
+#rxLevelPlate{position:absolute;left:1.15%;top:1.1%;width:20.5%;height:auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.75));opacity:0;transform:translateY(-28px) scale(.95);animation:rxLevelIn .72s cubic-bezier(.18,1.15,.3,1) .18s forwards}
+.rxTopPlaque{position:absolute;top:1.4%;height:7.1%;min-width:18%;display:flex;align-items:center;justify-content:center;padding:0 2.2%;background:linear-gradient(180deg,rgba(30,27,17,.96),rgba(8,8,7,.96));border:2px solid #d3a51c;border-left:7px solid #f2ba18;color:#f5e9c5;font:1000 italic clamp(11px,1.25vw,20px) Arial;letter-spacing:.055em;text-shadow:2px 2px #000;box-shadow:6px 6px 0 rgba(0,0,0,.62),inset 0 0 14px rgba(242,186,24,.12);clip-path:polygon(3% 0,100% 0,96% 100%,0 100%)}
+#rxTaskPlaque{left:38.5%;transform:translateY(-30px);opacity:0;animation:rxTaskIn .56s cubic-bezier(.2,1.3,.3,1) .42s forwards}
+#rxErrorPlaque{right:1.4%;transform:translateY(-30px);opacity:0;animation:rxTaskIn .56s cubic-bezier(.2,1.3,.3,1) .54s forwards}
+#rxTaskPlaque.bump{animation:rxTaskBump .44s cubic-bezier(.2,1.55,.3,1)}
+#rxPetro{position:absolute;left:.8%;top:24%;width:17.5%;height:47%;object-fit:contain;object-position:left center;filter:drop-shadow(0 11px 13px rgba(0,0,0,.9));opacity:0;transform:translateX(-35px) scale(.97);animation:rxPetroIn .72s ease .62s forwards}
+#rxOno{position:absolute;left:17.2%;top:9.3%;width:25.5%;max-height:17.5%;object-fit:contain;object-position:left center;z-index:72;opacity:0;transform:scale(.68) rotate(-2deg);filter:drop-shadow(0 8px 12px rgba(0,0,0,.85))}
+#rxOno.show{animation:rxOnoPop .42s cubic-bezier(.2,1.35,.3,1) forwards}
+@keyframes rxLevelIn{to{opacity:1;transform:none}}
+@keyframes rxTaskIn{to{opacity:1;transform:none}}
+@keyframes rxTaskBump{0%{transform:scale(.75);filter:brightness(1.8)}65%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes rxPetroIn{to{opacity:1;transform:none}}
+@keyframes rxOnoPop{0%{opacity:0;transform:scale(.62) rotate(-5deg)}70%{opacity:1;transform:scale(1.05) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(-1deg)}}
+
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="rxHud">
+  <img id="rxLevelPlate" src="../assets/asset_0023_0a0155305abb1acd.png" alt="Рівень 3">
+  <div class="rxTopPlaque" id="rxTaskPlaque">ЗАВДАННЯ 01 / 10</div>
+  <div class="rxTopPlaque" id="rxErrorPlaque">ПОМИЛОК: 0</div>
+  <img id="rxPetro" src="../assets/asset_0018_47f319ec4ea0381c.png" alt="Петрович">
+  <img id="rxOno" alt="Репліка Петровича">
+</div>
+
+  <img id="bg" src="../assets/asset_0014_fc9bbcc3f62d8a20.png" alt="RX-01 level 3">
+
+  <div id="scopeOverlay">
+    <svg id="scopeSvg" viewBox="-120 -120 240 240" aria-hidden="true">
+      <line id="beam" x1="0" y1="0" x2="0" y2="-92"/>
+      <circle id="beamDot" cx="0" cy="-92" r="3.5"/>
+      <circle id="centerDot" cx="0" cy="0" r="2.2"/>
+      <circle id="signalHalo" cx="0" cy="0" r="6"/>
+      <circle id="signalDot" cx="0" cy="0" r="3.2"/>
+      <circle id="peakPulse" cx="0" cy="0" r="4"/>
+    </svg>
+  </div>
+
+  <div id="azimuthDisplay">000°</div>
+  <div id="signalMeter">
+    <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+    <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+  </div>
+
+  <button class="hit" id="leftHit" aria-label="Повернути пеленг вліво"></button>
+  <button class="hit" id="rightHit" aria-label="Повернути пеленг вправо"></button>
+  <button class="hit" id="lockHit" aria-label="LOCK"></button>
+
+  
+  <div id="taskPanel">
+    <div>
+      <div id="taskTitle">ЗАВДАННЯ 1/5</div>
+      <div id="taskText">Знайди напрямок 090° і підтвердь LOCK.</div>
+      <div id="taskProgress">◉ ○ ○ ○ ○</div>
+      <div id="taskState"></div>
+    </div>
+  </div>
+  <div id="petroBox"><b>Петрович:</b> <span id="petroText">Дивись на коло.</span></div>
+  <div id="taskToast"></div>
+<div id="miniHud">
+    <div>ТЕСТОВА ЦІЛЬ: <b>прихована</b></div>
+    <div>ПОТОЧНИЙ AZ: <b id="hudAz">000°</b></div>
+    <div>СИГНАЛ: <b id="hudSig">0/10</b></div>
+    <div id="feedback">Знайди максимум і натисни LOCK.</div>
+    <div id="hint">← / → або A / D · утримання прискорює</div>
+  </div>
+  <div id="successFlash"></div>
+</div>
+
+<script>
+
+const RX_EMO={"05_displeased": "../assets/asset_0024_fc8c07f27522be7b.png", "01_neutral": "../assets/asset_0015_8a9f2b53c4cb74b5.png", "03_approval": "../assets/asset_0025_9dbffa15836adb10.png", "04_think": "../assets/asset_0026_3914834e8434d0f6.png", "08_victory": "../assets/asset_0027_d98edc8a97ff1582.png", "07_hint": "../assets/asset_0017_69b9347013345bb0.png", "06_angry": "../assets/asset_0028_4494bc88abe8df1a.png", "02_command": "../assets/asset_0018_47f319ec4ea0381c.png"};
+const RX_ONO={"05": "../assets/asset_0029_8694f4cebb6b1958.png", "12": "../assets/asset_0030_c88fac623639f6d0.png", "08": "../assets/asset_0031_531ebf55ad91d975.png", "02": "../assets/asset_0032_1ea6e705e4eac417.png", "09": "../assets/asset_0033_1cb0400dd270b71f.png", "04": "../assets/asset_0034_25c0257ac2aa7731.png", "10": "../assets/asset_0035_1a810fa03ce800d6.png", "11": "../assets/asset_0036_1a6af5f3e5536dfc.png", "06": "../assets/asset_0037_61a4801422be661b.png", "07": "../assets/asset_0038_fd5cb468564821f7.png", "03": "../assets/asset_0039_68b51272aaab9aac.png", "01": "../assets/asset_0040_5f48ed5c614017fa.png"};
+let rxErrors=0, rxOnoBusy=false, rxOnoTimer=null;
+const rxTaskPlaque=document.getElementById('rxTaskPlaque');
+const rxErrorPlaque=document.getElementById('rxErrorPlaque');
+const rxPetro=document.getElementById('rxPetro');
+const rxOno=document.getElementById('rxOno');
+
+function rxShowOno(key,emo,holdMs){
+  if(rxOnoBusy) return; // Петрович не перебиває сам себе
+  rxOnoBusy=true;
+  if(RX_EMO[emo]) rxPetro.src=RX_EMO[emo];
+  if(RX_ONO[key]) rxOno.src=RX_ONO[key];
+  rxOno.classList.remove('show'); void rxOno.offsetWidth; rxOno.classList.add('show');
+  clearTimeout(rxOnoTimer);
+  rxOnoTimer=setTimeout(()=>{
+    rxOno.classList.remove('show');
+    setTimeout(()=>{rxOnoBusy=false;},180);
+  },Math.max(2000,holdMs||2000));
+}
+function rxSetTask(n){rxTaskPlaque.textContent='ЗАВДАННЯ '+String(n).padStart(2,'0')+' / 10';rxTaskPlaque.classList.remove('bump');void rxTaskPlaque.offsetWidth;rxTaskPlaque.classList.add('bump')}
+function rxSetErrors(n){rxErrors=n;rxErrorPlaque.textContent='ПОМИЛОК: '+n}
+
+(() => {
+  const TASKS = [
+    {target:90,tolerance:5,start:0,text:'Знайди напрямок 090° і підтвердь LOCK.',petro:['Дивись на коло.','Крутиш напрямок — дивишся на сигнал.','Знайшов максимум — LOCK.']},
+    {target:180,tolerance:5,start:90,text:'Знайди напрямок 180° і підтвердь LOCK.',petro:['Добре.','Тепер ціль нижче по шкалі.','Шукай максимум.']},
+    {target:270,tolerance:3,start:180,text:'Знайди напрямок 270° і підтвердь LOCK.',petro:['Тепер в інший бік.','Сигнал росте — значить ідеш правильно.','Не проскочи максимум.']},
+    {target:137,tolerance:3,start:270,text:'Знайди напрямок 137° і підтвердь LOCK.',petro:['А тепер без красивих цифр.','Не шукай число.','Шукай максимум сигналу.']},
+    {target:347,tolerance:2,start:180,text:'Знайди напрямок 347° і підтвердь LOCK.',petro:['Ось тут уважно.','Коло, якщо що, не закінчується на 359.','До цілі інколи ближче через нуль.']}
+  ];
+  let taskIndex = 0;
+  let wrongLocks = 0;
+  let enabled = false;
+  let locked = false;
+  let az = TASKS[0].start;
+  let lastDir = null;
+  let holdTimer = null;
+  let repeatTimer = null;
+  let holdStartedAt = 0;
+
+  const azEl = document.getElementById('azimuthDisplay');
+  const signalDot = document.getElementById('signalDot');
+  const signalHalo = document.getElementById('signalHalo');
+  const hudAz = document.getElementById('hudAz');
+  const hudSig = document.getElementById('hudSig');
+  const feedback = document.getElementById('feedback');
+  const beam = document.getElementById('beam');
+  const beamDot = document.getElementById('beamDot');
+  const scope = document.getElementById('scopeOverlay');
+  const segs = [...document.querySelectorAll('.seg')];
+  const flash = document.getElementById('successFlash');
+
+  function norm(v) {
+    v %= 360;
+    if (v < 0) v += 360;
+    return v;
+  }
+
+  function circularDiff(a,b) {
+    let d = Math.abs(norm(a)-norm(b));
+    return Math.min(d, 360-d);
+  }
+
+  function signalLevel(a) {
+    const d = circularDiff(a, TASKS[taskIndex].target);
+    if (d === 0) return 10;
+    if (d <= 3) return 9;
+    if (d <= 6) return 8;
+    if (d <= 10) return 7;
+    if (d <= 18) return 6;
+    if (d <= 28) return 5;
+    if (d <= 40) return 4;
+    if (d <= 55) return 3;
+    if (d <= 75) return 2;
+    if (d <= 100) return 1;
+    return 0;
+  }
+
+  function render() {
+    const label = String(az).padStart(3,'0') + '°';
+    azEl.textContent = label;
+    hudAz.textContent = label;
+
+    const sig = signalLevel(az);
+    hudSig.textContent = sig + '/10';
+
+    segs.forEach((s,i) => {
+      const lit = i >= (10 - sig);
+      s.classList.toggle('on', lit);
+      s.classList.toggle('hot', lit && sig >= 7);
+      s.classList.toggle('peak', lit && sig === 10);
+    });
+
+    beam.setAttribute('transform', `rotate(${az} 0 0)`);
+    beamDot.setAttribute('transform', `rotate(${az} 0 0)`);
+
+    azEl.classList.remove('signal','hot','peak');
+    if (sig >= 2) azEl.classList.add('signal');
+    if (sig >= 7) azEl.classList.add('hot');
+    if (sig === 10) azEl.classList.add('peak');
+
+    const theta = TASKS[taskIndex].target * Math.PI / 180;
+    const dotRadius = 72;
+    const dotX = dotRadius * Math.sin(theta);
+    const dotY = -dotRadius * Math.cos(theta);
+    signalDot.setAttribute('cx', dotX.toFixed(2));
+    signalDot.setAttribute('cy', dotY.toFixed(2));
+    signalHalo.setAttribute('cx', dotX.toFixed(2));
+    signalHalo.setAttribute('cy', dotY.toFixed(2));
+    signalDot.classList.remove('visible','hot','peak');
+    signalHalo.classList.remove('peak');
+    if (sig >= 2) signalDot.classList.add('visible');
+    if (sig >= 6) signalDot.classList.add('hot');
+    if (sig === 10) {
+      signalDot.classList.add('peak');
+      signalDot.setAttribute('r','5.2');
+      signalHalo.classList.add('peak');
+    } else if (sig >= 6) signalDot.setAttribute('r','4.1');
+    else signalDot.setAttribute('r','3.2');
+
+    scope.classList.toggle('peak', sig === 10);
+
+    if (sig === 10) feedback.textContent = 'ПІК. Джерело видно на пеленгаторі. Тисни LOCK.';
+    else if (sig >= 8) feedback.textContent = 'Дуже сильний сигнал.';
+    else if (sig >= 6) feedback.textContent = 'Сигнал росте. Точка вже проявляється.';
+    else if (sig >= 2) feedback.textContent = 'Сигнал знайдено. Дотягуй максимум.';
+    else feedback.textContent = 'Слабко. Продовжуй пошук.';
+  }
+
+  function step(dir, amount=1) {
+    if (!enabled || locked) return;
+    az = norm(az + dir * amount);
+    lastDir = dir;
+    render();
+  }
+
+  function currentHoldStep() {
+    const ms = performance.now() - holdStartedAt;
+    if (ms > 1800) return 5;
+    if (ms > 900) return 2;
+    return 1;
+  }
+
+  function startHold(dir) {
+    stopHold();
+    holdStartedAt = performance.now();
+    step(dir,1);
+    holdTimer = setTimeout(() => {
+      repeatTimer = setInterval(() => step(dir,currentHoldStep()), 90);
+    }, 380);
+  }
+
+  function stopHold() {
+    if (holdTimer) clearTimeout(holdTimer);
+    if (repeatTimer) clearInterval(repeatTimer);
+    holdTimer = repeatTimer = null;
+  }
+
+  function bindHold(el, dir) {
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      el.setPointerCapture?.(e.pointerId);
+      startHold(dir);
+    });
+    el.addEventListener('pointerup', stopHold);
+    el.addEventListener('pointercancel', stopHold);
+    el.addEventListener('pointerleave', e => {
+      if (e.buttons === 0) stopHold();
+    });
+  }
+
+  bindHold(document.getElementById('leftHit'), -1);
+  bindHold(document.getElementById('rightHit'), +1);
+
+  document.addEventListener('keydown', e => {
+    if (e.repeat) return;
+    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+      e.preventDefault(); startHold(-1);
+    }
+    if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+      e.preventDefault(); startHold(+1);
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault(); checkLock();
+    }
+  });
+  document.addEventListener('keyup', e => {
+    if (['ArrowLeft','ArrowRight','a','d','A','D'].includes(e.key)) stopHold();
+  });
+
+  function toast(msg){
+    const t=document.getElementById('taskToast'); t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),900);
+  }
+
+  function updateTaskUI(){
+    const t=TASKS[taskIndex];
+    document.getElementById('taskTitle').textContent=`ЗАВДАННЯ ${taskIndex+1}/5`;
+    document.getElementById('taskText').textContent=t.text;
+    document.getElementById('taskProgress').textContent=TASKS.map((_,i)=>i<taskIndex?'●':i===taskIndex?'◉':'○').join(' ');
+    document.getElementById('taskState').textContent='';
+  }
+
+  function sayPetrovych(lines, done){
+    enabled=false;
+    let i=0;
+    const box=document.getElementById('petroText');
+    box.textContent=lines[0];
+    const timer=setInterval(()=>{
+      i++;
+      if(i<lines.length) box.textContent=lines[i];
+      else { clearInterval(timer); enabled=true; if(done) done(); }
+    },1150);
+  }
+
+  function startTask(){
+    const t=TASKS[taskIndex];
+    locked=false; enabled=false; az=t.start;
+    updateTaskUI(); render();
+    sayPetrovych(t.petro);
+  }
+
+  function checkLock() {
+    if(!enabled || locked) return;
+    const t=TASKS[taskIndex];
+    const d=circularDiff(az,t.target);
+    const sig=signalLevel(az);
+
+    if(d<=t.tolerance){
+      locked=true; enabled=false;
+      document.getElementById('taskState').textContent='СИГНАЛ ЗАФІКСОВАНО';
+      document.getElementById('petroText').textContent='Оце воно.'; rxShowOno('12','03_approval',2100);
+      toast('ЗАФІКСОВАНО ✓');
+      flash.classList.remove('show'); void flash.offsetWidth; flash.classList.add('show');
+
+      setTimeout(()=>{
+        if(taskIndex<TASKS.length-1){
+          taskIndex++;
+          startTask();
+        }else{
+          document.getElementById('taskTitle').textContent='5/5 — ВИКОНАНО';
+          document.getElementById('taskText').textContent='ПЕЛЕНГАТОР ОСВОЄНО';
+          document.getElementById('taskProgress').textContent='● ● ● ● ●';
+          document.getElementById('taskState').textContent='БЛОК ЗАВЕРШЕНО';
+          document.getElementById('petroText').textContent='Ну добре. Напрямок уже ловиш.';
+          toast('БЛОК 1 ЗАВЕРШЕНО');
+          setTimeout(()=>{
+            
+            document.getElementById('petroText').textContent='А тепер я тобі навіть напрямок не скажу.';
+            try{parent.RX01_STAGE_DONE('block1')}catch(e){}
+            try{parent.postMessage({type:'RX01_LEVEL3_BLOCK1_DONE'},'*')}catch(e){}
+          },1800);
+        }
+      },1250);
+    }else{
+      wrongLocks++; rxSetErrors(wrongLocks); rxShowOno('03','05_displeased',2100);
+      document.getElementById('taskState').textContent='LOCK: НЕ ПІК';
+      if(sig>=8) document.getElementById('petroText').textContent='Поруч. Дотягни сигнал.';
+      else if(sig>=4) document.getElementById('petroText').textContent='Є щось. Дивись на шкалу.';
+      else document.getElementById('petroText').textContent='Ні. Це не максимум.';
+    }
+  }
+  document.getElementById('lockHit').addEventListener('click', checkLock);
+
+  updateTaskUI();
+  const oldPetro=document.getElementById('petroText');
+  if(oldPetro && oldPetro.parentElement) oldPetro.parentElement.style.display='none';
+  const oldTaskTitle=document.getElementById('taskTitle');
+  if(oldTaskTitle){
+    new MutationObserver(()=>{
+      const m=oldTaskTitle.textContent.match(/(\d+)/);
+      if(m) rxSetTask(Number(m[1]));
+    }).observe(oldTaskTitle,{childList:true,subtree:true,characterData:true});
+  }
+  rxSetTask(1);
+  render();
+  sayPetrovych(TASKS[0].petro);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>RX-01 — Рівень 2</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,sans-serif}
+body{touch-action:manipulation;user-select:none}
+#rotate{display:none;position:fixed;inset:0;z-index:9999;background:#060706;color:#f3c43c;align-items:center;justify-content:center;text-align:center;padding:28px;font-weight:1000;font-size:26px}
+@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}#app{display:none}}
+#app{position:fixed;inset:0;display:grid;place-items:center;background:#050505}
+#stage{position:relative;width:min(100vw,150vh);height:min(100vh,66.6667vw);aspect-ratio:3/2;overflow:hidden;background:#000;box-shadow:0 0 45px #000}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hidden{display:none!important}
+
+/* HUD */
+.hud{position:absolute;inset:0;z-index:10;pointer-events:none}
+.plaque{position:absolute;top:1.2%;height:7.7%;display:flex;align-items:center;justify-content:center;color:#f3ead1;font-weight:1000;font-style:italic;font-size:clamp(11px,1.55vw,25px);letter-spacing:.04em;text-shadow:2px 2px 0 #000}
+.plaque img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
+#levelPlaque{left:9.5%;width:23.4%}
+#taskPlaque{left:39.0%;width:26.0%}
+#errorPlaque{right:8.8%;width:23.5%}
+
+/* Petrovych */
+#instructor{position:absolute;left:2.1%;top:22%;width:20%;height:57%;object-fit:contain;filter:drop-shadow(0 9px 12px #000);z-index:15;transition:.22s}
+#phrase{position:absolute;left:18.0%;top:8.0%;width:24%;max-height:23%;object-fit:contain;filter:drop-shadow(0 7px 8px #000);opacity:0;transform:scale(.78) rotate(-2deg);transition:opacity .22s,transform .24s;z-index:18;pointer-events:none}
+#phrase.show{opacity:1;transform:scale(1) rotate(-2deg)}
+
+/* LCD */
+#displayOverlay{position:absolute;left:30.6%;top:31.2%;width:34%;height:22%;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:2%;color:#071006;font-family:'Courier New',monospace;text-shadow:0 1px 0 rgba(210,255,170,.45),0 0 1px #071207;z-index:14;pointer-events:none;filter:contrast(1.35);white-space:nowrap;overflow:hidden;padding:0 3%}
+#entry{font-size:70px;font-weight:1000;line-height:1;color:#061006;letter-spacing:.02em;white-space:nowrap;flex:0 1 auto}
+#entryUnit{font-size:30px;font-weight:1000;color:#061006;align-self:center;margin-top:1.3%;white-space:nowrap;flex:0 0 auto}
+#proximity{position:absolute;left:34.1%;top:53.2%;width:27%;height:5.6%;z-index:15;pointer-events:none;font-family:'Courier New',monospace;color:#0a1608}
+#proxTitle{font-size:clamp(7px,.72vw,11px);font-weight:1000;letter-spacing:.08em;margin-bottom:.3%}
+#proxTrack{height:42%;display:grid;grid-template-columns:repeat(12,1fr);gap:1.2%}
+.seg{background:rgba(20,38,16,.22);border:1px solid rgba(10,22,8,.35)}
+.seg.on:nth-child(-n+4){background:#8f3528}.seg.on:nth-child(n+5):nth-child(-n+8){background:#bd8520}.seg.on:nth-child(n+9){background:#357b34}
+#proxText{font-size:clamp(7px,.7vw,11px);font-weight:1000;margin-top:.25%;text-align:right}
+#proximity.off{opacity:0}
+
+/* hitboxes precisely calibrated to 1536x1024 source */
+.hit{position:absolute;z-index:20;background:transparent;border:0;padding:0;cursor:pointer;pointer-events:auto;border-radius:6px}
+.hit:active,.hit.pressed{background:rgba(255,205,30,.22);box-shadow:0 0 16px rgba(255,205,30,.75),inset 0 0 12px rgba(255,240,170,.25)}
+#uHz{left:29.712%;top:66.358%;width:4.938%;height:9.104%}
+#ukHz{left:36.502%;top:66.513%;width:4.115%;height:8.179%}
+#uMHz{left:42.881%;top:66.821%;width:4.321%;height:8.642%}
+#uGHz{left:49.259%;top:66.821%;width:4.424%;height:8.024%}
+#lock{left:57.078%;top:66.358%;width:6.585%;height:12.346%}
+#k7{left:71.482%;top:40.432%;width:4.115%;height:5.556%}
+#k8{left:77.757%;top:40.432%;width:3.601%;height:5.401%}
+#k9{left:83.004%;top:40.277%;width:4.527%;height:6.019%}
+#k4{left:71.276%;top:48.766%;width:4.218%;height:6.327%}
+#k5{left:77.243%;top:49.383%;width:4.218%;height:5.247%}
+#k6{left:83.313%;top:49.074%;width:4.115%;height:5.864%}
+#k1{left:71.276%;top:58.179%;width:4.732%;height:5.710%}
+#k2{left:77.346%;top:58.179%;width:4.115%;height:6.019%}
+#k3{left:83.107%;top:58.179%;width:4.012%;height:5.556%}
+#kdot{left:71.585%;top:67.284%;width:3.910%;height:5.401%}
+#k0{left:77.449%;top:66.821%;width:3.910%;height:6.019%}
+#kback{left:83.415%;top:66.821%;width:3.910%;height:6.173%}
+
+/* Task card */
+#taskBox{position:absolute;left:2%;bottom:2.2%;width:27%;min-height:11.5%;z-index:16;background:rgba(10,11,9,.94);border:3px solid #d39a16;border-left:8px solid #f0b91c;color:#f1e7c3;padding:1.05% 1.3%;font-weight:900;font-size:clamp(10px,1.06vw,17px);line-height:1.25;box-shadow:7px 7px 0 rgba(0,0,0,.65),inset 0 0 18px rgba(211,154,22,.12)}
+#taskBox .taskTitle{color:#f0b91c;font-size:.78em;letter-spacing:.11em;margin-bottom:.35em}
+#taskBody{color:#f7efd7}
+#taskHint{font-size:.72em;color:#d3c59f;margin-top:.35em;font-weight:700}
+
+/* Tutorial */
+#tutorial{position:absolute;inset:0;z-index:30}
+#tutorialShade{position:absolute;inset:0;background:transparent;pointer-events:none}
+#tutInstructor{position:absolute;left:2.6%;top:25%;width:20%;height:55%;object-fit:contain;filter:drop-shadow(0 10px 10px #000);z-index:34}
+#tutBubble{position:absolute;left:2.2%;top:4%;width:25%;min-height:15%;background:#f4e8bd;border:5px solid #111;padding:1.55%;font-weight:900;font-size:clamp(11px,1.15vw,19px);line-height:1.18;clip-path:polygon(4% 0,96% 3%,100% 20%,97% 100%,5% 96%,0 76%,2% 18%);box-shadow:12px 12px 0 rgba(0,0,0,.65);z-index:35}
+#tutBubble b{color:#b87800}
+#tutNext{position:absolute;left:6.0%;bottom:3.4%;z-index:35;border:3px solid #111;background:#f0b91c;color:#111;font-weight:1000;padding:13px 26px;font-size:clamp(13px,1.45vw,22px);transform:skew(-6deg);box-shadow:5px 5px 0 #111;cursor:pointer}
+.hl{position:absolute;border:5px solid #f1b900;box-shadow:0 0 30px #ffcf32,0 0 0 9999px rgba(0,0,0,.67),inset 0 0 24px rgba(255,207,50,.45);animation:pulse 1s infinite alternate;pointer-events:none;z-index:33}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+
+/* Final */
+#gameOver{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#f2c329;text-align:center}
+#gameOver h1{font-size:clamp(34px,6vw,90px);margin:.15em}
+#gameOver p{font-size:clamp(16px,2vw,30px);font-weight:900}
+.finalBtn{border:3px solid #111;background:#f0b91c;color:#111;font-weight:1000;padding:14px 26px;font-size:clamp(14px,1.5vw,23px);transform:skew(-6deg);box-shadow:5px 5px 0 #111;cursor:pointer}
+
+@media(max-width:850px) and (orientation:landscape){
+ #instructor{width:17.5%;left:1%;top:27%;height:52%}
+ #phrase{left:17.5%;width:22%;top:7%;max-height:22%}
+ #tutInstructor{width:17.5%;left:1%;top:26%;height:51%}
+ #tutBubble{left:1.5%;top:2.5%;width:27%;font-size:10px;padding:1.35%}
+ #tutNext{left:4.5%;bottom:2%;padding:9px 18px}
+ .plaque{font-size:10px}
+ #taskBox{width:28%;font-size:9px}
+}
+</style>
+</head>
+<body>
+<div id="rotate">ПОВЕРНИ ТЕЛЕФОН ГОРИЗОНТАЛЬНО<br>RX-01 ПРАЦЮЄ У LANDSCAPE</div>
+<div id="app"><div id="stage">
+<img class="bg" src="../assets/p12_0012_c4a1388aa806b684.png" alt="RX-01">
+<div class="hud">
+  <div class="plaque" id="levelPlaque"><img src="../assets/p12_0103_3736fb97826de1f6.png" alt=""><span>РІВЕНЬ 2</span></div>
+  <div class="plaque" id="taskPlaque"><img src="../assets/p12_0011_5fbb8016d174e429.png" alt=""><span>ЗАВДАННЯ 01 / 10</span></div>
+  <div class="plaque" id="errorPlaque"><img src="../assets/p12_0103_3736fb97826de1f6.png" alt=""><span>ПОМИЛОК: 0</span></div>
+</div>
+
+<img id="instructor" src="" alt="Петрович">
+<img id="phrase" src="" alt="Репліка Петровича">
+
+<div id="displayOverlay"><span id="entry">0</span><span id="entryUnit">Hz</span></div>
+<div id="proximity" class="off"><div id="proxTitle">ТОЧНІСТЬ СИГНАЛУ</div><div id="proxTrack"></div><div id="proxText">ПОШУК</div></div>
+
+<button class="hit unitHit" id="uHz" data-unit="Hz" aria-label="Hz"></button>
+<button class="hit unitHit" id="ukHz" data-unit="kHz" aria-label="kHz"></button>
+<button class="hit unitHit" id="uMHz" data-unit="MHz" aria-label="MHz"></button>
+<button class="hit unitHit" id="uGHz" data-unit="GHz" aria-label="GHz"></button>
+<button class="hit" id="lock" aria-label="LOCK"></button>
+<button class="hit key" id="k7" data-key="7"></button><button class="hit key" id="k8" data-key="8"></button><button class="hit key" id="k9" data-key="9"></button>
+<button class="hit key" id="k4" data-key="4"></button><button class="hit key" id="k5" data-key="5"></button><button class="hit key" id="k6" data-key="6"></button>
+<button class="hit key" id="k1" data-key="1"></button><button class="hit key" id="k2" data-key="2"></button><button class="hit key" id="k3" data-key="3"></button>
+<button class="hit key" id="kdot" data-key="."></button><button class="hit key" id="k0" data-key="0"></button><button class="hit key" id="kback" data-key="back"></button>
+
+<div id="taskBox"><div class="taskTitle">ЗАВДАННЯ</div><div id="taskBody"></div></div>
+
+<div id="tutorial">
+ <div id="tutorialShade"></div>
+ <img id="tutInstructor" src="" alt="Петрович">
+ <div id="tutBubble"></div>
+ <button id="tutNext">ДАЛІ</button>
+ <div id="tutorialHL" class="hl"></div>
+</div>
+
+<div id="gameOver" class="hidden"><h1>РІВЕНЬ 2 — ЗАЛІК</h1><p id="finalText"></p><button class="finalBtn" id="repeatBtn">ПОВТОРИТИ РІВЕНЬ 2</button><button class="finalBtn" id="nextLevelBtn">ДАЛІ · РІВЕНЬ 3</button></div>
+</div></div>
+<script>
+const TASKS=[{"kind":"direct","prompt":"ВВЕДИ 145,5 MHz","promptValue":145.5,"promptUnit":"MHz","targetHz":145500000,"introPhrase":2},{"kind":"direct","prompt":"ВВЕДИ 868 kHz","promptValue":868,"promptUnit":"kHz","targetHz":868000,"introPhrase":5},{"kind":"direct","prompt":"ВВЕДИ 2,4 GHz","promptValue":2.4,"promptUnit":"GHz","targetHz":2400000000,"introPhrase":6},{"kind":"shift","prompt":"ЗМЕНШ ПОТОЧНУ ЧАСТОТУ НА 100 MHz","promptUnit":"MHz","deltaHz":-100000000,"targetHz":2300000000,"introPhrase":10,"secondaryPhrase":11},{"kind":"shift","prompt":"ЗБІЛЬШ ПОТОЧНУ ЧАСТОТУ НА 420 MHz","promptUnit":"MHz","deltaHz":420000000,"targetHz":2720000000,"introPhrase":12},{"kind":"shift","prompt":"ЗМЕНШ ПОТОЧНУ ЧАСТОТУ НА 200 MHz","promptUnit":"MHz","deltaHz":-200000000,"targetHz":2520000000,"introPhrase":13},{"kind":"shift","prompt":"ЗБІЛЬШ ПОТОЧНУ ЧАСТОТУ НА 500 kHz","promptUnit":"kHz","deltaHz":500000,"targetHz":2520500000,"introPhrase":22},{"kind":"shift","prompt":"ЗМЕНШ ПОТОЧНУ ЧАСТОТУ НА 26 000 kHz","promptUnit":"kHz","deltaHz":-26000000,"targetHz":2494500000,"introPhrase":20},{"kind":"shift","prompt":"ЗБІЛЬШ ПОТОЧНУ ЧАСТОТУ НА 12,4 MHz","promptUnit":"MHz","deltaHz":12400000,"targetHz":2506900000,"introPhrase":23},{"kind":"shift","prompt":"ЗМЕНШ ПОТОЧНУ ЧАСТОТУ НА 7,5 MHz","promptUnit":"MHz","deltaHz":-7500000,"targetHz":2499400000,"introPhrase":24}];
+const EMO={"01_neutral": "../assets/p12_0014_8a9f2b53c4cb74b5.png", "02_command": "../assets/p12_0087_47f319ec4ea0381c.png", "03_approval": "../assets/p12_0088_9dbffa15836adb10.png", "04_think": "../assets/p12_0089_3914834e8434d0f6.png", "05_displeased": "../assets/p12_0090_fc8c07f27522be7b.png", "06_angry": "../assets/p12_0091_4494bc88abe8df1a.png", "07_hint": "../assets/p12_0092_69b9347013345bb0.png", "08_victory": "../assets/p12_0093_d98edc8a97ff1582.png"};
+const PHRASES={"1": "../assets/p12_0104_924ac8ab6a652591.png", "2": "../assets/p12_0105_11e1d5558a27ee9f.png", "3": "../assets/p12_0106_2d59454e4bedafd2.png", "4": "../assets/p12_0107_7b31a427434a410c.png", "5": "../assets/p12_0108_3070492c3562e849.png", "6": "../assets/p12_0109_be896303e5c42a96.png", "7": "../assets/p12_0110_dd451c28840a5da4.png", "8": "../assets/p12_0111_f8c6b8f2f0defc8a.png", "9": "../assets/p12_0112_aba28cf15310f12e.png", "10": "../assets/p12_0113_51e28c711413b0e2.png", "11": "../assets/p12_0114_744a13d7b3ec7efa.png", "12": "../assets/p12_0115_e5899ca96c25561d.png", "13": "../assets/p12_0116_87ca48661bf27b65.png", "14": "../assets/p12_0117_d2d0058df26ba333.png", "15": "../assets/p12_0118_261a5e77e3ed4f42.png", "16": "../assets/p12_0119_725df7a29153861c.png", "17": "../assets/p12_0120_acbfaad56b8230fa.png", "18": "../assets/p12_0121_89debf110b98371e.png", "19": "../assets/p12_0122_1d98161b45162888.png", "20": "../assets/p12_0123_84ef460b9c91c66e.png", "21": "../assets/p12_0124_c33ce7b8e46b1196.png", "22": "../assets/p12_0125_863db20a6ea783d2.png", "23": "../assets/p12_0126_c1eee69402f215d0.png", "24": "../assets/p12_0127_c094198421a3eaaf.png", "25": "../assets/p12_0128_50fdcbd87261a0f4.png", "26": "../assets/p12_0129_53a2fb286259f37b.png", "27": "../assets/p12_0130_1bfc1bd43f62f41d.png", "28": "../assets/p12_0131_7a01c2c857e8d3d2.png", "29": "../assets/p12_0132_f6962dc355067ac7.png", "30": "../assets/p12_0133_20570c106da609c6.png", "31": "../assets/p12_0134_532e94023b42849b.png"};
+const UNIT={Hz:1,kHz:1000,MHz:1000000,GHz:1000000000};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const instructor=$("#instructor"), phrase=$("#phrase"), entry=$("#entry"), entryUnit=$("#entryUnit"),
+ taskBody=$("#taskBody"), taskPlaque=$("#taskPlaque span"), errorPlaque=$("#errorPlaque span"),
+ proximity=$("#proximity"), proxText=$("#proxText"), tut=$("#tutorial"), tutBubble=$("#tutBubble"),
+ tutInstructor=$("#tutInstructor"), tutNext=$("#tutNext"), tutHL=$("#tutorialHL");
+
+let taskIndex=0,errors=0,wrongStreak=0,locked=false,selectedUnit="Hz",buffer="0";
+let lastProbeDiff=null,probeStartDiff=null,probeTimer=null,phraseTimer=null,clearedOnce=true,taskStartBuffer="0",taskStartUnit="Hz",editedSinceTask=false;
+let acceptedHz=0;
+
+for(let i=0;i<12;i++){const s=document.createElement("i");s.className="seg";$("#proxTrack").appendChild(s)}
+
+const initialTutorialSteps=[
+ {emo:"02_command",text:"Другий рівень. Тепер <b>цифри вводиш сам</b>. Значення з картки завдання набираєш на цифровій клавіатурі RX-01.",hl:[69.4,37.4,19.6,38.2]},
+ {emo:"04_think",text:"Кнопка стирання прибирає останній символ. Крапка — десятковий роздільник. На ПК працюють <b>0–9, крапка або кома, Backspace</b>, а Enter дублює LOCK.",hl:[69.4,37.4,19.6,38.2]}
+];
+const shiftTutorialSteps=[
+ {emo:"02_command",text:"З четвертого завдання починається зміщення. <b>Попередня частота лишається на дисплеї</b>. Нове значення рахуєш сам і редагуєш вручну.",hl:[30.0,30.0,35.5,31.0]},
+ {emo:"07_hint",text:"Тут з'являється <b>шкала точності</b>. Перше введене тобою значення стає точкою старту. Далі шкала і я покажемо: ти йдеш ближче до цілі чи далі.",hl:[33.3,51.4,29.0,8.0]}
+];
+const decimalTutorialSteps=[
+ {emo:"04_think",text:"Фінальні два завдання — зміщення з дробовою частиною. У команді буде <b>не більше одного знака після коми</b>. Рахуєш сам і вводиш результат.",hl:[30.0,30.0,35.5,31.0]}
+];
+let tutorialSteps=[],tutIndex=0,tutorialDone=null;
+let shownShiftTutorial=false,shownDecimalTutorial=false;
+
+function beginTutorial(steps,onDone){
+ tutorialSteps=steps;tutIndex=0;tutorialDone=onDone;
+ tut.classList.remove("hidden");showTutorial();
+}
+function showTutorial(){
+ const s=tutorialSteps[tutIndex];
+ tutInstructor.src=EMO[s.emo];tutBubble.innerHTML=s.text;
+ Object.assign(tutHL.style,{left:s.hl[0]+"%",top:s.hl[1]+"%",width:s.hl[2]+"%",height:s.hl[3]+"%"});
+ tutNext.textContent=tutIndex===tutorialSteps.length-1?"ДО РОБОТИ":"ДАЛІ";
+}
+tutNext.onclick=()=>{
+ if(tutIndex<tutorialSteps.length-1){tutIndex++;showTutorial();return}
+ tut.classList.add("hidden");
+ const done=tutorialDone;tutorialDone=null;
+ if(done)done();
+};
+
+function react(id, emo="04_think", ms=2500){
+ if(!PHRASES[id])return;
+ instructor.src=EMO[emo]||EMO["01_neutral"];
+ phrase.src=PHRASES[id];phrase.classList.remove("show");requestAnimationFrame(()=>phrase.classList.add("show"));
+ clearTimeout(phraseTimer);phraseTimer=setTimeout(()=>phrase.classList.remove("show"),ms);
+}
+function fmtNumberString(s){return String(s).replace(".",",")}
+function digitCount(s){return (String(s).match(/\d/g)||[]).length}
+function parseBuffer(){const n=Number(String(buffer).replace(",","."));return Number.isFinite(n)?n:null}
+function candidateHz(){const n=parseBuffer();return n===null?null:n*UNIT[selectedUnit]}
+function tolerance(target){return Math.max(.5,Math.abs(target)*1e-10)}
+function correctTarget(target){const c=candidateHz();return c!==null&&Math.abs(c-target)<=tolerance(target)}
+function compactHzInUnit(hz,u){
+ const n=hz/UNIT[u];
+ if(Number.isInteger(n)) return String(n);
+ return Number(n.toPrecision(12)).toString();
+}
+function fitLCD(){
+ const box=$("#displayOverlay"),v=entry,u=entryUnit,avail=box.clientWidth*.94;
+ let lo=17,hi=Math.max(28,Math.min(70,box.clientHeight*.54)),best=17;
+ for(let i=0;i<12;i++){const mid=(lo+hi)/2;v.style.fontSize=mid+"px";u.style.fontSize=Math.max(12,mid*.42)+"px";if(v.scrollWidth+u.scrollWidth+box.clientWidth*.04<=avail){best=mid;lo=mid}else hi=mid}
+ v.style.fontSize=best+"px";u.style.fontSize=Math.max(12,best*.42)+"px";
+}
+function render(){
+ entry.textContent=buffer===""?"":fmtNumberString(buffer);
+ entryUnit.textContent=selectedUnit;
+ requestAnimationFrame(fitLCD);
+}
+function setProximity(p,label){
+ const raw=Math.max(0,Math.min(1,p));
+ const n=raw<=0?0:Math.max(1,Math.min(12,Math.round(raw*12)));
+ $$("#proxTrack .seg").forEach((s,i)=>s.classList.toggle("on",i<n));
+ proxText.textContent=label;
+}
+function scheduleProbe(){
+ clearTimeout(probeTimer);
+ const t=TASKS[taskIndex];
+ if(t.kind!=="shift"||!editedSinceTask||buffer===""||digitCount(buffer)<1)return;
+ probeTimer=setTimeout(runProbe,950);
+}
+function runProbe(){
+ const t=TASKS[taskIndex],c=candidateHz();if(c===null)return;
+ const diff=Math.abs(c-t.targetHz);
+ if(diff<=tolerance(t.targetHz)){
+   setProximity(1,"ЦІЛЬ");
+   react(17,"03_approval",2300);
+   lastProbeDiff=diff;
+   return;
+ }
+ if(probeStartDiff===null){
+   probeStartDiff=Math.max(diff,1);
+   lastProbeDiff=diff;
+   setProximity(.5,"ТОЧКА СТАРТУ");
+   react(13,"04_think",2000);
+   return;
+ }
+ const start=Math.max(probeStartDiff,1);
+ let p;
+ if(diff<=start) p=.5+.5*(1-diff/start);
+ else p=.5*Math.max(0,1-(diff-start)/start);
+ const eps=Math.max(start*.005,1);
+ let label="БЕЗ ЗМІН";
+ if(lastProbeDiff!==null&&diff<lastProbeDiff-eps){
+   label=p>=.90?"ДУЖЕ ГАРЯЧЕ":p>=.72?"ГАРЯЧЕ":"ТЕПЛІШЕ";
+   if(p>=.90)react(16,"07_hint",1900);
+   else if(p>=.72)react(15,"03_approval",1900);
+   else react(14,"07_hint",1800);
+ }else if(lastProbeDiff!==null&&diff>lastProbeDiff+eps){
+   label=p<=.18?"ДУЖЕ ХОЛОДНО":"ХОЛОДНІШЕ";
+   if(p<=.18)react(19,"05_displeased",2100);
+   else react(18,"05_displeased",1900);
+ }else{
+   label=p>=.72?"ГАРЯЧЕ":p>=.5?"ТОЧКА СТАРТУ":"ХОЛОДНО";
+ }
+ setProximity(p,label);
+ lastProbeDiff=diff;
+}
+function flash(el){if(!el)return;el.classList.add("pressed");setTimeout(()=>el.classList.remove("pressed"),120)}
+function editKey(k){
+ if(locked)return;
+ editedSinceTask=true;
+ if(k==="back"){
+   buffer=buffer.slice(0,-1);
+   if(buffer==="")clearedOnce=true;
+ }else if(k==="."){
+   if(buffer.includes("."))return;
+   if(buffer==="")buffer="0.";
+   else buffer+=".";
+ }else{
+   if(digitCount(buffer)>=12)return;
+   if(buffer==="0")buffer=k;
+   else buffer+=k;
+ }
+ render();scheduleProbe();
+}
+function setUnit(u){
+ if(locked)return;editedSinceTask=true;selectedUnit=u;render();scheduleProbe();
+}
+function loadTask(first=false){
+ locked=false;wrongStreak=0;lastProbeDiff=null;probeStartDiff=null;editedSinceTask=false;clearTimeout(probeTimer);
+ const t=TASKS[taskIndex];
+ taskPlaque.textContent=`ЗАВДАННЯ ${String(taskIndex+1).padStart(2,"0")} / 10`;
+ errorPlaque.textContent=`ПОМИЛОК: ${errors}`;
+ taskBody.textContent=t.prompt;
+ proximity.classList.toggle("off",t.kind!=="shift");
+ setProximity(0,t.kind==="shift"?"ВВЕДИ ПЕРШУ СПРОБУ":"");
+ if(first){
+   buffer="0";selectedUnit="Hz";acceptedHz=0;clearedOnce=true;
+ }else{
+   clearedOnce=false;
+ }
+ taskStartBuffer=buffer;
+ taskStartUnit=selectedUnit;
+ render();
+ instructor.src=EMO["02_command"];
+ if(t.introPhrase)react(t.introPhrase,taskIndex>=8?"04_think":"02_command",2400);
+ if(t.secondaryPhrase)setTimeout(()=>{if(taskIndex===3&&!locked)react(t.secondaryPhrase,"07_hint",2200)},2100);
+}
+function acceptTask(){
+ const t=TASKS[taskIndex],usedAlt=selectedUnit!==t.promptUnit;
+ locked=true;wrongStreak=0;acceptedHz=t.targetHz;
+ if(taskIndex===9){
+   react(29,"08_victory",3100);
+   setTimeout(finish,2600);
+   return;
+ }
+ if(taskIndex===6)react(21,"03_approval",2300);
+ else if(usedAlt)react(4,"03_approval",2300);
+ else if(taskIndex===0)react(3,"03_approval",2200);
+ else react(28,"03_approval",1900);
+ setTimeout(()=>{
+   taskIndex++;
+   if(taskIndex===3&&!shownShiftTutorial){
+     shownShiftTutorial=true;
+     beginTutorial(shiftTutorialSteps,()=>loadTask(false));
+   }else if(taskIndex===8&&!shownDecimalTutorial){
+     shownDecimalTutorial=true;
+     beginTutorial(decimalTutorialSteps,()=>loadTask(false));
+   }else loadTask(false);
+ },2100);
+}
+function wrongLock(){
+ const t=TASKS[taskIndex],c=candidateHz();errors++;wrongStreak++;errorPlaque.textContent=`ПОМИЛОК: ${errors}`;
+ if(buffer===taskStartBuffer||c===null){react(9,"06_angry",2400);return}
+ if(t.kind==="direct"){
+   const n=parseBuffer();
+   if(n!==null&&Math.abs(n-Number(t.promptValue))<1e-9&&selectedUnit!==t.promptUnit)react(8,"05_displeased",2300);
+   else if(wrongStreak>=3)react(27,"06_angry",2600);
+   else if(wrongStreak===2)react(26,"06_angry",2500);
+   else react(7,"05_displeased",2200);
+ }else{
+   const diff=c===null?Infinity:Math.abs(c-t.targetHz),base=Math.max(Math.abs(t.deltaHz||1),1);
+   if(diff<base*.08)react(16,"07_hint",2000);
+   else if(wrongStreak>=3)react(27,"06_angry",2600);
+   else if(wrongStreak===2)react(26,"06_angry",2500);
+   else react(7,"05_displeased",2200);
+ }
+}
+function doLock(){
+ if(locked)return;
+ if(buffer===""){
+   buffer=taskStartBuffer;
+   selectedUnit=taskStartUnit;
+   editedSinceTask=false;
+   render();
+   if(TASKS[taskIndex].kind==="shift")setProximity(0,"ВВЕДИ ПЕРШУ СПРОБУ");
+   react(13,"04_think",1800);
+   return;
+ }
+ if(correctTarget(TASKS[taskIndex].targetHz))acceptTask();else wrongLock();
+}
+$$("[data-key]").forEach(b=>b.onclick=()=>{flash(b);editKey(b.dataset.key)});
+$$("[data-unit]").forEach(b=>b.onclick=()=>{flash(b);setUnit(b.dataset.unit)});
+$("#lock").onclick=()=>{flash($("#lock"));doLock()};
+
+let backHoldTimer=null,backRepeat=null;
+$("#kback").addEventListener("pointerdown",()=>{
+ clearTimeout(backHoldTimer);backHoldTimer=setTimeout(()=>{backRepeat=setInterval(()=>{editKey("back")},90)},420)
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>$("#kback").addEventListener(ev,()=>{clearTimeout(backHoldTimer);clearInterval(backRepeat)}));
+
+window.addEventListener("keydown",e=>{
+ if(!tut.classList.contains("hidden"))return;
+ if(/^[0-9]$/.test(e.key)){e.preventDefault();const b=$("#k"+e.key);flash(b);editKey(e.key);return}
+ if(e.key==="."||e.key===","){e.preventDefault();flash($("#kdot"));editKey(".");return}
+ if(e.key==="Backspace"){e.preventDefault();flash($("#kback"));editKey("back");return}
+ if(e.key==="Enter"){e.preventDefault();flash($("#lock"));doLock();return}
+});
+window.addEventListener("resize",()=>requestAnimationFrame(fitLCD));
+window.addEventListener("orientationchange",()=>setTimeout(fitLCD,120));
+
+function finish(){
+ $("#finalText").textContent=`ЗАВДАНЬ: 10 / 10 · ПОМИЛОК: ${errors}`;
+ $("#gameOver").classList.remove("hidden");
+ setTimeout(()=>react(30,"08_victory",3000),600);
+}
+$("#repeatBtn").onclick=()=>location.reload();
+$("#nextLevelBtn").onclick=()=>parent.postMessage({type:"RX01_LEVEL2_DONE"},"*");
+
+tutInstructor.src=EMO["02_command"];instructor.src=EMO["01_neutral"];render();beginTutorial(initialTutorialSteps,()=>loadTask(true));
+</script>
+</body>
+</html>

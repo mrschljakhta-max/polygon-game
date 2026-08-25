@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<script>window.RX01_CONFIG={"mission": 10, "jordan": true};</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RX-01 — Рівень 3 — Прототип пеленгатора</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden;font-family:Arial,Helvetica,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:min(100vw,calc(100vh*1537/1023));height:min(100vh,calc(100vw*1023/1537));aspect-ratio:1537/1023;background:#000;overflow:hidden}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none}
+.hit{position:absolute;background:transparent;border:0;padding:0;cursor:pointer;z-index:20;touch-action:none}
+.hit:focus-visible{outline:2px solid rgba(255,215,50,.95);outline-offset:2px}
+#leftHit{left:71.01822%;top:32.92180%;width:3.28432%;height:3.61877%;}
+#rightHit{left:82.18478%;top:33.14174%;width:3.13793%;height:3.28935%;}
+#lockHit{left:56.42225%;top:66.47507%;width:7.51724%;height:12.39003%;}
+
+#azimuthDisplay{
+  position:absolute;left:75.61614%;top:33.47019%;width:5.03578%;height:2.96090%;
+  z-index:15;display:flex;align-items:center;justify-content:center;
+  color:#9dff43;font-family:"Courier New",monospace;font-weight:900;
+  font-size:clamp(10px,1.5vw,25px);letter-spacing:.06em;
+  text-shadow:0 0 5px rgba(115,255,46,.75);pointer-events:none;
+  transition:color .18s ease,text-shadow .18s ease,filter .18s ease;
+}
+#azimuthDisplay.signal{color:#ffd83d;text-shadow:0 0 5px rgba(255,216,61,.95),0 0 12px rgba(255,174,0,.55)}
+#azimuthDisplay.hot{color:#ffe866;text-shadow:0 0 6px #ffe866,0 0 16px rgba(255,174,0,.85)}
+#azimuthDisplay.peak{color:#fff4a8;text-shadow:0 0 7px #fff4a8,0 0 18px #ffd11a,0 0 28px rgba(255,153,0,.9);filter:brightness(1.18)}
+#signalMeter{
+  position:absolute;left:86.41770%;top:12.74682%;width:2.04359%;height:17.87292%;
+  z-index:15;display:grid;grid-template-rows:repeat(10,1fr);gap:3px;padding:5px 4px;pointer-events:none;
+  background:rgba(4,10,5,.34);border:1px solid rgba(127,183,49,.28);box-shadow:inset 0 0 8px rgba(0,0,0,.65)
+}
+.seg{min-height:2px;border:1px solid rgba(128,174,64,.42);background:rgba(29,48,19,.28);box-shadow:inset 0 0 3px rgba(0,0,0,.75);transition:background .12s ease,box-shadow .12s ease,border-color .12s ease}
+.seg.on{background:#f4c52d;border-color:#ffe56a;box-shadow:0 0 5px rgba(255,210,46,.88),inset 0 0 3px rgba(255,255,210,.45)}
+.seg.hot{background:#ffd82f;box-shadow:0 0 7px rgba(255,211,34,1),0 0 13px rgba(255,143,0,.55)}
+.seg.peak{background:#fff18a;border-color:#fff9c9;box-shadow:0 0 8px #ffe84b,0 0 16px rgba(255,154,0,.8)}
+
+#scopeOverlay{
+  position:absolute;left:70.73780%;top:10.24145%;
+  width:14.86532%;height:22.33431%;z-index:14;pointer-events:none;
+}
+#scopeSvg{width:100%;height:100%;overflow:visible}
+#beam{stroke:#9cff38;stroke-width:1.4;opacity:.85;filter:drop-shadow(0 0 3px rgba(141,255,49,.9))}
+#beamDot{fill:#a7ff3c;opacity:.9;filter:drop-shadow(0 0 5px rgba(141,255,49,1))}
+#centerDot{fill:#a7ff3c;opacity:.85}
+#signalDot{fill:#ffd83d;opacity:0;filter:drop-shadow(0 0 4px #ffd83d) drop-shadow(0 0 9px rgba(255,153,0,.8));transition:opacity .18s ease,r .18s ease}
+#signalDot.visible{opacity:.42}#signalDot.hot{opacity:.78}#signalDot.peak{opacity:1}
+#signalHalo{fill:none;stroke:#ffd83d;stroke-width:1.3;opacity:0}
+#signalHalo.peak{animation:targetPulse 1s ease-out infinite}
+@keyframes targetPulse{0%{r:6;opacity:.85}100%{r:24;opacity:0}}
+#peakPulse{fill:none;stroke:#a7ff3c;stroke-width:1.2;opacity:0}
+#scopeOverlay.peak #peakPulse{animation:pulse 1s ease-out infinite}
+@keyframes pulse{0%{r:4;opacity:.8}100%{r:22;opacity:0}}
+
+#miniHud{
+  position:absolute;left:2.2%;bottom:2.3%;z-index:30;
+  background:rgba(7,10,6,.76);border:1px solid rgba(220,166,32,.65);
+  color:#e8d68f;padding:9px 12px;font:700 12px/1.35 "Courier New",monospace;
+  border-radius:5px;pointer-events:none;min-width:210px;
+}
+#miniHud b{color:#fff0a0}
+#feedback{margin-top:4px;color:#b8ff73}
+#hint{color:#d2bf83}
+#successFlash{position:absolute;inset:0;z-index:40;background:rgba(120,255,55,0);pointer-events:none}
+#successFlash.show{animation:flash .45s ease}
+@keyframes flash{0%{background:rgba(120,255,55,0)}40%{background:rgba(120,255,55,.12)}100%{background:rgba(120,255,55,0)}}
+
+@media(max-width:800px){
+ #miniHud{font-size:9px;padding:6px 8px;min-width:160px}
+}
+
+#taskPanel{
+  position:absolute;left:30.8061%;top:32.7028%;width:32.9148%;height:28.2893%;
+  z-index:12;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:4%;pointer-events:none;color:#17220c;font-family:"Courier New",monospace;font-weight:900;
+}
+#taskTitle{font-size:clamp(15px,2.15vw,36px);letter-spacing:.07em}
+#taskText{margin-top:6%;font-size:clamp(11px,1.45vw,24px);line-height:1.25}
+#taskProgress{margin-top:7%;font-size:clamp(9px,1vw,17px);letter-spacing:.18em}
+#taskState{margin-top:5%;font-size:clamp(9px,1vw,17px)}
+#petroBox{
+  position:absolute;left:2.2%;bottom:2%;z-index:35;width:27%;
+  background:rgba(8,8,6,.86);border:2px solid #d2a62b;border-radius:6px;
+  padding:10px 12px;color:#f4df95;font:900 clamp(9px,1vw,16px)/1.3 Arial;
+  box-shadow:0 4px 15px #000;pointer-events:none
+}
+#petroBox b{color:#ffd43b}
+#taskToast{
+  position:absolute;left:50%;top:7%;transform:translateX(-50%);
+  z-index:50;background:rgba(8,8,6,.93);border:2px solid #d2a62b;
+  color:#ffe184;padding:10px 18px;border-radius:5px;
+  font:900 clamp(12px,1.4vw,22px) Arial;opacity:0;transition:.2s;pointer-events:none
+}
+#taskToast.show{opacity:1}
+
+#advancedPanel{
+  position:absolute;right:2.2%;bottom:2.3%;z-index:45;
+  display:grid;grid-template-columns:repeat(3,auto);gap:7px;
+  background:rgba(8,9,6,.84);border:1px solid rgba(216,169,37,.75);
+  padding:8px;border-radius:5px;box-shadow:0 4px 14px rgba(0,0,0,.65)
+}
+.advBtn{
+  min-width:72px;padding:8px 10px;border:1px solid #8c6c16;
+  background:#1b180c;color:#f4d865;font:900 11px Arial;cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,219,82,.08)
+}
+.advBtn.active{background:#d6aa2e;color:#171007;border-color:#ffe474}
+.advBtn:disabled{opacity:.45;cursor:default}
+#scanState{
+  grid-column:1/-1;text-align:center;color:#d7c58e;
+  font:800 10px/1.2 "Courier New",monospace;min-height:12px
+}
+#heatLayer{pointer-events:none}
+.heatMark{transition:opacity .2s}
+#scopeOverlay.scanning #beam{stroke:#ffe044;filter:drop-shadow(0 0 5px rgba(255,210,30,.95))}
+#scopeOverlay.scanning #beamDot{fill:#ffe044}
+#noiseReadout{color:#ffe375}
+
+.scanArc{
+  fill:none;
+  stroke-linecap:round;
+  transition:stroke .12s ease,opacity .12s ease,stroke-width .12s ease;
+}
+.scanArc.weak{stroke:rgba(180,155,48,.22)}
+.scanArc.mid{stroke:rgba(232,187,38,.48)}
+.scanArc.strong{stroke:rgba(255,214,44,.78);filter:drop-shadow(0 0 3px rgba(255,191,29,.65))}
+.scanArc.peak{stroke:rgba(255,241,131,.98);filter:drop-shadow(0 0 5px #ffd33a) drop-shadow(0 0 8px rgba(255,139,0,.75))}
+
+#petroBox{display:none!important}
+#rxHud{position:absolute;inset:0;z-index:70;pointer-events:none}
+#rxLevelPlate{position:absolute;left:1.15%;top:1.1%;width:20.5%;height:auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.75));opacity:0;transform:translateY(-28px) scale(.95);animation:rxLevelIn .72s cubic-bezier(.18,1.15,.3,1) .18s forwards}
+.rxTopPlaque{position:absolute;top:1.4%;height:7.1%;min-width:18%;display:flex;align-items:center;justify-content:center;padding:0 2.2%;background:linear-gradient(180deg,rgba(30,27,17,.96),rgba(8,8,7,.96));border:2px solid #d3a51c;border-left:7px solid #f2ba18;color:#f5e9c5;font:1000 italic clamp(11px,1.25vw,20px) Arial;letter-spacing:.055em;text-shadow:2px 2px #000;box-shadow:6px 6px 0 rgba(0,0,0,.62),inset 0 0 14px rgba(242,186,24,.12);clip-path:polygon(3% 0,100% 0,96% 100%,0 100%)}
+#rxTaskPlaque{left:38.5%;transform:translateY(-30px);opacity:0;animation:rxTaskIn .56s cubic-bezier(.2,1.3,.3,1) .42s forwards}
+#rxErrorPlaque{right:1.4%;transform:translateY(-30px);opacity:0;animation:rxTaskIn .56s cubic-bezier(.2,1.3,.3,1) .54s forwards}
+#rxTaskPlaque.bump{animation:rxTaskBump .44s cubic-bezier(.2,1.55,.3,1)}
+#rxPetro{position:absolute;left:.8%;top:24%;width:17.5%;height:47%;object-fit:contain;object-position:left center;filter:drop-shadow(0 11px 13px rgba(0,0,0,.9));opacity:0;transform:translateX(-35px) scale(.97);animation:rxPetroIn .72s ease .62s forwards}
+#rxOno{position:absolute;left:17.2%;top:9.3%;width:25.5%;max-height:17.5%;object-fit:contain;object-position:left center;z-index:72;opacity:0;transform:scale(.68) rotate(-2deg);filter:drop-shadow(0 8px 12px rgba(0,0,0,.85))}
+#rxOno.show{animation:rxOnoPop .42s cubic-bezier(.2,1.35,.3,1) forwards}
+@keyframes rxLevelIn{to{opacity:1;transform:none}}
+@keyframes rxTaskIn{to{opacity:1;transform:none}}
+@keyframes rxTaskBump{0%{transform:scale(.75);filter:brightness(1.8)}65%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes rxPetroIn{to{opacity:1;transform:none}}
+@keyframes rxOnoPop{0%{opacity:0;transform:scale(.62) rotate(-5deg)}70%{opacity:1;transform:scale(1.05) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(-1deg)}}
+
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="rxHud">
+  <img id="rxLevelPlate" src="../assets/asset_0023_0a0155305abb1acd.png" alt="Рівень 3">
+  <div class="rxTopPlaque" id="rxTaskPlaque">ЗАВДАННЯ 01 / 10</div>
+  <div class="rxTopPlaque" id="rxErrorPlaque">ПОМИЛОК: 0</div>
+  <img id="rxPetro" src="../assets/asset_0018_47f319ec4ea0381c.png" alt="Петрович">
+  <img id="rxOno" alt="Репліка Петровича">
+</div>
+
+  <img id="bg" src="../assets/asset_0014_fc9bbcc3f62d8a20.png" alt="RX-01 level 3">
+
+  <div id="scopeOverlay">
+    <svg id="scopeSvg" viewBox="-120 -120 240 240" aria-hidden="true">
+      <line id="beam" x1="0" y1="0" x2="0" y2="-92"/>
+      <circle id="beamDot" cx="0" cy="-92" r="3.5"/>
+      <circle id="centerDot" cx="0" cy="0" r="2.2"/>
+      <g id="heatLayer"></g>
+      <circle id="signalHalo" cx="0" cy="0" r="6"/>
+      <circle id="signalDot" cx="0" cy="0" r="3.2"/>
+      <circle id="peakPulse" cx="0" cy="0" r="4"/>
+    </svg>
+  </div>
+
+  <div id="azimuthDisplay">000°</div>
+  <div id="signalMeter">
+    <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+    <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+  </div>
+
+  <button class="hit" id="leftHit" aria-label="Повернути пеленг вліво"></button>
+  <button class="hit" id="rightHit" aria-label="Повернути пеленг вправо"></button>
+  <button class="hit" id="lockHit" aria-label="LOCK"></button>
+
+  
+  <div id="taskPanel">
+    <div>
+      <div id="taskTitle">ЗАВДАННЯ 1/5</div>
+      <div id="taskText">Знайди напрямок 090° і підтвердь LOCK.</div>
+      <div id="taskProgress">◉ ○ ○ ○ ○</div>
+      <div id="taskState"></div>
+    </div>
+  </div>
+  <div id="petroBox"><b>Петрович:</b> <span id="petroText">Дивись на коло.</span></div>
+  <div id="taskToast"></div>
+<div id="miniHud">
+    <div>ТЕСТОВА ЦІЛЬ: <b>прихована</b></div>
+    <div>ПОТОЧНИЙ AZ: <b id="hudAz">000°</b></div>
+    <div>СИГНАЛ: <b id="hudSig">0/10</b></div>
+    <div id="feedback">Знайди максимум і натисни LOCK.</div>
+    <div id="hint">← / → або A / D · F: FINE/COARSE · S: SCAN · Enter: LOCK</div>
+  </div>
+  <div id="advancedPanel">
+    <button class="advBtn" id="scanBtn">SCAN</button>
+    <button class="advBtn active" id="modeBtn">COARSE 5°</button>
+    <button class="advBtn" id="clearHeatBtn">CLEAR</button>
+    <div id="scanState">РУЧНИЙ ПОШУК</div>
+  </div>
+  <div id="successFlash"></div>
+</div>
+
+<script>
+
+const RX_EMO={"05_displeased": "../assets/asset_0024_fc8c07f27522be7b.png", "01_neutral": "../assets/asset_0015_8a9f2b53c4cb74b5.png", "03_approval": "../assets/asset_0025_9dbffa15836adb10.png", "04_think": "../assets/asset_0026_3914834e8434d0f6.png", "08_victory": "../assets/asset_0027_d98edc8a97ff1582.png", "07_hint": "../assets/asset_0017_69b9347013345bb0.png", "06_angry": "../assets/asset_0028_4494bc88abe8df1a.png", "02_command": "../assets/asset_0018_47f319ec4ea0381c.png"};
+const RX_ONO={"05": "../assets/asset_0029_8694f4cebb6b1958.png", "12": "../assets/asset_0030_c88fac623639f6d0.png", "08": "../assets/asset_0031_531ebf55ad91d975.png", "02": "../assets/asset_0032_1ea6e705e4eac417.png", "09": "../assets/asset_0033_1cb0400dd270b71f.png", "04": "../assets/asset_0034_25c0257ac2aa7731.png", "10": "../assets/asset_0035_1a810fa03ce800d6.png", "11": "../assets/asset_0036_1a6af5f3e5536dfc.png", "06": "../assets/asset_0037_61a4801422be661b.png", "07": "../assets/asset_0038_fd5cb468564821f7.png", "03": "../assets/asset_0039_68b51272aaab9aac.png", "01": "../assets/asset_0040_5f48ed5c614017fa.png"};
+let rxErrors=0, rxOnoBusy=false, rxOnoTimer=null;
+const rxTaskPlaque=document.getElementById('rxTaskPlaque');
+const rxErrorPlaque=document.getElementById('rxErrorPlaque');
+const rxPetro=document.getElementById('rxPetro');
+const rxOno=document.getElementById('rxOno');
+
+function rxShowOno(key,emo,holdMs){
+  if(rxOnoBusy) return; // Петрович не перебиває сам себе
+  rxOnoBusy=true;
+  if(RX_EMO[emo]) rxPetro.src=RX_EMO[emo];
+  if(RX_ONO[key]) rxOno.src=RX_ONO[key];
+  rxOno.classList.remove('show'); void rxOno.offsetWidth; rxOno.classList.add('show');
+  clearTimeout(rxOnoTimer);
+  rxOnoTimer=setTimeout(()=>{
+    rxOno.classList.remove('show');
+    setTimeout(()=>{rxOnoBusy=false;},180);
+  },Math.max(2000,holdMs||2000));
+}
+function rxSetTask(n){rxTaskPlaque.textContent='ЗАВДАННЯ '+String(n).padStart(2,'0')+' / 10';rxTaskPlaque.classList.remove('bump');void rxTaskPlaque.offsetWidth;rxTaskPlaque.classList.add('bump')}
+function rxSetErrors(n){rxErrors=n;rxErrorPlaque.textContent='ПОМИЛОК: '+n}
+
+(() => {
+  const CONFIG=window.RX01_CONFIG||{};
+  const MISSION=Number(CONFIG.mission||6);
+  const IS_JORDAN=!!CONFIG.jordan;
+  const JORDAN_STEPS=[
+    {target:42,falsePeaks:[{az:218,strength:5.5,width:24}]},
+    {target:118,falsePeaks:[{az:305,strength:6.4,width:18},{az:23,strength:4.2,width:24}]},
+    {target:203,falsePeaks:[{az:82,strength:6.8,width:17}]},
+    {target:311,falsePeaks:[{az:154,strength:7.1,width:16},{az:28,strength:4.4,width:24}]},
+    {target:257,falsePeaks:[{az:66,strength:6.2,width:19}]},
+    {target:6,falsePeaks:[{az:186,strength:5.8,width:22}]}
+  ];
+  let jordanStep=0;
+  let TARGET=IS_JORDAN?JORDAN_STEPS[0].target:Number(CONFIG.target||137);
+  let FALSE_PEAKS=IS_JORDAN?JORDAN_STEPS[0].falsePeaks:(CONFIG.falsePeaks||[]);
+  let taskIndex = 0;
+  let wrongLocks = 0;
+  let enabled = true;
+  let locked = false;
+  let az = 0;
+  let mode = 'coarse';
+  let scanning = false;
+  let scanTimer = null;
+  let measured = new Map();
+  let noisePhase=IS_JORDAN?73.4:(MISSION*31.7);
+  let holdTimer = null;
+  let repeatTimer = null;
+  let holdStartedAt = 0;
+
+  const azEl = document.getElementById('azimuthDisplay');
+  const signalDot = document.getElementById('signalDot');
+  const signalHalo = document.getElementById('signalHalo');
+  const hudAz = document.getElementById('hudAz');
+  const hudSig = document.getElementById('hudSig');
+  const feedback = document.getElementById('feedback');
+  const beam = document.getElementById('beam');
+  const beamDot = document.getElementById('beamDot');
+  const scope = document.getElementById('scopeOverlay');
+  const segs = [...document.querySelectorAll('.seg')];
+  const flash = document.getElementById('successFlash');
+
+  function norm(v) {
+    v %= 360;
+    if (v < 0) v += 360;
+    return v;
+  }
+
+  function circularDiff(a,b) {
+    let d = Math.abs(norm(a)-norm(b));
+    return Math.min(d, 360-d);
+  }
+
+  function gauss(diff,width,amp){
+    return amp * Math.exp(-0.5 * Math.pow(diff/width,2));
+  }
+
+  function rawSignal(a){
+    const main = gauss(circularDiff(a,TARGET), 13, 10);
+    let reflected = 0;
+    for(const p of FALSE_PEAKS){
+      reflected = Math.max(reflected, gauss(circularDiff(a,p.az),p.width,p.strength));
+    }
+    return Math.max(main,reflected);
+  }
+
+  function deterministicNoise(a){
+    // Gentle, repeatable "radio" flutter. Exact true peak remains clearly strongest.
+    const n1=Math.sin((a*0.73)+noisePhase)*0.28;
+    const n2=Math.sin((a*1.91)+(noisePhase*0.37))*0.17;
+    return n1+n2;
+  }
+
+  function signalPower(a){
+    const base=rawSignal(a);
+    let val=base + deterministicNoise(a);
+    if(circularDiff(a,TARGET)<=1) val=Math.max(val,9.8);
+    return Math.max(0,Math.min(10,val));
+  }
+
+  function signalLevel(a){
+    return Math.max(0,Math.min(10,Math.round(signalPower(a))));
+  }
+
+  function heatColor(power){
+    const p=Math.max(0,Math.min(10,power))/10;
+    if(p<0.12) return `rgba(112,145,62,${0.10+p*0.5})`;
+    if(p<0.55) return `rgba(205,166,34,${0.18+p*0.55})`;
+    return `rgba(255,220,55,${0.34+p*0.62})`;
+  }
+
+  function recordMeasurement(angle,power){
+    const key=Math.round(norm(angle));
+    const prev=measured.get(key);
+    if(prev==null || power>prev) measured.set(key,power);
+  }
+
+  function polarPoint(radius, angleDeg){
+    const t=(angleDeg-90)*Math.PI/180;
+    return {x:radius*Math.cos(t), y:radius*Math.sin(t)};
+  }
+
+  function arcPath(radius,startDeg,endDeg){
+    const s=polarPoint(radius,startDeg);
+    const e=polarPoint(radius,endDeg);
+    const large=(endDeg-startDeg)>180?1:0;
+    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${radius} ${radius} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
+  }
+
+  function renderHeat(){
+    const layer=document.getElementById('heatLayer');
+    if(!layer) return;
+    layer.innerHTML='';
+
+    // Build 5° sectors from measured samples.
+    const binSize=5;
+    const bins=[];
+    for(let start=0; start<360; start+=binSize){
+      let values=[];
+      for(const [angle,power] of measured.entries()){
+        const a=((angle%360)+360)%360;
+        if(a>=start && a<start+binSize) values.push(power);
+      }
+      if(values.length){
+        const avg=values.reduce((a,b)=>a+b,0)/values.length;
+        const max=Math.max(...values);
+        bins.push({start,end:start+binSize,avg,max});
+      }
+    }
+
+    // Draw subtle outer ring history.
+    for(const b of bins){
+      const p=Math.max(b.avg,b.max*0.86);
+      if(p<0.7) continue;
+
+      const arc=document.createElementNS('http://www.w3.org/2000/svg','path');
+      arc.setAttribute('d',arcPath(101,b.start+0.6,b.end-0.6));
+      arc.setAttribute('class','scanArc '+(p>=8.5?'peak':p>=6?'strong':p>=3?'mid':'weak'));
+      arc.setAttribute('stroke-width', p>=8.5?'7.2':p>=6?'6.2':p>=3?'5.1':'4.2');
+      arc.setAttribute('opacity', Math.min(1,0.18+p/11));
+      layer.appendChild(arc);
+
+      // Add a second inner arc for stronger sectors, making the scan read as a "band".
+      if(p>=4){
+        const inner=document.createElementNS('http://www.w3.org/2000/svg','path');
+        inner.setAttribute('d',arcPath(93,b.start+0.9,b.end-0.9));
+        inner.setAttribute('class','scanArc '+(p>=8.5?'peak':p>=6?'strong':'mid'));
+        inner.setAttribute('stroke-width', p>=8.5?'3.8':p>=6?'3.2':'2.5');
+        inner.setAttribute('opacity', Math.min(.9,0.10+p/13));
+        layer.appendChild(inner);
+      }
+    }
+  }
+
+  function render() {
+    const label = String(az).padStart(3,'0') + '°';
+    azEl.textContent = label;
+    hudAz.textContent = label;
+
+    const power = signalPower(az);
+    const sig = Math.max(0,Math.min(10,Math.round(power)));
+    hudSig.textContent = power.toFixed(1) + '/10';
+    recordMeasurement(az,power);
+    renderHeat();
+
+    segs.forEach((s,i) => {
+      const lit = i >= (10 - sig);
+      s.classList.toggle('on', lit);
+      s.classList.toggle('hot', lit && sig >= 7);
+      s.classList.toggle('peak', lit && power >= 9.7);
+    });
+
+    beam.setAttribute('transform', `rotate(${az} 0 0)`);
+    beamDot.setAttribute('transform', `rotate(${az} 0 0)`);
+
+    azEl.classList.remove('signal','hot','peak');
+    if (power >= 3.5) azEl.classList.add('signal');
+    if (power >= 7) azEl.classList.add('hot');
+    if (power >= 9.7) azEl.classList.add('peak');
+
+    // No direct source point in this mode: user must infer direction from measured field.
+    signalDot.style.opacity='0';
+    signalHalo.style.opacity='0';
+    scope.classList.toggle('peak', power >= 9.7);
+
+    if(scanning) feedback.textContent='SCAN: прочісування 0–359°';
+    else if(power >= 9.7) feedback.textContent='Стабільний максимум. Можна LOCK.';
+    else if(power >= 7) feedback.textContent='Сильний пік. Перевір, чи він головний.';
+    else if(power >= 4) feedback.textContent='Сигнал є. Уточнюй.';
+    else feedback.textContent='Шукай далі.';
+  }
+
+  function step(dir, amount=null) {
+    if (!enabled || locked || scanning) return;
+    const base = mode==='fine' ? 1 : 5;
+    const delta = amount==null ? base : amount;
+    az = norm(az + dir * delta);
+    lastDir = dir;
+    render();
+  }
+
+  function currentHoldStep() {
+    const ms = performance.now() - holdStartedAt;
+    const base = mode==='fine' ? 1 : 5;
+    if (ms > 1800) return base*4;
+    if (ms > 900) return base*2;
+    return base;
+  }
+
+  function startHold(dir) {
+    stopHold();
+    holdStartedAt = performance.now();
+    step(dir, mode==='fine'?1:5);
+    holdTimer = setTimeout(() => {
+      repeatTimer = setInterval(() => step(dir,currentHoldStep()), 90);
+    }, 380);
+  }
+
+  function stopHold() {
+    if (holdTimer) clearTimeout(holdTimer);
+    if (repeatTimer) clearInterval(repeatTimer);
+    holdTimer = repeatTimer = null;
+  }
+
+  function bindHold(el, dir) {
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      el.setPointerCapture?.(e.pointerId);
+      startHold(dir);
+    });
+    el.addEventListener('pointerup', stopHold);
+    el.addEventListener('pointercancel', stopHold);
+    el.addEventListener('pointerleave', e => {
+      if (e.buttons === 0) stopHold();
+    });
+  }
+
+  bindHold(document.getElementById('leftHit'), -1);
+  bindHold(document.getElementById('rightHit'), +1);
+
+
+  const scanBtn=document.getElementById('scanBtn');
+  const modeBtn=document.getElementById('modeBtn');
+  const clearHeatBtn=document.getElementById('clearHeatBtn');
+  const scanState=document.getElementById('scanState');
+
+  function setMode(next){
+    mode=next;
+    modeBtn.textContent=mode==='fine'?'FINE 1°':'COARSE 5°';
+    modeBtn.classList.toggle('active',mode==='coarse');
+    scanState.textContent=mode==='fine'?'ТОЧНЕ НАВЕДЕННЯ · 1°':'ГРУБИЙ ПОШУК · 5°';
+  }
+  modeBtn.addEventListener('click',()=>{ if(!scanning&&!locked) setMode(mode==='fine'?'coarse':'fine'); });
+  clearHeatBtn.addEventListener('click',()=>{ if(!scanning){ measured.clear();renderHeat();scanState.textContent='ІСТОРІЮ ОЧИЩЕНО'; }});
+
+  function stopScan(){
+    if(scanTimer) clearInterval(scanTimer);
+    scanTimer=null; scanning=false;
+    scope.classList.remove('scanning');
+    scanBtn.textContent='SCAN';
+    scanBtn.classList.remove('active');
+    modeBtn.disabled=false; clearHeatBtn.disabled=false;
+    scanState.textContent='SCAN ЗАВЕРШЕНО · ЯСКРАВІ ДУГИ = СИЛЬНІ СЕКТОРИ';
+    render();
+  }
+
+  function startScan(){
+    if(scanning){stopScan();return}
+    if(locked)return;
+    scanning=true; enabled=false; locked=false;
+    measured.clear(); renderHeat();
+    az=0;
+    scope.classList.add('scanning');
+    scanBtn.textContent='STOP';
+    scanBtn.classList.add('active');
+    modeBtn.disabled=true; clearHeatBtn.disabled=true;
+    scanState.textContent='АВТОСКАНУВАННЯ 0–359°';
+    render();
+    scanTimer=setInterval(()=>{
+      az=norm(az+3);
+      render();
+      if(az>=357){
+        clearInterval(scanTimer);scanTimer=null;
+        scanning=false;enabled=true;
+        scope.classList.remove('scanning');
+        scanBtn.textContent='SCAN';scanBtn.classList.remove('active');
+        modeBtn.disabled=false;clearHeatBtn.disabled=false;
+        setMode('coarse');
+        scanState.textContent='SCAN ЗАВЕРШЕНО · ОБЕРИ НАЙСИЛЬНІШУ ДУГУ';
+      }
+    },34);
+  }
+  scanBtn.addEventListener('click',startScan);
+
+  document.addEventListener('keydown', e => {
+    if (e.repeat) return;
+    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+      e.preventDefault(); startHold(-1);
+    }
+    if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+      e.preventDefault(); startHold(+1);
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault(); checkLock();
+    }
+    if (e.key.toLowerCase() === 's') {
+      e.preventDefault(); startScan();
+    }
+    if (e.key.toLowerCase() === 'f' && !scanning && !locked) {
+      e.preventDefault(); setMode(mode==='fine'?'coarse':'fine');
+    }
+  });
+  document.addEventListener('keyup', e => {
+    if (['ArrowLeft','ArrowRight','a','d','A','D'].includes(e.key)) stopHold();
+  });
+
+  function toast(msg){
+    const t=document.getElementById('taskToast'); t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1000);
+  }
+
+  function setupAdvancedUI(){
+      const title=document.getElementById('taskTitle'),text=document.getElementById('taskText'),
+            progress=document.getElementById('taskProgress'),state=document.getElementById('taskState');
+      const pb=document.getElementById('petroBox');if(pb)pb.style.display='none';
+      rxSetTask(MISSION);rxSetErrors(0);
+      if(IS_JORDAN){
+        title.textContent='МІСІЯ ДЖОРДАНА';
+        text.textContent='Тримай маяк. Джордан рухається — напрямок змінюється.';
+        progress.textContent=`СЛІД ${jordanStep+1}/${JORDAN_STEPS.length}`;
+        state.textContent='SCAN → COARSE → FINE → LOCK';
+        return;
+      }
+      title.textContent=`ЗАВДАННЯ ${MISSION}/10`;
+      if(MISSION===6){text.textContent='Точка джерела прихована. Знайди максимум тільки за шкалою.';progress.textContent='COARSE → FINE → LOCK';}
+      else if(MISSION===7){text.textContent='Є хибний пік. Перевір, чи немає сильнішого.';progress.textContent='ПЕРЕВІР ПІКИ → FINE → LOCK';}
+      else if(MISSION===8){text.textContent='Проскануй коло, знайди сильний сектор і уточни вручну.';progress.textContent='SCAN → COARSE → FINE → LOCK';}
+      else{text.textContent='Контрольний пошук. Шум, відбиття, мінімум підказок.';progress.textContent='ЗНАЙДИ ДЖЕРЕЛО';}
+      state.textContent='ТОЧКА ДЖЕРЕЛА ПРИХОВАНА';
+    }
+
+  function checkLock(){
+      if(!enabled||locked||scanning)return;
+      const d=circularDiff(az,TARGET),power=signalPower(az);
+      if(d<=2&&power>=9.5){
+        locked=true;enabled=false;
+        document.getElementById('taskState').textContent='СПРАВЖНІЙ МАКСИМУМ ЗАФІКСОВАНО';
+        toast('LOCK ✓ СПРАВЖНІЙ ПІК');
+        flash.classList.remove('show');void flash.offsetWidth;flash.classList.add('show');
+        rxShowOno('12','03_approval',2100); // одна похвала за правильну дію
+
+        if(IS_JORDAN){
+          setTimeout(()=>{
+            if(jordanStep<JORDAN_STEPS.length-1){
+              jordanStep++;
+              TARGET=JORDAN_STEPS[jordanStep].target;
+              FALSE_PEAKS=JORDAN_STEPS[jordanStep].falsePeaks;
+              az=norm(az+67);measured.clear();locked=false;enabled=true;scanning=false;setMode('coarse');
+              document.getElementById('taskProgress').textContent=`СЛІД ${jordanStep+1}/${JORDAN_STEPS.length}`;
+              document.getElementById('taskState').textContent='ДЖОРДАН ЗМІНИВ НАПРЯМОК';
+              render();
+            }else{
+              document.getElementById('taskTitle').textContent='10/10 — ВИКОНАНО';
+              document.getElementById('taskText').textContent='МІСІЯ ДЖОРДАНА ЗАВЕРШЕНА';
+              document.getElementById('taskProgress').textContent='● ● ● ● ● ●';
+              document.getElementById('taskState').textContent='РІВЕНЬ 3 ЗАВЕРШЕНО';
+              setTimeout(()=>{try{parent.RX01_STAGE_DONE('complete')}catch(e){};try{parent.postMessage({type:'RX01_LEVEL3_COMPLETE'},'*')}catch(e){}},2300);
+            }
+          },2300);
+        }else{
+          setTimeout(()=>{try{parent.RX01_STAGE_DONE('advanced',MISSION)}catch(e){};try{parent.postMessage({type:'RX01_LEVEL3_ADV_DONE',mission:MISSION},'*')}catch(e){}},2300);
+        }
+      }else{
+        wrongLocks++;rxSetErrors(wrongLocks);
+        document.getElementById('taskState').textContent=power>=6.5?'СИЛЬНИЙ, АЛЕ НЕ ГОЛОВНИЙ ПІК':'LOCK: НЕ МАКСИМУМ';
+        toast(power>=6.5?'ХИБНИЙ / НЕТОЧНИЙ ПІК':'НЕ МАКСИМУМ');
+        rxShowOno('03','05_displeased',2100); // одна репліка на одну помилку
+      }
+    }
+    document.getElementById('lockHit').addEventListener('click', checkLock);
+
+  setupAdvancedUI();
+  setMode('coarse');
+  render();
+})();
+</script>
+</body>
+</html>

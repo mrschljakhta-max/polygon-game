@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>RX-01 — Перехід на рівень 2</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030303}
+body{display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif}
+#stage{
+  position:relative;
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:#050505;
+}
+.panel,.phrase{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+  will-change:opacity,transform,filter;
+}
+.panel{
+  transition:opacity .9s ease,transform 1.05s cubic-bezier(.2,.78,.2,1),filter .9s ease;
+  transform:scale(1.02);
+  filter:brightness(.78) saturate(.9);
+  z-index:2;
+}
+.panel.show{opacity:1;transform:scale(1);filter:brightness(1) saturate(1)}
+.phrase{
+  z-index:8;
+  transition:opacity .75s ease,transform .85s cubic-bezier(.18,.82,.25,1),filter .75s ease;
+  transform:scale(.93) translateY(6px);
+  filter:blur(1.5px) brightness(.9);
+}
+.phrase.show{opacity:1;transform:scale(1) translateY(0);filter:blur(0) brightness(1)}
+
+/* Slanted comic-page reconstruction */
+#p1{left:.30%;top:.53%;width:56.30%;height:52.99%;}
+#p2{left:52.16%;top:.53%;width:47.84%;height:50.85%;}
+#p3{left:.30%;top:51.60%;width:54.14%;height:48.40%;}
+#p4{left:48.38%;top:48.29%;width:51.62%;height:51.71%;}
+
+/* Репліки навмисно різні за масштабом і не закривають Петровича */
+#t1{left:3.3%;top:7.5%;width:22.5%;transform-origin:left top}
+#t2{right:3.0%;top:5.8%;width:15.0%;transform-origin:right top}
+#t2b{right:3.6%;top:25.5%;width:16.5%;transform-origin:right top}
+#t3{left:3.0%;top:56.5%;width:24.0%;transform-origin:left center}
+#t4{right:7.0%;top:65.0%;width:17.0%;transform-origin:right center}
+
+#veil{position:absolute;inset:0;z-index:20;background:#050505;opacity:1;transition:opacity .8s ease;pointer-events:none}
+#veil.open{opacity:0}
+#endMark{
+  position:absolute;right:2.2%;bottom:2.2%;z-index:30;
+  padding:10px 15px;border:2px solid #d6a619;background:rgba(6,6,6,.82);
+  color:#e3b722;font-weight:900;font-size:clamp(9px,1vw,14px);
+  letter-spacing:.12em;opacity:0;transform:translateY(8px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+#endMark.show{opacity:.95;transform:translateY(0)}
+#nextBtn{
+  position:absolute;left:50%;bottom:3.2%;z-index:35;
+  transform:translateX(-50%) translateY(16px) skew(-6deg);
+  border:3px solid #111;background:#f0b91c;color:#111;
+  padding:13px 30px;font:1000 clamp(13px,1.4vw,22px) Arial,sans-serif;
+  letter-spacing:.08em;box-shadow:6px 6px 0 #111;cursor:pointer;
+  opacity:0;visibility:hidden;transition:opacity .55s ease,transform .55s ease;
+}
+#nextBtn.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0) skew(-6deg)}
+#nextBtn:active{transform:translateX(-50%) translateY(2px) skew(-6deg)}
+
+@media (prefers-reduced-motion:reduce){
+  .panel,.phrase,#veil,#endMark{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="veil"></div>
+
+  <img class="panel" id="p1" src="../assets/p12_0094_6f9540d1817459b3.png" alt="Панель 1">
+  <img class="panel" id="p2" src="../assets/p12_0095_f7445971802dbc6f.png" alt="Панель 2">
+  <img class="panel" id="p3" src="../assets/p12_0096_5ea3454748d58b67.png" alt="Панель 3">
+  <img class="panel" id="p4" src="../assets/p12_0097_812ec855ea24735d.png" alt="Панель 4">
+
+  <img class="phrase" id="t1" src="../assets/p12_0098_bbfbcdc6a104ab3b.png" alt="Перший рівень пройшов">
+  <img class="phrase" id="t2" src="../assets/p12_0099_ec7624335323b591.png" alt="Я навіть не встиг розчаруватись">
+  <img class="phrase" id="t2b" src="../assets/p12_0100_ecff362d62f4a29a.png" alt="Але я дам тобі ще один шанс">
+  <img class="phrase" id="t3" src="../assets/p12_0101_b6fec55eb93ec2cb.png" alt="Бо один раз випадково натиснути правильні кнопки">
+  <img class="phrase" id="t4" src="../assets/p12_0102_8f649ed143396ffb.png" alt="Це ще не професія">
+
+  <div id="endMark">РІВЕНЬ 2</div>
+  <button id="nextBtn" type="button">ПЕРЕЙТИ ДО РІВНЯ 2</button>
+</div>
+
+<script>
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const show=id=>document.getElementById(id).classList.add('show');
+
+async function run(){
+  await sleep(2000);
+  document.getElementById('veil').classList.add('open');
+
+  show('p1');  await sleep(2000);
+  show('t1');  await sleep(2000);
+
+  show('p2');  await sleep(2000);
+  show('t2');  await sleep(2000);
+  show('t2b'); await sleep(2000);
+
+  show('p3');  await sleep(2000);
+  show('t3');  await sleep(2000);
+
+  show('p4');  await sleep(2000);
+  show('t4');  await sleep(2000);
+
+  document.getElementById('endMark').classList.add('show');
+  await sleep(700);
+  document.getElementById('nextBtn').classList.add('show');
+}
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  parent.postMessage({type:'RX01_TRANSITION_DONE'},'*');
+});
+run();
+</script>
+</body>
+</html>
