@@ -1,0 +1,137 @@
+name: Patch Level 4 Intro
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-level4-intro.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch intro animation and controls
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('stages/14_level4_intro.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Remove the Repeat button and its JS wiring.
+          s = re.sub(r'\s*<button class="btn secondary" id="repeatBtn">↻ Повторити</button>\s*', '\n', s, count=1)
+          s = re.sub(r"\s*const repeatBtn=document\.getElementById\('repeatBtn'\);\s*", '\n', s, count=1)
+          s = re.sub(r"\s*repeatBtn\.addEventListener\('click',\s*runIntro\);\s*", '\n', s, count=1)
+          s = re.sub(r"\s*else if\(e\.key\.toLowerCase\(\)===['\"]r['\"]\)\s*\{\s*runIntro\(\);\s*\}", '', s, count=1)
+
+          # Uniform opacity-only animation. No slide/scale differences between elements.
+          override = r'''
+          /* LEVEL 4 INTRO — opacity-only animation and larger NEXT */
+          .panel {
+            transform:none !important;
+            filter:brightness(1) saturate(1.03) !important;
+            transition:opacity 1s ease !important;
+          }
+          .panel.show {
+            transform:none !important;
+            filter:brightness(1) saturate(1.03) !important;
+          }
+          .speechWrap {
+            transform:none !important;
+            transition:opacity 1s ease !important;
+          }
+          .panel.bubbleShown .speechWrap {
+            transform:none !important;
+          }
+          .controls {
+            justify-content:flex-end !important;
+            padding:24px 30px !important;
+          }
+          #nextBtn {
+            min-width:220px !important;
+            min-height:78px !important;
+            padding:22px 44px !important;
+            border:2px solid rgba(255,209,77,.92) !important;
+            border-radius:14px !important;
+            font:1000 clamp(22px,2vw,32px)/1 Arial,sans-serif !important;
+            letter-spacing:.08em !important;
+            box-shadow:0 14px 30px rgba(0,0,0,.58), inset 0 0 0 1px rgba(255,231,139,.14) !important;
+            transform:none !important;
+            transition:opacity .65s ease, background .18s ease !important;
+          }
+          #nextBtn.show {
+            transform:none !important;
+          }
+          @media (max-width:1100px) {
+            #nextBtn {
+              min-width:176px !important;
+              min-height:64px !important;
+              padding:18px 32px !important;
+              font-size:clamp(19px,3.5vw,26px) !important;
+            }
+          }
+          '''
+          s = s.replace('</style>', override + '\n</style>', 1)
+
+          # Replace runIntro with a strict 2-second alternating rhythm:
+          # panel1 -> 2s -> bubble1 -> 2s -> panel2 -> ... -> bubble4 -> 2s -> NEXT.
+          new_run = r'''  function runIntro() {
+            clearTimers();
+            ready=false;
+            nextBtn.classList.remove('show');
+            hint.classList.remove('show');
+            panels.forEach(p=>{ p.classList.remove('show','bubbleShown'); });
+
+            panels.forEach((panel,idx)=>{
+              const panelAt = idx * 4000;
+              const bubbleAt = panelAt + 2000;
+              timers.push(setTimeout(()=>{ panel.classList.add('show'); }, panelAt));
+              timers.push(setTimeout(()=>{ panel.classList.add('bubbleShown'); }, bubbleAt));
+            });
+
+            const total = panels.length * 4000;
+            timers.push(setTimeout(()=>{
+              ready=true;
+              nextBtn.classList.add('show');
+              hint.classList.add('show');
+            }, total));
+          }
+
+          function goNext() {'''
+          s, n = re.subn(r"  function runIntro\(\) \{.*?\n  function goNext\(\) \{", new_run, s, count=1, flags=re.S)
+          if n != 1:
+            raise SystemExit('Could not replace runIntro() block')
+
+          if 'repeatBtn' in s or '↻ Повторити' in s:
+            raise SystemExit('Repeat button remnants remain')
+
+          p.write_text(s, encoding='utf-8')
+
+          # Bust iframe/browser cache so the new intro is loaded immediately.
+          g = Path('game.html')
+          gs = g.read_text(encoding='utf-8')
+          gs, n = re.subn(r"stages/14_level4_intro\.html\?v=[^'\"]+", 'stages/14_level4_intro.html?v=20260826-1615-anim2s', gs, count=1)
+          if n != 1:
+            gs, n = re.subn(r"stages/14_level4_intro\.html", 'stages/14_level4_intro.html?v=20260826-1615-anim2s', gs, count=1)
+          if n != 1:
+            raise SystemExit('Could not update Level 4 intro cache-bust URL')
+          g.write_text(gs, encoding='utf-8')
+          PY
+
+      - name: Commit patched Level 4 intro
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stages/14_level4_intro.html game.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Tune Level 4 intro timing and controls"
+          git push
