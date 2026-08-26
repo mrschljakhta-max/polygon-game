@@ -47,6 +47,52 @@
     .controls { padding:12px; }
     .btn { padding:11px 14px; border-radius:9px; }
   }
+
+/* LEVEL 4 INTRO — opacity-only animation and larger NEXT */
+.panel {
+  transform:none !important;
+  filter:brightness(1) saturate(1.03) !important;
+  transition:opacity 1s ease !important;
+}
+.panel.show {
+  transform:none !important;
+  filter:brightness(1) saturate(1.03) !important;
+}
+.speechWrap {
+  transform:none !important;
+  transition:opacity 1s ease !important;
+}
+.panel.bubbleShown .speechWrap {
+  transform:none !important;
+}
+.controls {
+  justify-content:flex-end !important;
+  padding:24px 30px !important;
+}
+#nextBtn {
+  min-width:220px !important;
+  min-height:78px !important;
+  padding:22px 44px !important;
+  border:2px solid rgba(255,209,77,.92) !important;
+  border-radius:14px !important;
+  font:1000 clamp(22px,2vw,32px)/1 Arial,sans-serif !important;
+  letter-spacing:.08em !important;
+  box-shadow:0 14px 30px rgba(0,0,0,.58), inset 0 0 0 1px rgba(255,231,139,.14) !important;
+  transform:none !important;
+  transition:opacity .65s ease, background .18s ease !important;
+}
+#nextBtn.show {
+  transform:none !important;
+}
+@media (max-width:1100px) {
+  #nextBtn {
+    min-width:176px !important;
+    min-height:64px !important;
+    padding:18px 32px !important;
+    font-size:clamp(19px,3.5vw,26px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -79,16 +125,14 @@
   <div class="bottomFade"></div>
   <div class="hint" id="hint">Після заставки натисни «ДАЛІ»</div>
   <div class="controls">
-    <button class="btn secondary" id="repeatBtn">↻ Повторити</button>
-    <button class="btn" id="nextBtn">Далі</button>
+<button class="btn" id="nextBtn">Далі</button>
   </div>
   <div class="flash" id="flash"></div>
 </div>
 <script>
   const panels=[...document.querySelectorAll('.panel')];
   const nextBtn=document.getElementById('nextBtn');
-  const repeatBtn=document.getElementById('repeatBtn');
-  const hint=document.getElementById('hint');
+const hint=document.getElementById('hint');
   const flash=document.getElementById('flash');
   let timers=[];
   let ready=false;
@@ -99,26 +143,28 @@
   }
 
   function runIntro() {
-    clearTimers();
-    ready=false;
-    nextBtn.classList.remove('show');
-    hint.classList.remove('show');
-    panels.forEach(p=>{ p.classList.remove('show','bubbleShown'); });
+  clearTimers();
+  ready=false;
+  nextBtn.classList.remove('show');
+  hint.classList.remove('show');
+  panels.forEach(p=>{ p.classList.remove('show','bubbleShown'); });
 
-    panels.forEach((panel,idx)=>{
-      timers.push(setTimeout(()=>{ panel.classList.add('show'); }, idx*1300 + 120));
-      timers.push(setTimeout(()=>{ panel.classList.add('bubbleShown'); }, idx*1300 + 520));
-    });
+  panels.forEach((panel,idx)=>{
+    const panelAt = idx * 4000;
+    const bubbleAt = panelAt + 2000;
+    timers.push(setTimeout(()=>{ panel.classList.add('show'); }, panelAt));
+    timers.push(setTimeout(()=>{ panel.classList.add('bubbleShown'); }, bubbleAt));
+  });
 
-    const total=panels.length*1300 + 700;
-    timers.push(setTimeout(()=>{
-      ready=true;
-      nextBtn.classList.add('show');
-      hint.classList.add('show');
-    }, total));
-  }
+  const total = panels.length * 4000;
+  timers.push(setTimeout(()=>{
+    ready=true;
+    nextBtn.classList.add('show');
+    hint.classList.add('show');
+  }, total));
+}
 
-  function goNext() {
+function goNext() {
     if(!ready) return;
     hint.classList.remove('show');
     flash.classList.add('show');
@@ -130,15 +176,11 @@
       }
     }, 620);
   }
-
-  repeatBtn.addEventListener('click', runIntro);
-  nextBtn.addEventListener('click', goNext);
+nextBtn.addEventListener('click', goNext);
   window.addEventListener('keydown', (e)=>{
     if((e.key==='Enter' || e.key===' ') && ready) {
       e.preventDefault();
       goNext();
-    } else if(e.key.toLowerCase()==='r') {
-      runIntro();
     }
   });
 
