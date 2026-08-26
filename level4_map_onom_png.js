@@ -104,11 +104,22 @@
     st.textContent=`
       #rx01PetroOnoV2,#rx01PetroOnoV3,#toast,.toast,#petrovychSpeech,.petrovychSpeech{display:none!important}
       .instructorCard #petrovychSpeech{display:none!important}
-      #rx01MapOnoPng{position:absolute;left:20.5%;bottom:2.2%;z-index:99999;width:min(37vw,610px);opacity:0;visibility:hidden;transform:translateY(9px) scale(.985);transition:opacity .2s ease,transform .2s ease,visibility .2s;pointer-events:none;filter:drop-shadow(0 11px 18px rgba(0,0,0,.58))}
-      #rx01MapOnoPng.show{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
-      #rx01MapOnoPng img{display:block;width:100%;height:auto;max-height:43vh;object-fit:contain;object-position:left bottom}
-      @media(max-width:1100px){#rx01MapOnoPng{left:20%;bottom:2%;width:min(43vw,560px)}#rx01MapOnoPng img{max-height:41vh}}
-      @media(max-width:780px){#rx01MapOnoPng{left:18.5%;bottom:1.5%;width:min(49vw,500px)}#rx01MapOnoPng img{max-height:39vh}}
+      #rx01MapOnoPng{
+        position:absolute;
+        left:26.9%;
+        top:34.6%;
+        z-index:99999;
+        width:293px;
+        opacity:0;
+        visibility:hidden;
+        transform:translate(-50%,-50%) rotate(-4.9deg);
+        transform-origin:center center;
+        transition:opacity .2s ease,visibility .2s;
+        pointer-events:none;
+        filter:drop-shadow(0 10px 14px rgba(0,0,0,.28));
+      }
+      #rx01MapOnoPng.show{opacity:1;visibility:visible}
+      #rx01MapOnoPng img{display:block;width:100%;height:auto;object-fit:contain}
     `;
     d.head.appendChild(st);
 
