@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>RX-01 — Полігон · Тест рівня</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,sans-serif}#frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:#050505}#transition{position:fixed;inset:0;z-index:999;display:grid;place-items:center;background:#050505;opacity:0;visibility:hidden;transition:.35s;pointer-events:none}#transition.show{opacity:1;visibility:visible}#transition .small{color:#aaa;font:900 clamp(11px,1vw,17px) "Courier New";letter-spacing:.15em;text-align:center}#transition .big{margin-top:10px;color:#f1bb1b;font:1000 clamp(30px,5.7vw,86px)/.95 Arial;text-align:center;text-transform:uppercase}#complete{position:fixed;inset:0;z-index:1000;display:none;place-items:center;background:#060606;color:#fff;text-align:center;padding:30px}#complete.show{display:grid}#complete h1{color:#f1bb1b;font-size:clamp(42px,7vw,105px);line-height:.9;margin:0}#complete p{font-size:clamp(16px,1.8vw,27px);color:#ddd}.home{position:fixed;z-index:1200;left:12px;top:12px;border:1px solid #58513b;background:#10130fdd;color:#cfc79f;padding:8px 11px;border-radius:5px;text-decoration:none;font:900 11px Arial;opacity:.55}.home:hover{opacity:1;color:#ffd331;border-color:#d8ba55}.placeholder{position:fixed;inset:0;z-index:900;display:none;place-items:center;background:#070807;color:#eee;text-align:center;padding:30px}.placeholder.show{display:grid}.placeholder b{display:block;color:#f1bb1b;font-size:clamp(54px,12vw,150px);line-height:.8}.placeholder h1{font-size:clamp(28px,4vw,60px);margin:22px 0 8px}.placeholder p{color:#999;font:700 14px "Courier New",monospace}
+</style>
+</head>
+<body>
+<a class="home" href="./">← РІВНІ</a>
+<iframe id="frame" allow="fullscreen"></iframe>
+<div id="transition"><div><div class="small" id="trSmall"></div><div class="big" id="trBig"></div></div></div>
+<div id="complete"><div><h1>РІВЕНЬ 4<br>ВИКОНАНО</h1><p>Три джерела локалізовано. Звіт передано на штаб.</p></div></div>
+<div class="placeholder" id="placeholder"><div><b>05</b><h1>РІВЕНЬ 5</h1><p>ПОКИ ЩО В РОЗРОБЦІ</p></div></div>
+<script>
+const frame=document.getElementById('frame'),trans=document.getElementById('transition'),trSmall=document.getElementById('trSmall'),trBig=document.getElementById('trBig');
+const stages=[
+ {url:'stages/01_mission_intro.html',small:'RX-01 · МІСІЯ 01',big:'ПОЛІГОН'},
+ {url:'stages/02_level1.html',small:'RX-01 · РІВЕНЬ 1',big:'ПОЧАТОК РОБОТИ'},
+ {url:'stages/03_level2_transition.html',small:'RX-01',big:'РІВЕНЬ 2'},
+ {url:'stages/04_level2.html',small:'RX-01 · РІВЕНЬ 2',big:'ЗАЛІК'},
+ {url:'stages/05_level3_intro.html',small:'RX-01 · РІВЕНЬ 3',big:'ПЕЛЕНГАТОР'},
+ {url:'stages/06_level3_tutorial.html',small:'ПІДГОТОВКА',big:'СТАРТОВИЙ ІНСТРУКТАЖ'},
+ {url:'stages/07_level3_tasks_01_05.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 01–05'},
+ {url:'stages/08_level3_task_06.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 06 / 10'},
+ {url:'stages/09_level3_task_07.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 07 / 10'},
+ {url:'stages/10_level3_task_08.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 08 / 10'},
+ {url:'stages/11_level3_task_09.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 09 / 10'},
+ {url:'stages/12_level3_jordan.html',small:'ФІНАЛЬНА МІСІЯ',big:'ДЖОРДАН'},
+ {url:'stages/13_level3_task_10.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 10 / 10'},
+ {url:'stages/14_level4_intro.html',small:'RX-01 · РІВЕНЬ 4',big:'ТОЧКА НА КАРТІ'},
+ {url:'stages/15_level4_map.html',small:'РІВЕНЬ 4',big:'ТАКТИЧНА КАРТА'},
+ {url:'stages/16_level4_rx.html',small:'РІВЕНЬ 4',big:'RX-01 · ПЕЛЕНГАЦІЯ'}
+];
+let idx=0;
+function load(i,announce=true){idx=i;const go=()=>{frame.src=stages[i].url;setTimeout(()=>{try{frame.contentWindow.focus()}catch(e){}},250)};if(!announce){go();return}trSmall.textContent=stages[i].small;trBig.textContent=stages[i].big;trans.classList.add('show');setTimeout(()=>{go();setTimeout(()=>trans.classList.remove('show'),430)},430)}
+function finishLevel4(){trans.classList.add('show');trSmall.textContent='RX-01 · ПОЛІГОН';trBig.textContent='РІВЕНЬ 4 ВИКОНАНО';setTimeout(()=>{trans.classList.remove('show');document.getElementById('complete').classList.add('show')},1300)}
+window.RX01_STAGE_DONE=function(kind){if(kind==='tutorial'&&idx===5)return load(6);if(kind==='block1'&&idx===6)return load(7);if(kind==='advanced'&&idx>=7&&idx<=10)return idx<10?load(idx+1):load(11);if(kind==='jordanIntro'&&idx===11)return load(12);if(kind==='complete'&&idx===12)return load(13)};
+window.RX01_LEVEL4_TO_RX=()=>{if(idx===14)load(15)};window.RX01_LEVEL4_RETURN_MAP=()=>{if(idx===15)load(14)};window.RX01_LEVEL4_COMPLETE=()=>{if(idx===14)finishLevel4()};
+window.addEventListener('message',e=>{const t=e.data&&e.data.type;if(!t)return;if(t==='RX01_INTRO_DONE'&&idx===0)load(1);else if(t==='RX01_LEVEL1_DONE'&&idx===1)load(2);else if(t==='RX01_TRANSITION_DONE'&&idx===2)load(3);else if(t==='RX01_LEVEL2_DONE'&&idx===3)load(4);else if(t==='RX01_LEVEL3_INTRO_DONE'&&idx===4)load(5);else if(t==='RX01_LEVEL3_TUTORIAL_DONE'&&idx===5)load(6);else if(t==='RX01_LEVEL3_BLOCK1_DONE'&&idx===6)load(7);else if(t==='RX01_LEVEL3_ADV_DONE'&&idx>=7&&idx<=10)idx<10?load(idx+1):load(11);else if(t==='RX01_JORDAN_INTRO_DONE'&&idx===11)load(12);else if(t==='RX01_LEVEL3_COMPLETE'&&idx===12)load(13);else if(t==='RX01_LEVEL4_INTRO_DONE'&&idx===13)load(14);else if(t==='RX01_LEVEL4_TO_RX'&&idx===14)load(15);else if(t==='RX01_LEVEL4_RETURN_MAP'&&idx===15)load(14);else if(t==='RX01_LEVEL4_COMPLETE'&&idx===14)finishLevel4()});
+const level=Math.max(1,Math.min(5,Number(new URLSearchParams(location.search).get('level')||1)));
+if(level===5){frame.style.display='none';document.getElementById('placeholder').classList.add('show')}else{if(level===4){['rx01_level4_flow','rx01_level4_map_state','rx01_level4_our_journal'].forEach(k=>localStorage.removeItem(k))}const start={1:1,2:2,3:4,4:13}[level]||1;load(start,false)}
+</script>
+</body>
+</html>
