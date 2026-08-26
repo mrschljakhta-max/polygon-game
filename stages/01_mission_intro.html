@@ -16,12 +16,12 @@ body{font-family:Arial,sans-serif}
   overflow:hidden;
 }
 .grid{position:absolute;inset:0;display:grid;grid-template-columns:27.35fr 23.15fr 24.55fr 24.95fr;background:#050505}
-.panel{position:relative;overflow:hidden;background:#050505;border-right:5px solid #090909;visibility:hidden;opacity:0;transform:translateX(-36px) scale(.985);transition:opacity .32s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.panel{position:relative;overflow:hidden;background:#050505;border-right:5px solid #090909;visibility:hidden;opacity:0;transition:opacity 1s ease}
 .panel:last-child{border-right:0}
-.panel.show{visibility:visible;opacity:1;transform:none}
+.panel.show{visibility:visible;opacity:1}
 .panel>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.caption{position:absolute;z-index:3;visibility:hidden;opacity:0;transform:scale(.82);transition:opacity .22s ease,transform .32s cubic-bezier(.2,1.2,.3,1);filter:drop-shadow(0 6px 5px rgba(0,0,0,.45))}
-.caption.show{visibility:visible;opacity:1;transform:scale(1)}
+.caption{position:absolute;z-index:3;visibility:hidden;opacity:0;transition:opacity 1s ease;filter:drop-shadow(0 6px 5px rgba(0,0,0,.45))}
+.caption.show{visibility:visible;opacity:1}
 .caption img{display:block;width:100%;height:auto}
 .polygon{left:2.5%;top:2.2%;width:92%}
 .krr{left:2%;top:27%;width:94%}
@@ -29,8 +29,14 @@ body{font-family:Arial,sans-serif}
 .contact{left:8%;top:58%;width:84%}
 .today{left:4%;top:8%;width:92%}
 .click{left:11%;bottom:4%;width:78%}
-.replay{position:absolute;right:1.2%;bottom:1.2%;z-index:20;visibility:hidden;opacity:0;border:1px solid #e9c443;background:rgba(0,0,0,.72);color:#f4d85d;font:700 12px system-ui;padding:8px 11px;cursor:pointer;transition:opacity .3s}
-.replay.show{visibility:visible;opacity:1}.replay{font-size:16px;font-weight:900;padding:11px 20px;background:#e9c443;color:#111;border:2px solid #111;box-shadow:5px 5px 0 #111}
+.next{position:absolute;right:2%;bottom:2%;z-index:20;visibility:hidden;opacity:0;min-width:220px;min-height:78px;border:2px solid #111;background:#e9c443;color:#111;font:1000 clamp(22px,2vw,32px)/1 Arial,sans-serif;letter-spacing:.08em;padding:22px 44px;cursor:pointer;box-shadow:6px 6px 0 #111;transition:opacity .8s ease,transform .18s ease}
+.next.show{visibility:visible;opacity:1}
+.next:hover{transform:translateY(-2px)}
+.next:active{transform:translateY(0)}
+@media(max-width:1100px){
+  .panel{border-right:3px solid #090909}
+  .next{min-width:176px;min-height:64px;padding:18px 32px;font-size:clamp(19px,3.5vw,26px)}
+}
 </style>
 </head>
 <body>
@@ -55,25 +61,33 @@ body{font-family:Arial,sans-serif}
       <div class="caption click" id="click"><img src="../assets/p12_0010_5d139dc50b67217f.png" alt="Клац!"></div>
     </section>
   </div>
-  <button class="replay" id="replay">ДАЛІ →</button>
+  <button class="next" id="nextBtn">ДАЛІ</button>
 </div>
 <script>
-const seq = [
-  ['p1',0], ['polygon',500], ['krr',1500],
-  ['p2',3500], ['first',4000],
-  ['p3',6000], ['contact',6500],
-  ['p4',8500], ['today',9000], ['click',10000]
+const seq=[
+  ['p1',0],
+  ['polygon',2000],
+  ['krr',4000],
+  ['p2',6000],
+  ['first',8000],
+  ['p3',10000],
+  ['contact',12000],
+  ['p4',14000],
+  ['today',16000],
+  ['click',18000]
 ];
 let timers=[];
 function run(){
-  timers.forEach(clearTimeout); timers=[];
-  document.querySelectorAll('.panel,.caption,#replay').forEach(el=>el.classList.remove('show'));
+  timers.forEach(clearTimeout);timers=[];
+  document.querySelectorAll('.panel,.caption,#nextBtn').forEach(el=>el.classList.remove('show'));
   seq.forEach(([id,t])=>timers.push(setTimeout(()=>document.getElementById(id).classList.add('show'),t)));
-  timers.push(setTimeout(()=>document.getElementById('replay').classList.add('show'),11500));
+  timers.push(setTimeout(()=>document.getElementById('nextBtn').classList.add('show'),20000));
 }
-document.getElementById('replay').addEventListener('click',()=>{
-  try { parent.postMessage({type:'RX01_INTRO_DONE'}, '*'); } catch(e) {}
-});
+function goNext(){
+  try{parent.postMessage({type:'RX01_INTRO_DONE'},'*')}catch(e){}
+}
+document.getElementById('nextBtn').addEventListener('click',goNext);
+window.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&document.getElementById('nextBtn').classList.contains('show')){e.preventDefault();goNext()}});
 run();
 </script>
 </body>
