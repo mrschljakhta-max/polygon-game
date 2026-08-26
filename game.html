@@ -14,6 +14,7 @@
 <div id="transition"><div><div class="small" id="trSmall"></div><div class="big" id="trBig"></div></div></div>
 <div id="complete"><div><h1>РІВЕНЬ 4<br>ВИКОНАНО</h1><p>Три джерела локалізовано. Звіт передано на штаб.</p></div></div>
 <div class="placeholder" id="placeholder"><div><b>05</b><h1>РІВЕНЬ 5</h1><p>ПОКИ ЩО В РОЗРОБЦІ</p></div></div>
+<script src="level4_onom_v2.js?v=20260826-onom-v2"></script>
 <script>
 const frame=document.getElementById('frame'),trans=document.getElementById('transition'),trSmall=document.getElementById('trSmall'),trBig=document.getElementById('trBig');
 const stages=[
@@ -35,6 +36,7 @@ const stages=[
  {url:'stages/16_level4_rx.html',small:'РІВЕНЬ 4',big:'RX-01 · ПЕЛЕНГАЦІЯ'}
 ];
 let idx=0;
+frame.addEventListener('load',()=>{if(idx===14)window.RX01_APPLY_LEVEL4_ONO?.(frame,'map');else if(idx===15)window.RX01_APPLY_LEVEL4_ONO?.(frame,'rx')});
 function load(i,announce=true){idx=i;const go=()=>{frame.src=stages[i].url;setTimeout(()=>{try{frame.contentWindow.focus()}catch(e){}},250)};if(!announce){go();return}trSmall.textContent=stages[i].small;trBig.textContent=stages[i].big;trans.classList.add('show');setTimeout(()=>{go();setTimeout(()=>trans.classList.remove('show'),430)},430)}
 function finishLevel4(){trans.classList.add('show');trSmall.textContent='RX-01 · ПОЛІГОН';trBig.textContent='РІВЕНЬ 4 ВИКОНАНО';setTimeout(()=>{trans.classList.remove('show');document.getElementById('complete').classList.add('show')},1300)}
 window.RX01_STAGE_DONE=function(kind){if(kind==='tutorial'&&idx===5)return load(6);if(kind==='block1'&&idx===6)return load(7);if(kind==='advanced'&&idx>=7&&idx<=10)return idx<10?load(idx+1):load(11);if(kind==='jordanIntro'&&idx===11)return load(12);if(kind==='complete'&&idx===12)return load(13)};
