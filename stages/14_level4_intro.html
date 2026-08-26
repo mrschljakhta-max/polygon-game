@@ -13,17 +13,18 @@
   .topbar { position:absolute; left:14px; top:12px; z-index:30; display:flex; gap:10px; align-items:center; }
   .levelTag { background:rgba(15,15,15,.88); color:#f1c542; border:1px solid rgba(241,197,66,.45); border-radius:8px; padding:8px 12px; font:900 clamp(11px,1.05vw,16px)/1 Arial, sans-serif; letter-spacing:.08em; text-transform:uppercase; box-shadow:0 6px 16px rgba(0,0,0,.35); }
   .subtitleTag { color:#d7d7d7; font:800 clamp(10px,.92vw,14px)/1.1 "Courier New", monospace; letter-spacing:.12em; text-transform:uppercase; opacity:.85; }
-  .comic { position:absolute; inset:0; display:flex; z-index:5; }
-  .panel { position:relative; flex:1 1 0; min-width:0; overflow:hidden; border-left:3px solid #090909; border-right:3px solid #090909; opacity:0; transform:translateY(24px) scale(1.02); filter:brightness(.52) saturate(.9); transition:opacity .42s ease, transform .42s ease, filter .42s ease; }
+  :root { --panel-w: 320px; --panel-h: 852px; }
+  .comic { position:absolute; inset:24px 20px 86px 20px; display:flex; justify-content:center; align-items:flex-start; gap:12px; z-index:5; }
+  .panel { position:relative; flex:0 0 auto; width:var(--panel-w); height:var(--panel-h); overflow:hidden; border-left:3px solid rgba(231,215,176,.82); border-right:3px solid rgba(231,215,176,.82); box-shadow:0 8px 24px rgba(0,0,0,.4); opacity:0; transform:translateY(24px) scale(1.02); filter:brightness(.58) saturate(.95); transition:opacity .42s ease, transform .42s ease, filter .42s ease; }
   .panel.show { opacity:1; transform:none; filter:brightness(.95) saturate(1.02); }
-  .panel img.panelImg { width:100%; height:100%; object-fit:cover; object-position:center center; display:block; user-select:none; -webkit-user-drag:none; }
+  .panel img.panelImg { width:100%; height:100%; object-fit:contain; object-position:center top; display:block; user-select:none; -webkit-user-drag:none; }
   .panel::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18) 36%, rgba(0,0,0,.28) 100%); pointer-events:none; }
-  .speechWrap { position:absolute; left:3.5%; top:8%; width:92%; z-index:8; opacity:0; transform:scale(.93) translateY(-10px); transition:opacity .28s ease, transform .28s cubic-bezier(.2,1.2,.3,1); filter:drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
+  .speechWrap { position:absolute; left:4%; top:1.8%; width:84%; z-index:8; opacity:0; transform:scale(.93) translateY(-10px); transition:opacity .28s ease, transform .28s cubic-bezier(.2,1.2,.3,1); filter:drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
   .panel.bubbleShown .speechWrap { opacity:1; transform:none; }
   .speechWrap img { width:100%; height:auto; display:block; user-select:none; -webkit-user-drag:none; }
-  .panel:nth-child(2) .speechWrap { top:8.2%; width:90%; left:4%; }
-  .panel:nth-child(3) .speechWrap { top:8.2%; width:88%; left:4%; }
-  .panel:nth-child(4) .speechWrap { top:8.2%; width:88%; left:4%; }
+  .panel:nth-child(2) .speechWrap { top:1.8%; width:82%; left:4.2%; }
+  .panel:nth-child(3) .speechWrap { top:1.6%; width:80%; left:4.6%; }
+  .panel:nth-child(4) .speechWrap { top:1.6%; width:82%; left:4.2%; }
   .bottomFade { position:absolute; left:0; right:0; bottom:0; height:20%; z-index:12; background:linear-gradient(180deg, transparent, rgba(0,0,0,.85)); pointer-events:none; }
   .controls { position:absolute; left:0; right:0; bottom:0; z-index:40; display:flex; justify-content:space-between; align-items:flex-end; padding:18px; pointer-events:none; }
   .btn { pointer-events:auto; appearance:none; border:1px solid rgba(255,209,77,.6); background:rgba(12,12,12,.88); color:#f3d46a; border-radius:12px; padding:13px 18px; font:900 clamp(12px,1.06vw,16px)/1 Arial, sans-serif; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 22px rgba(0,0,0,.35); transition:transform .18s ease, background .18s ease, opacity .25s ease; }
@@ -38,11 +39,12 @@
   .flash { position:absolute; inset:0; background:#000; z-index:80; pointer-events:none; opacity:0; transition:opacity .55s ease; }
   .flash.show { opacity:1; }
   @media (max-width: 1100px) {
-    .panel { border-left:2px solid #090909; border-right:2px solid #090909; }
-    .speechWrap { left:2.8%; width:94%; top:7%; }
+    .comic { inset:18px 10px 82px 10px; gap:8px; }
+    .panel { border-left:2px solid rgba(231,215,176,.82); border-right:2px solid rgba(231,215,176,.82); }
+    .speechWrap { left:2.6%; width:88%; top:1.2%; }
     .panel:nth-child(2) .speechWrap,
     .panel:nth-child(3) .speechWrap,
-    .panel:nth-child(4) .speechWrap { left:3%; width:92%; top:7%; }
+    .panel:nth-child(4) .speechWrap { left:2.8%; width:86%; top:1.2%; }
     .controls { padding:14px; }
     .btn { padding:12px 15px; border-radius:10px; }
   }
@@ -92,6 +94,24 @@
   let timers=[];
   let ready=false;
 
+  function updatePanelLayout() {
+    const root=document.documentElement;
+    const vw=window.innerWidth;
+    const vh=window.innerHeight;
+    const sidePad = vw <= 1100 ? 20 : 40;
+    const gap = vw <= 1100 ? 8 : 12;
+    const bottomReserve = vw <= 1100 ? 102 : 118;
+    const topReserve = vw <= 1100 ? 24 : 32;
+    const aspect = 384/1023;
+    const availableW = Math.max(320, vw - sidePad*2 - gap*3);
+    const availableH = Math.max(420, vh - topReserve - bottomReserve);
+    const hFromW = (availableW / 4) / aspect;
+    const panelH = Math.min(availableH, hFromW);
+    const panelW = panelH * aspect;
+    root.style.setProperty('--panel-h', panelH.toFixed(2) + 'px');
+    root.style.setProperty('--panel-w', panelW.toFixed(2) + 'px');
+  }
+
   function clearTimers() {
     timers.forEach(t=>clearTimeout(t));
     timers=[];
@@ -130,6 +150,7 @@
     }, 620);
   }
 
+  window.addEventListener('resize', updatePanelLayout);
   repeatBtn.addEventListener('click', runIntro);
   nextBtn.addEventListener('click', goNext);
   window.addEventListener('keydown', (e)=>{
@@ -137,10 +158,12 @@
       e.preventDefault();
       goNext();
     } else if(e.key.toLowerCase()==='r') {
-      runIntro();
+      updatePanelLayout();
+  runIntro();
     }
   });
 
+  updatePanelLayout();
   runIntro();
 </script>
 </body>
