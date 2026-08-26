@@ -1,10 +1,8 @@
 name: Patch Level 4 onomatopoeia v2
-# trigger: 2026-08-26-onom-v2
+# trigger: 2026-08-26-onom-v2-broad
 
 on:
   push:
-    paths:
-      - '.github/workflows/patch_level4_onom_v2.yml'
 
 permissions:
   contents: write
