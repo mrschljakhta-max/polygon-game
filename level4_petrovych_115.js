@@ -33,4 +33,12 @@
 
     return result;
   };
+
+  if(!document.querySelector('script[data-rx01-rx-onom-png]')){
+    const script=document.createElement('script');
+    script.src='level4_rx_onom_png.js?v=20260827-rx-png-2';
+    script.dataset.rx01RxOnomPng='1';
+    script.async=true;
+    document.head.appendChild(script);
+  }
 })();
