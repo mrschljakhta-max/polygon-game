@@ -182,17 +182,22 @@
         d.head.appendChild(st);
       }
       st.textContent=`
+        #rx01RxOnoPng,
+        #rx01RxOnoPng.show,
         #rx01PetroOnoV2,
         #rx01PetroOnoV2.show{
-          left:31.4% !important;
-          top:20.6% !important;
+          left:24.0114% !important;
+          top:22.7741% !important;
           bottom:auto !important;
-          width:300px !important;
+          width:17.9361% !important;
           max-width:none !important;
           opacity:1;
-          transform:translate(-50%,-50%) rotate(0deg) !important;
+          transform:scale(1) !important;
           transform-origin:center center !important;
           filter:drop-shadow(0 10px 14px rgba(0,0,0,.30)) !important;
+        }
+        #rx01RxOnoPng:not(.show){
+          transform:scale(.97) !important;
         }
       `;
     }catch(e){console.warn('RX onomatopoeia geometry preset failed',e)}
