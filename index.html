@@ -69,8 +69,6 @@ button{font:inherit}
 
 /* Екран рівнів */
 #levelsScreen .bg{background-image:url("assets/menu/poligon-levels-bg.webp");filter:brightness(.93) contrast(1.03)}
-.levels-heading{position:absolute;top:13.4%;left:50%;transform:translateX(-50%);z-index:6;margin:0;font:800 clamp(11px,.85vw,16px)/1 Arial,sans-serif;letter-spacing:.30em;color:rgba(228,199,112,.78);text-transform:uppercase;text-shadow:0 2px 8px #000;opacity:0;white-space:nowrap}
-#levelsScreen.active .levels-heading{animation:quietAppear .9s ease .28s forwards}
 @keyframes quietAppear{to{opacity:1}}
 .back-btn{position:absolute;top:7.3%;right:5.7%;z-index:15;padding:.72em 1.1em;border:1px solid rgba(190,143,24,.48);background:rgba(5,7,4,.68);color:#d4bb73;font:700 clamp(9px,.68vw,13px)/1 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;opacity:0;transition:.25s ease}
 #levelsScreen.active .back-btn{animation:quietAppear .9s ease .42s forwards}
@@ -119,7 +117,6 @@ button{font:inherit}
   .stage{width:100vw;height:100svh;aspect-ratio:auto}
   .bg{background-size:cover}
   .choose-level{left:20%;top:66%;width:60%}
-  .levels-heading{top:4.4%;font-size:11px}
   .back-btn{top:3%;right:4%;font-size:9px}
   .cards{top:11%;bottom:3%;left:4%;width:92%;height:auto;transform:none;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px 10px;overflow-y:auto;overscroll-behavior:contain;padding:8px 7px 24px;scrollbar-width:thin;scrollbar-color:#806415 transparent}
   .level-card:nth-child(5){grid-column:1/-1;width:48%;justify-self:center}
@@ -128,7 +125,7 @@ button{font:inherit}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .screen.active,#startScreen .bg,.choose-level,.levels-heading,.back-btn,.level-card{opacity:1!important;visibility:visible!important}
+  .screen.active,#startScreen .bg,.choose-level,.back-btn,.level-card{opacity:1!important;visibility:visible!important}
   #startScreen .bg{filter:brightness(1)!important;transform:scale(1)!important}
   .choose-level{transform:translateY(0) scale(1)!important;filter:brightness(1) drop-shadow(0 13px 19px rgba(0,0,0,.68))!important}
   #startScreen.active .choose-level.ready:hover{outline:none;filter:brightness(1.12) drop-shadow(0 0 14px rgba(255,190,20,.24))!important}
@@ -153,7 +150,6 @@ button{font:inherit}
     <section class="screen" id="levelsScreen" aria-label="Вибір рівня" aria-hidden="true">
       <div class="bg"></div>
       <div class="vignette"></div>
-      <h1 class="levels-heading">ОБЕРИ РІВЕНЬ</h1>
       <button class="back-btn" id="backBtn" type="button">← НАЗАД</button>
       <div class="cards" aria-label="Рівні гри">
         <button class="level-card" data-level="1" type="button">
