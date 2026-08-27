@@ -20,7 +20,7 @@
 <div class="placeholder" id="placeholder"><div><b>05</b><h1>РІВЕНЬ 5</h1><p>ПОКИ ЩО В РОЗРОБЦІ</p></div></div>
 <script src="level4_onom_v2.js?v=20260826-onom-v2"></script>
 <script src="level4_map_onom_png.js?v=20260827-png2"></script>
-<script src="level4_petrovych_115.js?v=20260827-115a"></script>
+<script src="level4_petrovych_115.js?v=20260827-115b-layout2"></script>
 <script src="level4_rx_onom_geometry.js?v=20260827-rxgeo4"></script>
 <script src="level3_operator_ui.js?v=20260827-ui4"></script>
 <script src="level4_intro_dali.js?v=20260827-l4-clean-3"></script>
@@ -45,12 +45,12 @@ const stages=[
  {url:'stages/13_level3_task_10.html',small:'РІВЕНЬ 3',big:'ЗАВДАННЯ 10 / 10'},
  {url:'stages/14_level4_intro.html?v=20260827-l4-clean-3',small:'RX-01 · РІВЕНЬ 4',big:'ТОЧКА НА КАРТІ'},
  {url:'stages/15_level4_map.html',small:'РІВЕНЬ 4',big:'ТАКТИЧНА КАРТА'},
- {url:'stages/16_level4_rx.html',small:'РІВЕНЬ 4',big:'RX-01 · ПЕЛЕНГАЦІЯ'}
+ {url:'stages/16_level4_rx.html?v=20260827-layout2',small:'РІВЕНЬ 4',big:'RX-01 · ПЕЛЕНГАЦІЯ'}
 ];
 const TRANSITION_FADE_IN_MS=500,TRANSITION_HOLD_MS=2000,TRANSITION_FADE_OUT_MS=600,FRAME_LOAD_TIMEOUT_MS=8000;
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let idx=0,transitioning=false;
-frame.addEventListener('load',()=>{if(idx===14)window.RX01_APPLY_LEVEL4_ONO?.(frame,'map');else if(idx===15)window.RX01_APPLY_LEVEL4_ONO?.(frame,'rx')});
+frame.addEventListener('load',()=>{if(idx===14)window.RX01_APPLY_LEVEL4_ONO?.(frame,'map');else if(idx===15){window.RX01_APPLY_LEVEL4_ONO?.(frame,'rx');window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame)}});
 function focusFrame(){setTimeout(()=>{try{frame.contentWindow.focus()}catch(e){}},100)}
 function openStage(i){idx=i;return new Promise(resolve=>{let settled=false;const done=()=>{if(settled)return;settled=true;clearTimeout(timeout);frame.removeEventListener('load',onLoad);focusFrame();resolve()};const onLoad=()=>done();const timeout=setTimeout(done,FRAME_LOAD_TIMEOUT_MS);frame.addEventListener('load',onLoad);frame.src=stages[i].url})}
 async function load(i,announce=true){if(transitioning)return;if(!announce){openStage(i);return}transitioning=true;idx=i;trSmall.textContent=stages[i].small;trBig.textContent=stages[i].big;trans.classList.add('show');await wait(TRANSITION_FADE_IN_MS);await Promise.all([openStage(i),wait(TRANSITION_HOLD_MS)]);trans.classList.remove('show');await wait(TRANSITION_FADE_OUT_MS);transitioning=false}
