@@ -124,6 +124,32 @@
     return null;
   };
 
+  function bindLayoutIndependentAD(d,w){
+    if(w.__rx01LayoutIndependentADBound)return;
+    w.__rx01LayoutIndependentADBound=true;
+
+    const remap=(e,type)=>{
+      if(!e.isTrusted)return;
+      if(e.code!=='KeyA'&&e.code!=='KeyD')return;
+      const lower=(e.key||'').toLowerCase();
+      if(lower==='a'||lower==='d')return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const key=e.code==='KeyA'?'a':'d';
+      d.dispatchEvent(new w.KeyboardEvent(type,{
+        key,
+        code:e.code,
+        bubbles:true,
+        cancelable:true,
+        repeat:e.repeat
+      }));
+    };
+
+    w.addEventListener('keydown',e=>remap(e,'keydown'),true);
+    w.addEventListener('keyup',e=>remap(e,'keyup'),true);
+  }
+
   function ensureBearingTutorial(d,stage){
     let shade=d.getElementById('rxBearingTutorialShade');
     if(!shade){shade=d.createElement('div');shade.id='rxBearingTutorialShade';stage.appendChild(shade)}
@@ -166,8 +192,8 @@
 
     w.addEventListener('keydown',e=>{
       if(!active)return;
-      const k=e.key.toLowerCase();
-      if(e.key==='ArrowLeft'||e.key==='ArrowRight'||k==='a'||k==='d')attempted=true;
+      const k=(e.key||'').toLowerCase();
+      if(e.key==='ArrowLeft'||e.key==='ArrowRight'||k==='a'||k==='d'||e.code==='KeyA'||e.code==='KeyD')attempted=true;
       else if(e.key==='Enter'){
         e.preventDefault();e.stopImmediatePropagation();
       }
@@ -218,6 +244,7 @@
         hideTimer=setTimeout(()=>status.classList.remove('show'),state==='peak'?2100:1350);
       };
 
+      bindLayoutIndependentAD(d,w);
       bindBearingTutorial(d,w,stage);
       bindFirstLockTutorial(d,w,hint);
 
