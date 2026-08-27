@@ -29,6 +29,47 @@
     #kback{left:82.9368% !important;top:67.0653% !important;width:5.1666% !important;height:6.7526% !important}
   `;
 
+  function bindLevel1Keyboard(frame){
+    try{
+      const d=frame?.contentDocument;
+      const w=frame?.contentWindow;
+      if(!d||!w||w.__rx01Level1KeyboardBound)return;
+      w.__rx01Level1KeyboardBound=true;
+
+      w.addEventListener('keydown',e=>{
+        if(e.ctrlKey||e.altKey||e.metaKey)return;
+
+        if(e.key==='Escape'){
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href='./#levels';
+          return;
+        }
+
+        const hud=d.querySelector('#hud');
+        const gameOver=d.querySelector('#gameOver');
+        const gameplayActive=!!hud&&!hud.classList.contains('hidden')&&(!gameOver||gameOver.classList.contains('hidden'));
+        if(!gameplayActive)return;
+
+        let target=null;
+        if(/^[0-9]$/.test(e.key)){
+          target=d.querySelector(`[data-key="${e.key}"]`);
+        }else if(e.key==='.'||e.key===','||e.code==='NumpadDecimal'){
+          target=d.querySelector('#kdot');
+        }else if(e.key==='Backspace'){
+          target=d.querySelector('#kback');
+        }else if(e.key==='Enter'||e.code==='NumpadEnter'){
+          target=d.querySelector('#lock');
+        }
+
+        if(!target)return;
+        e.preventDefault();
+        e.stopPropagation();
+        target.click();
+      },true);
+    }catch(e){console.warn('RX-01 level 1 keyboard shortcuts failed',e)}
+  }
+
   function applyLevel1Geometry(frame){
     try{
       const d=frame?.contentDocument;
@@ -46,6 +87,7 @@
 
       const rects=JSON.stringify(LEVEL1_TUTORIAL_RECTS);
       w.eval(`(()=>{try{const r=${rects};if(typeof tutSteps!=='undefined'){for(let i=0;i<r.length;i++){if(tutSteps[i])tutSteps[i].hl=r[i];}if(typeof showTut==='function'&&typeof ts!=='undefined'&&document.querySelector('#tutorial:not(.hidden)'))showTut();}}catch(e){console.warn('RX-01 level 1 tutorial geometry patch failed',e)}})();`);
+      bindLevel1Keyboard(frame);
     }catch(e){console.warn('RX-01 level 1 geometry preset failed',e)}
   }
 
