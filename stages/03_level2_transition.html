@@ -51,14 +51,6 @@ body{display:flex;align-items:center;justify-content:center;font-family:Arial,sa
 
 #veil{position:absolute;inset:0;z-index:20;background:#050505;opacity:1;transition:opacity .8s ease;pointer-events:none}
 #veil.open{opacity:0}
-#endMark{
-  position:absolute;right:2.2%;bottom:2.2%;z-index:30;
-  padding:10px 15px;border:2px solid #d6a619;background:rgba(6,6,6,.82);
-  color:#e3b722;font-weight:900;font-size:clamp(9px,1vw,14px);
-  letter-spacing:.12em;opacity:0;transform:translateY(8px);
-  transition:opacity .6s ease,transform .6s ease;
-}
-#endMark.show{opacity:.95;transform:translateY(0)}
 #nextBtn{
   position:absolute;left:50%;bottom:3.2%;z-index:35;
   transform:translateX(-50%) translateY(16px) skew(-6deg);
@@ -71,7 +63,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:Arial,sa
 #nextBtn:active{transform:translateX(-50%) translateY(2px) skew(-6deg)}
 
 @media (prefers-reduced-motion:reduce){
-  .panel,.phrase,#veil,#endMark{transition:none!important}
+  .panel,.phrase,#veil{transition:none!important}
 }
 </style>
 </head>
@@ -90,7 +82,6 @@ body{display:flex;align-items:center;justify-content:center;font-family:Arial,sa
   <img class="phrase" id="t3" src="../assets/p12_0101_b6fec55eb93ec2cb.png" alt="Бо один раз випадково натиснути правильні кнопки">
   <img class="phrase" id="t4" src="../assets/p12_0102_8f649ed143396ffb.png" alt="Це ще не професія">
 
-  <div id="endMark">РІВЕНЬ 2</div>
   <button id="nextBtn" type="button">ПЕРЕЙТИ ДО РІВНЯ 2</button>
 </div>
 
@@ -115,8 +106,6 @@ async function run(){
   show('p4');  await sleep(2000);
   show('t4');  await sleep(2000);
 
-  document.getElementById('endMark').classList.add('show');
-  await sleep(700);
   document.getElementById('nextBtn').classList.add('show');
 }
 document.getElementById('nextBtn').addEventListener('click',()=>{
