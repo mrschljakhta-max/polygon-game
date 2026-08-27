@@ -9,14 +9,25 @@
     const style=doc.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-      .${CLASS_NAME}{
+      .${CLASS_NAME},
+      .${CLASS_NAME}:hover,
+      .${CLASS_NAME}:focus,
+      .${CLASS_NAME}:focus-visible,
+      .${CLASS_NAME}:active{
         color:transparent!important;
         text-shadow:none!important;
-        background:transparent!important;
+        background:none!important;
+        border:0!important;
         border-color:transparent!important;
+        border-radius:0!important;
+        outline:0!important;
+        outline-offset:0!important;
         box-shadow:none!important;
+        -webkit-box-shadow:none!important;
+        -webkit-appearance:none!important;
+        appearance:none!important;
         overflow:visible!important;
-        -webkit-tap-highlight-color:transparent;
+        -webkit-tap-highlight-color:transparent!important;
       }
       .${CLASS_NAME}::before,.${CLASS_NAME}::after{display:none!important}
       .${CLASS_NAME}>img.rx01-level4-dali-image{
@@ -54,6 +65,31 @@
     doc.head.appendChild(style);
   }
 
+  function isServiceHint(text){
+    const t=(text||'').replace(/\s+/g,' ').trim().toUpperCase();
+    return t.includes('ПІСЛЯ ЗАСТАВКИ НАТИСНИ') && t.includes('ДАЛІ');
+  }
+
+  function hideServiceHint(doc){
+    const all=[...doc.querySelectorAll('body *')];
+    for(const el of all){
+      if(!isServiceHint(el.textContent)) continue;
+      const childHasSame=[...el.children].some(ch=>isServiceHint(ch.textContent));
+      if(!childHasSame) el.style.setProperty('display','none','important');
+    }
+  }
+
+  function installCleanup(doc){
+    if(!doc?.documentElement || doc.documentElement.dataset.rx01L4Cleanup==='1') return;
+    doc.documentElement.dataset.rx01L4Cleanup='1';
+    hideServiceHint(doc);
+    const Obs=doc.defaultView?.MutationObserver;
+    if(!Obs) return;
+    const obs=new Obs(()=>hideServiceHint(doc));
+    obs.observe(doc.body||doc.documentElement,{childList:true,subtree:true,characterData:true});
+    setTimeout(()=>obs.disconnect(),30000);
+  }
+
   function findDaliButton(doc){
     const candidates=[...doc.querySelectorAll('button,a,[role="button"]')];
     return candidates.find(el=>((el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase()==='ДАЛІ'))
@@ -67,14 +103,21 @@
     try{doc=frame.contentDocument||frame.contentWindow?.document}catch(e){return false}
     if(!doc?.documentElement) return false;
     ensureStyle(doc);
+    installCleanup(doc);
+    hideServiceHint(doc);
     const btn=findDaliButton(doc);
     if(!btn) return false;
-    if(btn.dataset.rx01ExactDali==='1') return true;
 
-    btn.dataset.rx01ExactDali='1';
     btn.classList.add(CLASS_NAME);
+    btn.style.setProperty('border','0','important');
+    btn.style.setProperty('outline','0','important');
+    btn.style.setProperty('box-shadow','none','important');
+    btn.style.setProperty('background','none','important');
+    btn.style.setProperty('border-radius','0','important');
     if(getComputedStyle(btn).position==='static') btn.style.position='relative';
 
+    if(btn.dataset.rx01ExactDali==='1') return true;
+    btn.dataset.rx01ExactDali='1';
     [...btn.children].forEach(child=>{child.style.visibility='hidden'});
     const img=doc.createElement('img');
     img.className='rx01-level4-dali-image';
@@ -88,7 +131,7 @@
   function schedule(frame){
     let tries=0;
     const tick=()=>{
-      if(applyToFrame(frame)) return;
+      applyToFrame(frame);
       if(++tries<160) setTimeout(tick,125);
     };
     tick();
