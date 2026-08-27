@@ -60,6 +60,8 @@
       font-weight:1000 !important;
       line-height:1.18 !important;
       letter-spacing:.015em !important;
+      transform:scaleX(1.10) !important;
+      transform-origin:center center !important;
     }
     #taskProgress{
       margin-top:5.5% !important;
