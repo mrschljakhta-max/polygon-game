@@ -1,5 +1,13 @@
 (()=>{
   const LEVEL1_PATH='/stages/02_level1.html';
+  const LEVEL3_TASK_PATHS=[
+    '/stages/07_level3_tasks_01_05.html',
+    '/stages/08_level3_task_06.html',
+    '/stages/09_level3_task_07.html',
+    '/stages/10_level3_task_08.html',
+    '/stages/11_level3_task_09.html',
+    '/stages/13_level3_task_10.html'
+  ];
   const LEVEL1_TUTORIAL_RECTS=[
     [30.6,31.4,34,29],
     [30.6,31.4,34,29],
@@ -27,6 +35,44 @@
     #kdot{left:70.9721% !important;top:67.0653% !important;width:4.8946% !important;height:7.5711% !important}
     #k0{left:77.2264% !important;top:66.656% !important;width:4.7587% !important;height:6.7526% !important}
     #kback{left:82.9368% !important;top:67.0653% !important;width:5.1666% !important;height:6.7526% !important}
+  `;
+
+  const LEVEL3_LCD_CSS=`
+    #taskPanel{
+      color:#061006 !important;
+      font-family:"Courier New",monospace !important;
+      font-weight:1000 !important;
+      padding:2.7% !important;
+      text-shadow:0 1px 0 rgba(210,255,170,.45),0 0 1px #071207 !important;
+      filter:contrast(1.45) !important;
+      -webkit-font-smoothing:none;
+      text-rendering:geometricPrecision;
+    }
+    #taskTitle{
+      font-size:clamp(18px,2.35vw,39px) !important;
+      font-weight:1000 !important;
+      line-height:1.02 !important;
+      letter-spacing:.045em !important;
+    }
+    #taskText{
+      margin-top:4.5% !important;
+      font-size:clamp(13px,1.65vw,27px) !important;
+      font-weight:1000 !important;
+      line-height:1.18 !important;
+      letter-spacing:.015em !important;
+    }
+    #taskProgress{
+      margin-top:5.5% !important;
+      font-size:clamp(11px,1.15vw,19px) !important;
+      font-weight:1000 !important;
+      letter-spacing:.16em !important;
+    }
+    #taskState{
+      margin-top:3.5% !important;
+      font-size:clamp(11px,1.1vw,18px) !important;
+      font-weight:1000 !important;
+      letter-spacing:.03em !important;
+    }
   `;
 
   function bindLevel1Keyboard(frame){
@@ -91,11 +137,33 @@
     }catch(e){console.warn('RX-01 level 1 geometry preset failed',e)}
   }
 
+  function applyLevel3LCD(frame){
+    try{
+      const d=frame?.contentDocument;
+      const w=frame?.contentWindow;
+      if(!d||!w)return;
+      if(!LEVEL3_TASK_PATHS.some(path=>w.location.pathname.endsWith(path)))return;
+      if(!d.getElementById('taskPanel'))return;
+
+      let st=d.getElementById('rx01Level3LCDPreset');
+      if(!st){
+        st=d.createElement('style');
+        st.id='rx01Level3LCDPreset';
+        d.head.appendChild(st);
+      }
+      st.textContent=LEVEL3_LCD_CSS;
+    }catch(e){console.warn('RX-01 level 3 LCD preset failed',e)}
+  }
+
   window.RX01_APPLY_LEVEL1_GEOMETRY=applyLevel1Geometry;
+  window.RX01_APPLY_LEVEL3_LCD=applyLevel3LCD;
 
   const frame=document.getElementById('frame');
   if(frame){
-    frame.addEventListener('load',()=>applyLevel1Geometry(frame));
+    frame.addEventListener('load',()=>{
+      applyLevel1Geometry(frame);
+      applyLevel3LCD(frame);
+    });
   }
 
   const previous=window.RX01_APPLY_LEVEL4_ONO;
