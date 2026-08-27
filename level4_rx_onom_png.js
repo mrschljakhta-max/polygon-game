@@ -118,7 +118,7 @@
         box.classList.remove('show');
         console.warn('Level 4 RX onomatopoeia PNG missing:',src);
       };
-      img.src=src+'?v=20260827-rx-png-1';
+      img.src=src+'?v=20260827-rx-png-2';
       if(img.complete&&img.naturalWidth)img.onload();
     }
 
@@ -139,7 +139,7 @@
       }else showId('p10');
     }
 
-    Object.keys(FILES).forEach(id=>{const pre=new Image();pre.src=urlFor(id)+'?v=20260827-rx-png-1'});
+    Object.keys(FILES).forEach(id=>{const pre=new Image();pre.src=urlFor(id)+'?v=20260827-rx-png-2'});
   }
 
   window.RX01_APPLY_LEVEL4_ONO=(frame,mode)=>{
@@ -149,4 +149,17 @@
     }
     return result;
   };
+
+  const frame=document.getElementById('frame');
+  if(frame){
+    const applyCurrent=()=>{
+      try{
+        const path=frame.contentWindow&&frame.contentWindow.location&&frame.contentWindow.location.pathname;
+        if(path&&path.endsWith('/stages/16_level4_rx.html'))window.RX01_APPLY_LEVEL4_ONO(frame,'rx');
+      }catch(_){ }
+    };
+    frame.addEventListener('load',applyCurrent);
+    setTimeout(applyCurrent,0);
+    setTimeout(applyCurrent,250);
+  }
 })();
