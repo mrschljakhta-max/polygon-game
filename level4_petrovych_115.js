@@ -35,6 +35,9 @@
       setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),0);
       setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),180);
       setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),700);
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_SERVICE_PANEL?.(frame),0);
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_SERVICE_PANEL?.(frame),180);
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_SERVICE_PANEL?.(frame),700);
     }
 
     return result;
@@ -52,6 +55,14 @@
     const script=document.createElement('script');
     script.src='level4_rx_layout_v2.js?v=20260827-layout-v2-1';
     script.dataset.rx01RxLayoutV2='1';
+    script.async=false;
+    document.head.appendChild(script);
+  }
+
+  if(!document.querySelector('script[data-rx01-service-panel-v1]')){
+    const script=document.createElement('script');
+    script.src='level4_rx_service_panel_v1.js?v=20260827-service-panel-1';
+    script.dataset.rx01ServicePanelV1='1';
     script.async=false;
     document.head.appendChild(script);
   }
