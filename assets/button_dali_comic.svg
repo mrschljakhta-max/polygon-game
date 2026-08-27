@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">ДАЛІ</title>
+  <desc id="desc">Жовта коміксова кнопка у стилі заставки Полігону</desc>
+  <defs>
+    <linearGradient id="yellow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd72d"/>
+      <stop offset="0.48" stop-color="#ffcf20"/>
+      <stop offset="1" stop-color="#f3b90d"/>
+    </linearGradient>
+    <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="8" r="7" fill="#101010"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-30%" width="150%" height="170%">
+      <feDropShadow dx="18" dy="18" stdDeviation="0" flood-color="#000" flood-opacity=".92"/>
+    </filter>
+    <filter id="textShadow" x="-20%" y="-30%" width="150%" height="170%">
+      <feDropShadow dx="12" dy="13" stdDeviation="0" flood-color="#000" flood-opacity=".92"/>
+    </filter>
+    <clipPath id="shapeClip">
+      <path d="M92 52 L1466 38 L1548 118 L1490 430 L112 474 L42 392 L96 128 Z"/>
+    </clipPath>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <path d="M92 52 L1466 38 L1548 118 L1490 430 L112 474 L42 392 L96 128 Z" fill="url(#yellow)" stroke="#080808" stroke-width="34" stroke-linejoin="miter"/>
+    <path d="M108 78 L1450 66 L1516 128 L1466 402 L126 446 L76 386 L120 144 Z" fill="none" stroke="#111" stroke-width="10"/>
+
+    <g clip-path="url(#shapeClip)" opacity=".94">
+      <path d="M18 55 H410 L300 250 H18 Z" fill="url(#dots)"/>
+      <path d="M1210 16 H1600 V500 H1330 L1435 278 Z" fill="url(#dots)"/>
+      <path d="M88 128 L350 120 L242 202 L92 220 Z" fill="#ffd72d" stroke="#0b0b0b" stroke-width="12"/>
+      <path d="M1280 71 L1545 56 L1432 146 L1312 152 Z" fill="#ffd72d" stroke="#0b0b0b" stroke-width="12"/>
+      <path d="M70 410 L382 383 L236 490 L82 490 Z" fill="#ffd72d" stroke="#0b0b0b" stroke-width="12"/>
+      <path d="M1202 410 L1510 382 L1382 486 L1234 486 Z" fill="#ffd72d" stroke="#0b0b0b" stroke-width="12"/>
+
+      <g fill="#111" opacity=".82">
+        <circle cx="505" cy="106" r="8"/><circle cx="548" cy="402" r="10"/><circle cx="1158" cy="122" r="11"/>
+        <circle cx="1240" cy="330" r="7"/><circle cx="360" cy="336" r="6"/><circle cx="1030" cy="407" r="5"/>
+      </g>
+      <g stroke="#101010" stroke-width="7" stroke-linecap="square" opacity=".9">
+        <path d="M180 330 l112 -62"/><path d="M196 348 l76 -42"/><path d="M1320 360 l106 -58"/>
+        <path d="M1258 384 l148 -78"/><path d="M508 423 l82 -29"/>
+      </g>
+    </g>
+  </g>
+
+  <text x="800" y="352" text-anchor="middle" font-family="Arial Black, Impact, Arial, sans-serif" font-size="226" font-weight="900" font-style="italic" letter-spacing="12" fill="#0b0b0b" stroke="#fff3c6" stroke-width="7" paint-order="stroke fill" filter="url(#textShadow)">ДАЛІ</text>
+  <text x="800" y="352" text-anchor="middle" font-family="Arial Black, Impact, Arial, sans-serif" font-size="226" font-weight="900" font-style="italic" letter-spacing="12" fill="#0b0b0b" stroke="#f8c526" stroke-width="3" paint-order="stroke fill">ДАЛІ</text>
+</svg>
