@@ -29,7 +29,7 @@ const CAMPAIGN_KEY='rx01_campaign_progress',CAMPAIGN_DEFAULT={1:100,2:35,3:0,4:0
 function readCampaignProgress(){let saved={};try{saved=JSON.parse(localStorage.getItem(CAMPAIGN_KEY)||'{}')||{}}catch(e){}return Object.fromEntries([1,2,3,4].map(level=>[level,Math.max(0,Math.min(100,Number(saved[level]??CAMPAIGN_DEFAULT[level])||0))]))}
 function setCampaignProgress(level,value){const progress=readCampaignProgress();progress[level]=Math.max(progress[level]||0,Math.max(0,Math.min(100,Number(value)||0)));try{localStorage.setItem(CAMPAIGN_KEY,JSON.stringify(progress))}catch(e){}}
 const stages=[
- {url:'stages/01_mission_intro_v3.html?v=20260827-exact-dali-c',small:'RX-01 · МІСІЯ 01',big:'ПОЛІГОН'},
+ {url:'stages/01_mission_intro.html?v=20260827-real-button-1',small:'RX-01 · МІСІЯ 01',big:'ПОЛІГОН'},
  {url:'stages/02_level1.html',small:'RX-01 · РІВЕНЬ 1',big:'ПОЧАТОК РОБОТИ'},
  {url:'stages/03_level2_transition.html?v=20260827-no-endmark-2',small:'RX-01',big:'РІВЕНЬ 2'},
  {url:'stages/04_level2.html',small:'RX-01 · РІВЕНЬ 2',big:'ЗАЛІК'},
