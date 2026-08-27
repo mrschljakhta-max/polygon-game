@@ -7,6 +7,7 @@
 <link rel="preload" as="image" href="../assets/p12_0001_75ac8f55381f6d4f.png" fetchpriority="high">
 <link rel="preload" as="image" href="../assets/p12_0002_291aae677fbf1554.png" fetchpriority="high">
 <link rel="preload" as="image" href="../assets/p12_0003_c2364a798163c06e.png" fetchpriority="high">
+<link rel="preload" as="image" href="../assets/button_dali_comic.svg?v=20260827-a" fetchpriority="low">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#050505;overflow:hidden}
@@ -32,13 +33,50 @@ body{font-family:Arial,sans-serif}
 .contact{left:8%;top:58%;width:84%}
 .today{left:4%;top:8%;width:92%}
 .click{left:11%;bottom:4%;width:78%}
-.next{position:absolute;right:2%;bottom:2%;z-index:20;visibility:hidden;opacity:0;min-width:220px;min-height:78px;border:2px solid #111;background:#e9c443;color:#111;font:1000 clamp(22px,2vw,32px)/1 Arial,sans-serif;letter-spacing:.08em;padding:22px 44px;cursor:pointer;box-shadow:6px 6px 0 #111;transition:opacity .8s ease,transform .18s ease}
-.next.show{visibility:visible;opacity:1}
-.next:hover{transform:translateY(-2px)}
-.next:active{transform:translateY(0)}
+
+.next{
+  position:absolute;
+  left:83.4089%;
+  top:89.4797%;
+  width:16.3735%;
+  height:9.9742%;
+  z-index:20;
+  visibility:hidden;
+  opacity:0;
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  cursor:pointer;
+  transform:translateY(10px) scale(.96);
+  transform-origin:center;
+  transition:opacity .38s ease,transform .42s cubic-bezier(.2,.9,.25,1);
+  -webkit-tap-highlight-color:transparent;
+}
+.next.show{visibility:visible;opacity:1;transform:translateY(0) scale(1)}
+.next img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  pointer-events:none;
+  transform-origin:center;
+  filter:drop-shadow(5px 7px 0 rgba(0,0,0,.78));
+}
+.next.show img{animation:nextIdle 2.4s ease-in-out .55s infinite}
+.next:hover img{animation:none;transform:scale(1.045);filter:drop-shadow(7px 9px 0 rgba(0,0,0,.82)) drop-shadow(0 0 14px rgba(255,210,35,.25))}
+.next:active img{animation:none;transform:scale(.975);filter:drop-shadow(3px 4px 0 rgba(0,0,0,.82))}
+.next:focus-visible{outline:3px solid #fff2a8;outline-offset:5px}
+@keyframes nextIdle{
+  0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(5px 7px 0 rgba(0,0,0,.78)) drop-shadow(0 0 0 rgba(255,210,35,0))}
+  50%{transform:translateY(-2px) scale(1.025);filter:drop-shadow(6px 9px 0 rgba(0,0,0,.8)) drop-shadow(0 0 13px rgba(255,210,35,.24))}
+}
+@media(prefers-reduced-motion:reduce){
+  .panel,.caption,.next{transition:none!important}
+  .next.show img{animation:none!important}
+}
 @media(max-width:1100px){
   .panel{border-right:3px solid #090909}
-  .next{min-width:176px;min-height:64px;padding:18px 32px;font-size:clamp(19px,3.5vw,26px)}
 }
 </style>
 </head>
@@ -64,7 +102,7 @@ body{font-family:Arial,sans-serif}
       <div class="caption click" id="click"><img src="../assets/p12_0010_5d139dc50b67217f.png" alt="Клац!" loading="eager" decoding="async" fetchpriority="low"></div>
     </section>
   </div>
-  <button class="next" id="nextBtn">ДАЛІ</button>
+  <button class="next" id="nextBtn" aria-label="Далі"><img src="../assets/button_dali_comic.svg?v=20260827-a" alt="" draggable="false"></button>
 </div>
 <script>
 const frameGroups=['p1','p2','p3','p4'];
@@ -103,9 +141,6 @@ async function reveal(id,groupId=id){
 async function run(){
   document.querySelectorAll('.panel,.caption,#nextBtn').forEach(el=>el.classList.remove('show'));
 
-  // The first frame remains black until its background and both captions
-  // are fully downloaded and decoded. Two paint frames prevent a partial
-  // raster from becoming visible at the start of the opacity transition.
   await groupReady.get('p1');
   await nextPaint();
 
