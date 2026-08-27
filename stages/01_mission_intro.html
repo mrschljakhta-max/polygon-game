@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RX-01 — коміксова заставка</title>
+<link rel="preload" as="image" href="../assets/p12_0001_75ac8f55381f6d4f.png" fetchpriority="high">
+<link rel="preload" as="image" href="../assets/p12_0002_291aae677fbf1554.png" fetchpriority="high">
+<link rel="preload" as="image" href="../assets/p12_0003_c2364a798163c06e.png" fetchpriority="high">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#050505;overflow:hidden}
@@ -16,11 +19,11 @@ body{font-family:Arial,sans-serif}
   overflow:hidden;
 }
 .grid{position:absolute;inset:0;display:grid;grid-template-columns:27.35fr 23.15fr 24.55fr 24.95fr;background:#050505}
-.panel{position:relative;overflow:hidden;background:#050505;border-right:5px solid #090909;visibility:hidden;opacity:0;transition:opacity 1s ease}
+.panel{position:relative;overflow:hidden;background:#050505;border-right:5px solid #090909;visibility:hidden;opacity:0;transition:opacity 1s ease;will-change:opacity}
 .panel:last-child{border-right:0}
 .panel.show{visibility:visible;opacity:1}
 .panel>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.caption{position:absolute;z-index:3;visibility:hidden;opacity:0;transition:opacity 1s ease;filter:drop-shadow(0 6px 5px rgba(0,0,0,.45))}
+.caption{position:absolute;z-index:3;visibility:hidden;opacity:0;transition:opacity 1s ease;filter:drop-shadow(0 6px 5px rgba(0,0,0,.45));will-change:opacity}
 .caption.show{visibility:visible;opacity:1}
 .caption img{display:block;width:100%;height:auto}
 .polygon{left:2.5%;top:2.2%;width:92%}
@@ -43,45 +46,93 @@ body{font-family:Arial,sans-serif}
 <div class="stage">
   <div class="grid">
     <section class="panel" id="p1">
-      <img class="bg" src="../assets/p12_0001_75ac8f55381f6d4f.png" alt="Полігон">
-      <div class="caption polygon" id="polygon"><img src="../assets/p12_0002_291aae677fbf1554.png" alt="Полігон 07:02"></div>
-      <div class="caption krr" id="krr"><img src="../assets/p12_0003_c2364a798163c06e.png" alt="КРРР—ШШШШШ!"></div>
+      <img class="bg" src="../assets/p12_0001_75ac8f55381f6d4f.png" alt="Полігон" loading="eager" decoding="async" fetchpriority="high">
+      <div class="caption polygon" id="polygon"><img src="../assets/p12_0002_291aae677fbf1554.png" alt="Полігон 07:02" loading="eager" decoding="async" fetchpriority="high"></div>
+      <div class="caption krr" id="krr"><img src="../assets/p12_0003_c2364a798163c06e.png" alt="КРРР—ШШШШШ!" loading="eager" decoding="async" fetchpriority="high"></div>
     </section>
     <section class="panel" id="p2">
-      <img class="bg" src="../assets/p12_0004_1a7ca5a121643e2b.png" alt="RX-01">
-      <div class="caption first" id="first"><img src="../assets/p12_0005_7b1da80d0ebb29a4.png" alt="Перший виїзд!"></div>
+      <img class="bg" src="../assets/p12_0004_1a7ca5a121643e2b.png" alt="RX-01" loading="eager" decoding="async" fetchpriority="low">
+      <div class="caption first" id="first"><img src="../assets/p12_0005_7b1da80d0ebb29a4.png" alt="Перший виїзд!" loading="eager" decoding="async" fetchpriority="low"></div>
     </section>
     <section class="panel" id="p3">
-      <img class="bg" src="../assets/p12_0006_3d3f9a54d7658dc1.png" alt="Інструктор">
-      <div class="caption contact" id="contact"><img src="../assets/p12_0007_34a9f29a7dcdadfb.png" alt="На зв'язок!!!"></div>
+      <img class="bg" src="../assets/p12_0006_3d3f9a54d7658dc1.png" alt="Інструктор" loading="eager" decoding="async" fetchpriority="low">
+      <div class="caption contact" id="contact"><img src="../assets/p12_0007_34a9f29a7dcdadfb.png" alt="На зв'язок!!!" loading="eager" decoding="async" fetchpriority="low"></div>
     </section>
     <section class="panel" id="p4">
-      <img class="bg" src="../assets/p12_0008_b3e4af93c493ff55.png" alt="Робота з RX-01">
-      <div class="caption today" id="today"><img src="../assets/p12_0009_c05e2a04d5681c71.png" alt="Сьогодні працюєш сам — я поруч."></div>
-      <div class="caption click" id="click"><img src="../assets/p12_0010_5d139dc50b67217f.png" alt="Клац!"></div>
+      <img class="bg" src="../assets/p12_0008_b3e4af93c493ff55.png" alt="Робота з RX-01" loading="eager" decoding="async" fetchpriority="low">
+      <div class="caption today" id="today"><img src="../assets/p12_0009_c05e2a04d5681c71.png" alt="Сьогодні працюєш сам — я поруч." loading="eager" decoding="async" fetchpriority="low"></div>
+      <div class="caption click" id="click"><img src="../assets/p12_0010_5d139dc50b67217f.png" alt="Клац!" loading="eager" decoding="async" fetchpriority="low"></div>
     </section>
   </div>
   <button class="next" id="nextBtn">ДАЛІ</button>
 </div>
 <script>
-const seq=[
-  ['p1',0],
-  ['polygon',2000],
-  ['krr',4000],
-  ['p2',6000],
-  ['first',8000],
-  ['p3',10000],
-  ['contact',12000],
-  ['p4',14000],
-  ['today',16000],
-  ['click',18000]
-];
-let timers=[];
-function run(){
-  timers.forEach(clearTimeout);timers=[];
+const frameGroups=['p1','p2','p3','p4'];
+const imageReady=new WeakMap();
+
+function prepareImage(image){
+  if(imageReady.has(image))return imageReady.get(image);
+  const loaded=image.complete
+    ? Promise.resolve()
+    : new Promise(resolve=>{
+        image.addEventListener('load',resolve,{once:true});
+        image.addEventListener('error',resolve,{once:true});
+      });
+  const ready=loaded.then(async()=>{
+    if(!image.naturalWidth||typeof image.decode!=='function')return;
+    try{await image.decode()}catch(error){}
+  });
+  imageReady.set(image,ready);
+  return ready;
+}
+
+function prepareElement(id){
+  const element=document.getElementById(id);
+  return Promise.all([...element.querySelectorAll('img')].map(prepareImage));
+}
+
+const groupReady=new Map(frameGroups.map(id=>[id,prepareElement(id)]));
+const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
+const nextPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
+async function reveal(id,groupId=id){
+  if(groupReady.has(groupId))await groupReady.get(groupId);
+  document.getElementById(id).classList.add('show');
+}
+
+async function run(){
   document.querySelectorAll('.panel,.caption,#nextBtn').forEach(el=>el.classList.remove('show'));
-  seq.forEach(([id,t])=>timers.push(setTimeout(()=>document.getElementById(id).classList.add('show'),t)));
-  timers.push(setTimeout(()=>document.getElementById('nextBtn').classList.add('show'),20000));
+
+  // The first frame remains black until its background and both captions
+  // are fully downloaded and decoded. Two paint frames prevent a partial
+  // raster from becoming visible at the start of the opacity transition.
+  await groupReady.get('p1');
+  await nextPaint();
+
+  await reveal('p1','p1');
+  await wait(2000);
+  await reveal('polygon','p1');
+  await wait(2000);
+  await reveal('krr','p1');
+  await wait(2000);
+
+  await reveal('p2','p2');
+  await wait(2000);
+  await reveal('first','p2');
+  await wait(2000);
+
+  await reveal('p3','p3');
+  await wait(2000);
+  await reveal('contact','p3');
+  await wait(2000);
+
+  await reveal('p4','p4');
+  await wait(2000);
+  await reveal('today','p4');
+  await wait(2000);
+  await reveal('click','p4');
+  await wait(2000);
+  document.getElementById('nextBtn').classList.add('show');
 }
 function goNext(){
   try{parent.postMessage({type:'RX01_INTRO_DONE'},'*')}catch(e){}
