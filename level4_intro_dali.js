@@ -9,15 +9,20 @@
     const style=doc.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-      .${CLASS_NAME},
-      .${CLASS_NAME}:hover,
-      .${CLASS_NAME}:focus,
-      .${CLASS_NAME}:focus-visible,
-      .${CLASS_NAME}:active{
+      #hint{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+      #nextBtn.${CLASS_NAME},
+      #nextBtn.${CLASS_NAME}:hover,
+      #nextBtn.${CLASS_NAME}:focus,
+      #nextBtn.${CLASS_NAME}:focus-visible,
+      #nextBtn.${CLASS_NAME}:active{
         color:transparent!important;
         text-shadow:none!important;
-        background:none!important;
+        background:transparent!important;
+        background-color:transparent!important;
+        background-image:none!important;
         border:0!important;
+        border-width:0!important;
+        border-style:none!important;
         border-color:transparent!important;
         border-radius:0!important;
         outline:0!important;
@@ -29,8 +34,8 @@
         overflow:visible!important;
         -webkit-tap-highlight-color:transparent!important;
       }
-      .${CLASS_NAME}::before,.${CLASS_NAME}::after{display:none!important}
-      .${CLASS_NAME}>img.rx01-level4-dali-image{
+      #nextBtn.${CLASS_NAME}::before,#nextBtn.${CLASS_NAME}::after{display:none!important}
+      #nextBtn.${CLASS_NAME}>img.rx01-level4-dali-image{
         position:absolute!important;
         left:50%!important;
         top:50%!important;
@@ -46,12 +51,12 @@
         filter:drop-shadow(5px 7px 0 rgba(0,0,0,.78));
         animation:rx01L4DaliIdle 2.4s ease-in-out .55s infinite;
       }
-      .${CLASS_NAME}:hover>img.rx01-level4-dali-image{
+      #nextBtn.${CLASS_NAME}:hover>img.rx01-level4-dali-image{
         animation:none;
         transform:translate(-50%,-50%) scale(1.045);
         filter:drop-shadow(7px 9px 0 rgba(0,0,0,.82)) drop-shadow(0 0 14px rgba(255,210,35,.25));
       }
-      .${CLASS_NAME}:active>img.rx01-level4-dali-image{
+      #nextBtn.${CLASS_NAME}:active>img.rx01-level4-dali-image{
         animation:none;
         transform:translate(-50%,-50%) scale(.975);
         filter:drop-shadow(3px 4px 0 rgba(0,0,0,.82));
@@ -60,40 +65,45 @@
         0%,100%{transform:translate(-50%,-50%) scale(1);filter:drop-shadow(5px 7px 0 rgba(0,0,0,.78)) drop-shadow(0 0 0 rgba(255,210,35,0))}
         50%{transform:translate(-50%,calc(-50% - 2px)) scale(1.025);filter:drop-shadow(6px 9px 0 rgba(0,0,0,.8)) drop-shadow(0 0 13px rgba(255,210,35,.24))}
       }
-      @media(prefers-reduced-motion:reduce){.${CLASS_NAME}>img.rx01-level4-dali-image{animation:none!important}}
+      @media(prefers-reduced-motion:reduce){#nextBtn.${CLASS_NAME}>img.rx01-level4-dali-image{animation:none!important}}
     `;
     doc.head.appendChild(style);
   }
 
-  function isServiceHint(text){
-    const t=(text||'').replace(/\s+/g,' ').trim().toUpperCase();
-    return t.includes('ПІСЛЯ ЗАСТАВКИ НАТИСНИ') && t.includes('ДАЛІ');
-  }
-
   function hideServiceHint(doc){
-    const all=[...doc.querySelectorAll('body *')];
-    for(const el of all){
-      if(!isServiceHint(el.textContent)) continue;
-      const childHasSame=[...el.children].some(ch=>isServiceHint(ch.textContent));
-      if(!childHasSame) el.style.setProperty('display','none','important');
+    const hint=doc.getElementById('hint');
+    if(hint){
+      hint.classList.remove('show');
+      hint.style.setProperty('display','none','important');
+      hint.style.setProperty('visibility','hidden','important');
+      hint.style.setProperty('opacity','0','important');
+      hint.setAttribute('aria-hidden','true');
     }
   }
 
-  function installCleanup(doc){
-    if(!doc?.documentElement || doc.documentElement.dataset.rx01L4Cleanup==='1') return;
-    doc.documentElement.dataset.rx01L4Cleanup='1';
-    hideServiceHint(doc);
-    const Obs=doc.defaultView?.MutationObserver;
-    if(!Obs) return;
-    const obs=new Obs(()=>hideServiceHint(doc));
-    obs.observe(doc.body||doc.documentElement,{childList:true,subtree:true,characterData:true});
-    setTimeout(()=>obs.disconnect(),30000);
+  function findDaliButton(doc){
+    return doc.getElementById('nextBtn')
+      || [...doc.querySelectorAll('button,a,[role="button"]')].find(el=>((el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase()==='ДАЛІ'));
   }
 
-  function findDaliButton(doc){
-    const candidates=[...doc.querySelectorAll('button,a,[role="button"]')];
-    return candidates.find(el=>((el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase()==='ДАЛІ'))
-      || doc.querySelector('#nextBtn,.next-btn,.nextButton,.continue-btn,.continueButton');
+  function forceButtonChromeOff(btn){
+    const props={
+      border:'0',
+      'border-width':'0',
+      'border-style':'none',
+      'border-color':'transparent',
+      'border-radius':'0',
+      outline:'0',
+      'outline-offset':'0',
+      'box-shadow':'none',
+      '-webkit-box-shadow':'none',
+      background:'transparent',
+      'background-color':'transparent',
+      'background-image':'none',
+      color:'transparent',
+      'text-shadow':'none'
+    };
+    for(const [k,v] of Object.entries(props)) btn.style.setProperty(k,v,'important');
   }
 
   function applyToFrame(frame){
@@ -102,29 +112,28 @@
     let doc;
     try{doc=frame.contentDocument||frame.contentWindow?.document}catch(e){return false}
     if(!doc?.documentElement) return false;
+
     ensureStyle(doc);
-    installCleanup(doc);
     hideServiceHint(doc);
+
     const btn=findDaliButton(doc);
     if(!btn) return false;
-
     btn.classList.add(CLASS_NAME);
-    btn.style.setProperty('border','0','important');
-    btn.style.setProperty('outline','0','important');
-    btn.style.setProperty('box-shadow','none','important');
-    btn.style.setProperty('background','none','important');
-    btn.style.setProperty('border-radius','0','important');
-    if(getComputedStyle(btn).position==='static') btn.style.position='relative';
+    forceButtonChromeOff(btn);
+    if(doc.defaultView?.getComputedStyle(btn).position==='static') btn.style.setProperty('position','relative');
 
-    if(btn.dataset.rx01ExactDali==='1') return true;
-    btn.dataset.rx01ExactDali='1';
-    [...btn.children].forEach(child=>{child.style.visibility='hidden'});
-    const img=doc.createElement('img');
-    img.className='rx01-level4-dali-image';
-    img.src=ASSET;
-    img.alt='';
-    img.draggable=false;
-    btn.appendChild(img);
+    if(btn.dataset.rx01ExactDali!=='1'){
+      btn.dataset.rx01ExactDali='1';
+      [...btn.children].forEach(child=>{child.style.visibility='hidden'});
+      const img=doc.createElement('img');
+      img.className='rx01-level4-dali-image';
+      img.src=ASSET;
+      img.alt='';
+      img.draggable=false;
+      btn.appendChild(img);
+    }
+
+    hideServiceHint(doc);
     return true;
   }
 
@@ -132,7 +141,7 @@
     let tries=0;
     const tick=()=>{
       applyToFrame(frame);
-      if(++tries<160) setTimeout(tick,125);
+      if(++tries<240) setTimeout(tick,125);
     };
     tick();
   }
