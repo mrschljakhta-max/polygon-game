@@ -1,6 +1,7 @@
 (()=>{
+  const FIRST_LEVEL3_TASK_PATH='/stages/07_level3_tasks_01_05.html';
   const LEVEL3_TASK_PATHS=[
-    '/stages/07_level3_tasks_01_05.html',
+    FIRST_LEVEL3_TASK_PATH,
     '/stages/08_level3_task_06.html',
     '/stages/09_level3_task_07.html',
     '/stages/10_level3_task_08.html',
@@ -10,6 +11,7 @@
 
   const CSS=`
     #miniHud{display:none!important}
+
     #rxOperatorStatus,#rxOperatorHint{
       position:absolute;left:50%;z-index:86;pointer-events:none;
       opacity:0;visibility:hidden;
@@ -40,12 +42,76 @@
     #rxOperatorHint{
       bottom:2.1%;
       padding:7px 15px 8px;
-      background:rgba(8,9,7,.86);
-      border:1px solid rgba(206,163,41,.66);
-      color:#d8c995;
-      font:900 clamp(9px,.82vw,13px)/1.1 "Courier New",monospace;
-      letter-spacing:.035em;text-shadow:1px 1px 0 #000;
+      background:rgba(8,9,7,.90);
+      border:1px solid rgba(206,163,41,.78);
+      color:#f0dda2;
+      font:1000 clamp(10px,.9vw,14px)/1.1 "Courier New",monospace;
+      letter-spacing:.045em;text-shadow:1px 1px 0 #000;
     }
+
+    #rxBearingTutorialShade{
+      position:absolute;inset:0;z-index:78;pointer-events:none;
+      background:rgba(0,0,0,.18);opacity:0;transition:opacity .35s ease;
+    }
+    #rxBearingTutorialShade.show{opacity:1}
+    #rxBearingTutorial{
+      position:absolute;right:7.4%;top:39.5%;z-index:88;pointer-events:none;
+      width:25%;padding:15px 18px 14px;
+      opacity:0;visibility:hidden;transform:translateY(12px) scale(.96);
+      transition:opacity .28s ease,transform .38s cubic-bezier(.2,1.2,.3,1),visibility 0s linear .38s;
+      background:linear-gradient(180deg,rgba(29,26,16,.97),rgba(7,8,6,.97));
+      border:2px solid #d1a21d;border-left:7px solid #f2bd1e;
+      clip-path:polygon(3% 0,100% 0,96% 100%,0 100%);
+      box-shadow:7px 7px 0 rgba(0,0,0,.62),0 0 22px rgba(242,189,30,.12);
+      color:#f6e7bd;text-align:center;text-transform:uppercase;
+      text-shadow:2px 2px 0 #000;
+    }
+    #rxBearingTutorial.show{
+      opacity:1;visibility:visible;transform:none;
+      transition:opacity .2s ease,transform .34s cubic-bezier(.2,1.2,.3,1),visibility 0s;
+    }
+    #rxBearingTutorial .title{
+      color:#ffd541;font:1000 italic clamp(13px,1.3vw,21px)/1 Arial,sans-serif;
+      letter-spacing:.05em;margin-bottom:10px;
+    }
+    #rxBearingTutorial .keys{display:flex;align-items:center;justify-content:center;gap:9px;margin:5px 0 8px}
+    #rxBearingTutorial .key{
+      display:grid;place-items:center;min-width:43px;height:35px;padding:0 9px;
+      border:2px solid #e2b52c;background:#17160e;color:#fff1bd;
+      box-shadow:inset 0 0 10px rgba(255,212,55,.08),3px 3px 0 #000;
+      font:1000 clamp(15px,1.25vw,21px)/1 Arial,sans-serif;
+    }
+    #rxBearingTutorial .sub{
+      color:#d8c995;font:900 clamp(9px,.82vw,13px)/1.25 "Courier New",monospace;
+      letter-spacing:.02em;
+    }
+    #rxBearingTutorial .action{
+      margin-top:10px;color:#fff4bd;
+      font:1000 clamp(10px,.9vw,14px)/1.15 Arial,sans-serif;
+      letter-spacing:.03em;
+    }
+
+    #leftHit.rxBearingPulse,#rightHit.rxBearingPulse{
+      border:2px solid #ffe04a!important;
+      border-radius:5px!important;
+      box-shadow:0 0 0 2px rgba(0,0,0,.72),0 0 9px #ffd238,0 0 22px rgba(255,193,31,.85)!important;
+      background:rgba(255,213,54,.08)!important;
+      animation:rxBearingPulse 1.05s ease-in-out infinite;
+      z-index:87!important;
+    }
+    #rightHit.rxBearingPulse{animation-delay:.52s}
+    @keyframes rxBearingPulse{
+      0%,100%{filter:brightness(1);transform:scale(1)}
+      50%{filter:brightness(1.65);transform:scale(1.08)}
+    }
+
+    #lockHit.rxLockPulse{
+      border:2px solid #ffe04a!important;border-radius:6px!important;
+      box-shadow:0 0 0 2px rgba(0,0,0,.72),0 0 10px #ffd238,0 0 24px rgba(255,193,31,.82)!important;
+      background:rgba(255,213,54,.07)!important;
+      animation:rxLockPulse .88s ease-in-out infinite;z-index:87!important;
+    }
+    @keyframes rxLockPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.75)}}
   `;
 
   const classify=text=>{
@@ -58,6 +124,75 @@
     return null;
   };
 
+  function ensureBearingTutorial(d,stage){
+    let shade=d.getElementById('rxBearingTutorialShade');
+    if(!shade){shade=d.createElement('div');shade.id='rxBearingTutorialShade';stage.appendChild(shade)}
+    let box=d.getElementById('rxBearingTutorial');
+    if(!box){
+      box=d.createElement('div');box.id='rxBearingTutorial';
+      box.innerHTML='<div class="title">ПОВЕРТАЙ ПЕЛЕНГ</div><div class="keys"><span class="key">←</span><span class="key">→</span></div><div class="sub">СТРІЛКИ НА КЛАВІАТУРІ<br>A / D — ТАКОЖ ПРАЦЮЮТЬ</div><div class="action">НАТИСНИ ← АБО →, ЩОБ ПРОДОВЖИТИ</div>';
+      stage.appendChild(box);
+    }
+    return {shade,box};
+  }
+
+  function bindBearingTutorial(d,w,stage){
+    if(window.__rx01Level3BearingTutorialDone||w.__rx01BearingTutorialBound)return;
+    if(!w.location.pathname.endsWith(FIRST_LEVEL3_TASK_PATH))return;
+    const left=d.getElementById('leftHit'),right=d.getElementById('rightHit'),az=d.getElementById('azimuthDisplay');
+    if(!left||!right||!az)return;
+    w.__rx01BearingTutorialBound=true;
+
+    const {shade,box}=ensureBearingTutorial(d,stage);
+    let active=false,attempted=false,initialAz=az.textContent;
+
+    const show=()=>{
+      if(window.__rx01Level3BearingTutorialDone)return;
+      active=true;initialAz=az.textContent;
+      left.classList.add('rxBearingPulse');right.classList.add('rxBearingPulse');
+      shade.classList.add('show');box.classList.add('show');
+    };
+    const finish=()=>{
+      if(!active)return;
+      active=false;window.__rx01Level3BearingTutorialDone=true;
+      left.classList.remove('rxBearingPulse');right.classList.remove('rxBearingPulse');
+      shade.classList.remove('show');box.classList.remove('show');
+    };
+
+    const azObserver=new w.MutationObserver(()=>{
+      if(active&&attempted&&az.textContent!==initialAz)finish();
+    });
+    azObserver.observe(az,{childList:true,subtree:true,characterData:true});
+
+    w.addEventListener('keydown',e=>{
+      if(!active)return;
+      const k=e.key.toLowerCase();
+      if(e.key==='ArrowLeft'||e.key==='ArrowRight'||k==='a'||k==='d')attempted=true;
+      else if(e.key==='Enter'){
+        e.preventDefault();e.stopImmediatePropagation();
+      }
+    },true);
+    const markAttempt=()=>{if(active)attempted=true};
+    left.addEventListener('pointerdown',markAttempt,true);
+    right.addEventListener('pointerdown',markAttempt,true);
+
+    setTimeout(show,2300);
+  }
+
+  function bindFirstLockTutorial(d,w,hint){
+    const lock=d.getElementById('lockHit');
+    if(!lock||w.__rx01LockTutorialBound)return;
+    w.__rx01LockTutorialBound=true;
+
+    const hide=()=>{
+      if(!lock.classList.contains('rxLockPulse'))return;
+      lock.classList.remove('rxLockPulse');hint.classList.remove('show');
+      window.__rx01Level3LockTutorialDone=true;
+    };
+    w.addEventListener('keydown',e=>{if(e.key==='Enter'&&lock.classList.contains('rxLockPulse'))hide()},true);
+    lock.addEventListener('click',hide,true);
+  }
+
   function apply(frame){
     try{
       const d=frame?.contentDocument;
@@ -67,42 +202,24 @@
       if(!d.getElementById('stage'))return;
 
       let style=d.getElementById('rxOperatorUiStyle');
-      if(!style){
-        style=d.createElement('style');
-        style.id='rxOperatorUiStyle';
-        d.head.appendChild(style);
-      }
+      if(!style){style=d.createElement('style');style.id='rxOperatorUiStyle';d.head.appendChild(style)}
       style.textContent=CSS;
 
       const stage=d.getElementById('stage');
       let status=d.getElementById('rxOperatorStatus');
-      if(!status){
-        status=d.createElement('div');
-        status.id='rxOperatorStatus';
-        stage.appendChild(status);
-      }
+      if(!status){status=d.createElement('div');status.id='rxOperatorStatus';stage.appendChild(status)}
       let hint=d.getElementById('rxOperatorHint');
-      if(!hint){
-        hint=d.createElement('div');
-        hint.id='rxOperatorHint';
-        hint.textContent='← → / A D — ПЕЛЕНГ · ENTER — LOCK';
-        stage.appendChild(hint);
-      }
+      if(!hint){hint=d.createElement('div');hint.id='rxOperatorHint';stage.appendChild(hint)}
 
       let hideTimer=null;
       const showStatus=(state,label)=>{
         clearTimeout(hideTimer);
-        status.dataset.state=state;
-        status.textContent=label;
-        status.classList.add('show');
-        hideTimer=setTimeout(()=>status.classList.remove('show'),state==='peak'?1900:1350);
+        status.dataset.state=state;status.textContent=label;status.classList.add('show');
+        hideTimer=setTimeout(()=>status.classList.remove('show'),state==='peak'?2100:1350);
       };
 
-      if(!window.__rx01Level3ControlsShown){
-        window.__rx01Level3ControlsShown=true;
-        setTimeout(()=>hint.classList.add('show'),700);
-        setTimeout(()=>hint.classList.remove('show'),5000);
-      }
+      bindBearingTutorial(d,w,stage);
+      bindFirstLockTutorial(d,w,hint);
 
       const feedback=d.getElementById('feedback');
       if(feedback&&!w.__rx01OperatorFeedbackBound){
@@ -114,6 +231,13 @@
           if(next.key===last)return;
           last=next.key;
           showStatus(next.key,next.label);
+          if(next.key==='peak'&&!window.__rx01Level3LockTutorialDone){
+            const lock=d.getElementById('lockHit');
+            if(lock){
+              lock.classList.add('rxLockPulse');
+              hint.textContent='ENTER — LOCK';hint.classList.add('show');
+            }
+          }
         };
         new w.MutationObserver(sync).observe(feedback,{childList:true,subtree:true,characterData:true});
       }
