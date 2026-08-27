@@ -9,7 +9,7 @@
 </style>
 </head>
 <body>
-<a class="home" href="./">← РІВНІ</a>
+<a class="home" href="./#levels">← РІВНІ</a>
 <iframe id="frame" allow="fullscreen"></iframe>
 <div id="transition"><div><div class="small" id="trSmall"></div><div class="big" id="trBig"></div></div></div>
 <div id="complete"><div><h1>РІВЕНЬ 4<br>ВИКОНАНО</h1><p>Три джерела локалізовано. Звіт передано на штаб.</p></div></div>
@@ -20,6 +20,9 @@
 <script src="level4_rx_onom_geometry.js?v=20260827-rxgeo1"></script>
 <script>
 const frame=document.getElementById('frame'),trans=document.getElementById('transition'),trSmall=document.getElementById('trSmall'),trBig=document.getElementById('trBig');
+const CAMPAIGN_KEY='rx01_campaign_progress',CAMPAIGN_DEFAULT={1:100,2:35,3:0,4:0};
+function readCampaignProgress(){let saved={};try{saved=JSON.parse(localStorage.getItem(CAMPAIGN_KEY)||'{}')||{}}catch(e){}return Object.fromEntries([1,2,3,4].map(level=>[level,Math.max(0,Math.min(100,Number(saved[level]??CAMPAIGN_DEFAULT[level])||0))]))}
+function setCampaignProgress(level,value){const progress=readCampaignProgress();progress[level]=Math.max(progress[level]||0,Math.max(0,Math.min(100,Number(value)||0)));try{localStorage.setItem(CAMPAIGN_KEY,JSON.stringify(progress))}catch(e){}}
 const stages=[
  {url:'stages/01_mission_intro.html?v=20260826-restore-l1-intro',small:'RX-01 · МІСІЯ 01',big:'ПОЛІГОН'},
  {url:'stages/02_level1.html',small:'RX-01 · РІВЕНЬ 1',big:'ПОЧАТОК РОБОТИ'},
@@ -42,9 +45,9 @@ let idx=0;
 frame.addEventListener('load',()=>{if(idx===14)window.RX01_APPLY_LEVEL4_ONO?.(frame,'map');else if(idx===15)window.RX01_APPLY_LEVEL4_ONO?.(frame,'rx')});
 function load(i,announce=true){idx=i;const go=()=>{frame.src=stages[i].url;setTimeout(()=>{try{frame.contentWindow.focus()}catch(e){}},250)};if(!announce){go();return}trSmall.textContent=stages[i].small;trBig.textContent=stages[i].big;trans.classList.add('show');setTimeout(()=>{go();setTimeout(()=>trans.classList.remove('show'),430)},430)}
 function finishLevel4(){trans.classList.add('show');trSmall.textContent='RX-01 · ПОЛІГОН';trBig.textContent='РІВЕНЬ 4 ВИКОНАНО';setTimeout(()=>{trans.classList.remove('show');document.getElementById('complete').classList.add('show')},1300)}
-window.RX01_STAGE_DONE=function(kind){if(kind==='tutorial'&&idx===5)return load(6);if(kind==='block1'&&idx===6)return load(7);if(kind==='advanced'&&idx>=7&&idx<=10)return idx<10?load(idx+1):load(11);if(kind==='jordanIntro'&&idx===11)return load(12);if(kind==='complete'&&idx===12)return load(13)};
-window.RX01_LEVEL4_TO_RX=()=>{if(idx===14)load(15)};window.RX01_LEVEL4_RETURN_MAP=()=>{if(idx===15)load(14)};window.RX01_LEVEL4_COMPLETE=()=>{if(idx===14)finishLevel4()};
-window.addEventListener('message',e=>{const t=e.data&&e.data.type;if(!t)return;if(t==='RX01_INTRO_DONE'&&idx===0)load(1);else if(t==='RX01_LEVEL1_DONE'&&idx===1)load(2);else if(t==='RX01_TRANSITION_DONE'&&idx===2)load(3);else if(t==='RX01_LEVEL2_DONE'&&idx===3)load(4);else if(t==='RX01_LEVEL3_INTRO_DONE'&&idx===4)load(5);else if(t==='RX01_LEVEL3_TUTORIAL_DONE'&&idx===5)load(6);else if(t==='RX01_LEVEL3_BLOCK1_DONE'&&idx===6)load(7);else if(t==='RX01_LEVEL3_ADV_DONE'&&idx>=7&&idx<=10)idx<10?load(idx+1):load(11);else if(t==='RX01_JORDAN_INTRO_DONE'&&idx===11)load(12);else if(t==='RX01_LEVEL3_COMPLETE'&&idx===12)load(13);else if(t==='RX01_LEVEL4_INTRO_DONE'&&idx===13)load(14);else if(t==='RX01_LEVEL4_TO_RX'&&idx===14)load(15);else if(t==='RX01_LEVEL4_RETURN_MAP'&&idx===15)load(14);else if(t==='RX01_LEVEL4_COMPLETE'&&idx===14)finishLevel4()});
+window.RX01_STAGE_DONE=function(kind){if(kind==='tutorial'&&idx===5)return load(6);if(kind==='block1'&&idx===6)return load(7);if(kind==='advanced'&&idx>=7&&idx<=10)return idx<10?load(idx+1):load(11);if(kind==='jordanIntro'&&idx===11)return load(12);if(kind==='complete'&&idx===12){setCampaignProgress(3,100);return load(13)}};
+window.RX01_LEVEL4_TO_RX=()=>{if(idx===14)load(15)};window.RX01_LEVEL4_RETURN_MAP=()=>{if(idx===15)load(14)};window.RX01_LEVEL4_COMPLETE=()=>{if(idx===14){setCampaignProgress(4,100);finishLevel4()}};
+window.addEventListener('message',e=>{const t=e.data&&e.data.type;if(!t)return;if(t==='RX01_LEVEL1_DONE'){setCampaignProgress(1,100);setCampaignProgress(2,35)}else if(t==='RX01_LEVEL2_DONE')setCampaignProgress(2,100);else if(t==='RX01_LEVEL3_COMPLETE')setCampaignProgress(3,100);else if(t==='RX01_LEVEL4_COMPLETE')setCampaignProgress(4,100);if(t==='RX01_INTRO_DONE'&&idx===0)load(1);else if(t==='RX01_LEVEL1_DONE'&&idx===1)load(2);else if(t==='RX01_TRANSITION_DONE'&&idx===2)load(3);else if(t==='RX01_LEVEL2_DONE'&&idx===3)load(4);else if(t==='RX01_LEVEL3_INTRO_DONE'&&idx===4)load(5);else if(t==='RX01_LEVEL3_TUTORIAL_DONE'&&idx===5)load(6);else if(t==='RX01_LEVEL3_BLOCK1_DONE'&&idx===6)load(7);else if(t==='RX01_LEVEL3_ADV_DONE'&&idx>=7&&idx<=10)idx<10?load(idx+1):load(11);else if(t==='RX01_JORDAN_INTRO_DONE'&&idx===11)load(12);else if(t==='RX01_LEVEL3_COMPLETE'&&idx===12)load(13);else if(t==='RX01_LEVEL4_INTRO_DONE'&&idx===13)load(14);else if(t==='RX01_LEVEL4_TO_RX'&&idx===14)load(15);else if(t==='RX01_LEVEL4_RETURN_MAP'&&idx===15)load(14);else if(t==='RX01_LEVEL4_COMPLETE'&&idx===14)finishLevel4()});
 const level=Math.max(1,Math.min(5,Number(new URLSearchParams(location.search).get('level')||1)));
 if(level===5){frame.style.display='none';document.getElementById('placeholder').classList.add('show')}else{if(level===4){['rx01_level4_flow','rx01_level4_map_state','rx01_level4_our_journal'].forEach(k=>localStorage.removeItem(k))}const start={1:0,2:2,3:4,4:13}[level]??0;load(start,false)}
 </script>
