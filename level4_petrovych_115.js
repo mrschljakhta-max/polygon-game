@@ -31,6 +31,12 @@
       setTimeout(()=>enlargePetrovych(frame),120);
     }
 
+    if(mode==='rx'){
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),0);
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),180);
+      setTimeout(()=>window.RX01_APPLY_LEVEL4_RX_LAYOUT?.(frame),700);
+    }
+
     return result;
   };
 
@@ -39,6 +45,14 @@
     script.src='level4_rx_onom_png.js?v=20260827-rx-png-2';
     script.dataset.rx01RxOnomPng='1';
     script.async=true;
+    document.head.appendChild(script);
+  }
+
+  if(!document.querySelector('script[data-rx01-rx-layout-v2]')){
+    const script=document.createElement('script');
+    script.src='level4_rx_layout_v2.js?v=20260827-layout-v2-1';
+    script.dataset.rx01RxLayoutV2='1';
+    script.async=false;
     document.head.appendChild(script);
   }
 })();
