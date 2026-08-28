@@ -275,6 +275,8 @@ function showToast(text){
   toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
 }
 function requestGameFullscreen(){
+  const mobileLike=window.matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if(!mobileLike)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
   if(standalone){try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}return;}
   if(document.fullscreenElement||document.webkitFullscreenElement)return;

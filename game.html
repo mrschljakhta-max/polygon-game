@@ -33,6 +33,8 @@
 <script>
 const frame=document.getElementById('frame'),trans=document.getElementById('transition'),trSmall=document.getElementById('trSmall'),trBig=document.getElementById('trBig');
 function requestGameplayFullscreen(){
+  const mobileLike=window.matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if(!mobileLike)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
   if(standalone){try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(e){}return;}
   if(document.fullscreenElement||document.webkitFullscreenElement)return;
