@@ -53,7 +53,7 @@
 
   if(!document.querySelector('script[data-rx01-rx-layout-v2]')){
     const script=document.createElement('script');
-    script.src='level4_rx_layout_v2.js?v=20260827-layout-v2-1';
+    script.src='level4_rx_layout_v2.js?v=20260828-layout-v2-hotfix-1';
     script.dataset.rx01RxLayoutV2='1';
     script.async=false;
     document.head.appendChild(script);
