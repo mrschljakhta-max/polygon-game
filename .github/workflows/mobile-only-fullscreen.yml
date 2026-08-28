@@ -1,0 +1,38 @@
+name: Limit fullscreen to mobile devices
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add mobile guard
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for filename, function_name in [('index.html','requestGameFullscreen'),('game.html','requestGameplayFullscreen')]:
+              p=Path(filename)
+              s=p.read_text(encoding='utf-8')
+              needle=f'function {function_name}(){{\n'
+              guard="  const mobileLike=window.matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);\n  if(!mobileLike)return;\n"
+              if needle in s and guard not in s:
+                  s=s.replace(needle,needle+guard,1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit mobile-only fullscreen
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html game.html
+          git rm .github/workflows/mobile-only-fullscreen.yml
+          git commit -m "Limit fullscreen to mobile devices"
+          git push
