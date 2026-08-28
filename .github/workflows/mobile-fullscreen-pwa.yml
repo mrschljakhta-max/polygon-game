@@ -27,21 +27,23 @@ jobs:
           for size in (192, 512):
               icon = im.resize((size, size), Image.Resampling.LANCZOS)
               icon.save(out / f'pwa-{size}.png', optimize=True)
-          Path('manifest.webmanifest').write_text('''{
-            "name": "Полігон — навчальна гра",
-            "short_name": "Полігон",
-            "description": "Навчальна гра Полігон",
-            "start_url": "/",
-            "scope": "/",
-            "display": "fullscreen",
-            "orientation": "landscape",
-            "background_color": "#020302",
-            "theme_color": "#020302",
-            "icons": [
-              {"src": "/assets/icons/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-              {"src": "/assets/icons/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-            ]
-          }''', encoding='utf-8')
+          manifest = {
+              "name": "Полігон — навчальна гра",
+              "short_name": "Полігон",
+              "description": "Навчальна гра Полігон",
+              "start_url": "/",
+              "scope": "/",
+              "display": "fullscreen",
+              "orientation": "landscape",
+              "background_color": "#020302",
+              "theme_color": "#020302",
+              "icons": [
+                  {"src": "/assets/icons/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+                  {"src": "/assets/icons/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+              ]
+          }
+          import json
+          Path('manifest.webmanifest').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
           PY
 
       - name: Add mobile fullscreen and PWA metadata
@@ -65,27 +67,24 @@ jobs:
 
           if 'function requestGameFullscreen()' not in s:
               marker = 'function openLevels(){'
-              helper = '''function requestGameFullscreen(){
-  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-  if(standalone){
-    try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}
-    return;
-  }
-  if(document.fullscreenElement||document.webkitFullscreenElement)return;
-  const root=document.documentElement;
-  const request=root.requestFullscreen||root.webkitRequestFullscreen;
-  if(!request)return;
-  try{
-    const result=request.call(root);
-    if(result&&typeof result.then==='function'){
-      result.then(()=>{
-        try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}
-      }).catch(()=>{});
-    }
-  }catch(error){}
-}
-
-'''
+              helper = '\n'.join([
+                  'function requestGameFullscreen(){',
+                  "  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;",
+                  "  if(standalone){try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}return;}",
+                  '  if(document.fullscreenElement||document.webkitFullscreenElement)return;',
+                  '  const root=document.documentElement;',
+                  '  const request=root.requestFullscreen||root.webkitRequestFullscreen;',
+                  '  if(!request)return;',
+                  '  try{',
+                  '    const result=request.call(root);',
+                  "    if(result&&typeof result.then==='function'){",
+                  "      result.then(()=>{try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}}).catch(()=>{});",
+                  '    }',
+                  '  }catch(error){}',
+                  '}',
+                  '',
+                  ''
+              ])
               s = s.replace(marker, helper + marker, 1)
 
           old = "chooseLevel.addEventListener('click',openLevels);"
