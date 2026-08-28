@@ -6,7 +6,9 @@
     displayInput:{left:32.2339,top:38.2077,width:30.764,height:17.9104}
   };
 
+  const states=new WeakMap();
   const norm=s=>(s||'').replace(/\s+/g,' ').trim().toLowerCase();
+
   const visible=el=>{
     if(!el||!el.isConnected)return false;
     const r=el.getBoundingClientRect();
@@ -15,7 +17,12 @@
   };
 
   function sceneRoot(d){
-    const candidates=[d.getElementById('stage'),d.getElementById('app'),d.querySelector('.stage'),d.querySelector('.app')].filter(Boolean);
+    const candidates=[
+      d.getElementById('stage'),
+      d.getElementById('app'),
+      d.querySelector('.stage'),
+      d.querySelector('.app')
+    ].filter(Boolean);
     return candidates.find(el=>{
       const r=el.getBoundingClientRect();
       return r.width>500&&r.height>350;
@@ -24,42 +31,68 @@
 
   function exactTextNode(d,phrase){
     const target=norm(phrase);
-    const els=[...d.querySelectorAll('div,section,aside,article,p,span,b,strong,h1,h2,h3,label')];
+    const els=[...d.querySelectorAll('div,section,aside,article,p,span,b,strong,h1,h2,h3,label,button')];
     const exact=els.filter(el=>visible(el)&&norm(el.textContent)===target);
-    if(exact.length)return exact.sort((a,b)=>a.getBoundingClientRect().width*a.getBoundingClientRect().height-b.getBoundingClientRect().width*b.getBoundingClientRect().height)[0];
-    const containing=els.filter(el=>visible(el)&&norm(el.textContent).includes(target));
-    return containing.sort((a,b)=>a.getBoundingClientRect().width*a.getBoundingClientRect().height-b.getBoundingClientRect().width*b.getBoundingClientRect().height)[0]||null;
+    if(exact.length){
+      return exact.sort((a,b)=>{
+        const ar=a.getBoundingClientRect(),br=b.getBoundingClientRect();
+        return ar.width*ar.height-br.width*br.height;
+      })[0];
+    }
+    return null;
+  }
+
+  function safeBox(el,root,kind){
+    if(!el||!root||!visible(el))return false;
+    const d=root.ownerDocument;
+    if(el===root||el===d.body||el===d.documentElement)return false;
+    if(!root.contains(el))return false;
+
+    const rr=root.getBoundingClientRect();
+    const r=el.getBoundingClientRect();
+    if(rr.width<1||rr.height<1)return false;
+
+    const wr=r.width/rr.width;
+    const hr=r.height/rr.height;
+    const ar=(r.width*r.height)/(rr.width*rr.height);
+
+    // Найважливіший запобіжник: службовий пошук ніколи не має права
+    // вибрати весь екран/сцену і змінити її width/height.
+    if(kind==='tech'&&(wr>.48||hr>.38||ar>.16))return false;
+    if(kind==='display'&&(wr>.58||hr>.40||ar>.20))return false;
+    return r.width>90&&r.height>35;
   }
 
   function nearestLayoutBox(leaf,root,kind){
     if(!leaf)return null;
-    let cur=leaf,best=null;
-    for(let i=0;cur&&cur!==root&&i<8;i++,cur=cur.parentElement){
-      if(!visible(cur))continue;
-      const r=cur.getBoundingClientRect();
+    let cur=leaf;
+    for(let i=0;cur&&cur!==root&&i<6;i++,cur=cur.parentElement){
+      if(!safeBox(cur,root,kind))continue;
       const cs=cur.ownerDocument.defaultView.getComputedStyle(cur);
       const positioned=cs.position==='absolute'||cs.position==='fixed';
       const bordered=parseFloat(cs.borderTopWidth)>0||parseFloat(cs.borderLeftWidth)>0;
       const bg=cs.backgroundColor&&cs.backgroundColor!=='rgba(0, 0, 0, 0)'&&cs.backgroundColor!=='transparent';
-      const sensible=kind==='display'?r.width>120&&r.height>45:r.width>120&&r.height>50;
-      if(sensible&&(positioned||bordered||bg))best=cur;
-      if(sensible&&positioned)return cur;
+      if(positioned||bordered||bg)return cur;
     }
-    return best||leaf.parentElement||leaf;
+    return safeBox(leaf,root,kind)?leaf:null;
   }
 
   function findTechnical(d,root){
-    const ids=['techInfo','technicalInfo','taskInfo','missionInfo','taskBox','infoBox','statusBox'];
-    for(const id of ids){const el=d.getElementById(id);if(visible(el))return el;}
-    const leaf=exactTextNode(d,'ЗАВДАННЯ');
-    return nearestLayoutBox(leaf,root,'tech');
+    const ids=['miniHud','techInfo','technicalInfo','taskInfo','missionInfo','taskBox','infoBox','statusBox'];
+    for(const id of ids){
+      const el=d.getElementById(id);
+      if(safeBox(el,root,'tech'))return el;
+    }
+    return nearestLayoutBox(exactTextNode(d,'ЗАВДАННЯ'),root,'tech');
   }
 
   function findDisplayInput(d,root){
     const ids=['displayInput','inputPanel','inputBox','entryPanel','displayEntry','freqEntry','rxInput'];
-    for(const id of ids){const el=d.getElementById(id);if(visible(el))return el;}
-    const leaf=exactTextNode(d,'ВВЕДИ ЗНАЧЕННЯ');
-    return nearestLayoutBox(leaf,root,'display');
+    for(const id of ids){
+      const el=d.getElementById(id);
+      if(safeBox(el,root,'display'))return el;
+    }
+    return nearestLayoutBox(exactTextNode(d,'ВВЕДИ ЗНАЧЕННЯ'),root,'display');
   }
 
   function cssTarget(root,spec){
@@ -74,6 +107,9 @@
 
   function place(el,root,spec,role){
     if(!el||!root)return false;
+    if(role==='technicalInfo'&&!safeBox(el,root,'tech'))return false;
+    if(role==='displayInput'&&!safeBox(el,root,'display'))return false;
+
     el.dataset.rx01LayoutRole=role;
     el.style.setProperty('position','absolute','important');
     el.style.setProperty('right','auto','important');
@@ -81,7 +117,6 @@
     el.style.setProperty('margin','0','important');
     el.style.setProperty('transform','none','important');
     el.style.setProperty('transform-origin','top left','important');
-    void el.offsetWidth;
 
     const op=el.offsetParent||root;
     const or=op.getBoundingClientRect();
@@ -114,23 +149,38 @@
     return true;
   }
 
+  function getState(d,root){
+    let state=states.get(d);
+    if(!state){
+      state={root,tech:null,display:null};
+      states.set(d,state);
+    }
+    state.root=root;
+    return state;
+  }
+
   function apply(frame){
     try{
       const w=frame?.contentWindow,d=frame?.contentDocument;
       if(!w||!d||!d.body||!w.location.pathname.endsWith(RX_PATH))return false;
       const root=sceneRoot(d);
       if(!root)return false;
+      const state=getState(d,root);
+
+      // Ці два блоки визначаємо один раз і надалі не шукаємо заново
+      // після зміни текстів/стану гри. Саме повторний пошук після введення
+      // азимуту раніше міг помилково схопити контейнер усієї сцени.
+      if(!state.tech||!state.tech.isConnected)state.tech=findTechnical(d,root);
+      if(!state.display||!state.display.isConnected)state.display=findDisplayInput(d,root);
 
       const ono=d.getElementById('rx01RxOnoPng')||d.getElementById('rx01PetroOnoV2');
-      const tech=findTechnical(d,root);
-      const display=findDisplayInput(d,root);
 
       if(ono)place(ono,root,LAYOUT.onomatopoeia,'onomatopoeia');
-      if(tech)place(tech,root,LAYOUT.technicalInfo,'technicalInfo');
-      if(display)place(display,root,LAYOUT.displayInput,'displayInput');
+      if(state.tech)place(state.tech,root,LAYOUT.technicalInfo,'technicalInfo');
+      if(state.display)place(state.display,root,LAYOUT.displayInput,'displayInput');
 
-      d.documentElement.dataset.rx01LayoutV2='1';
-      return !!(ono||tech||display);
+      d.documentElement.dataset.rx01LayoutV2='2';
+      return !!(ono||state.tech||state.display);
     }catch(err){
       console.warn('RX-01 layout v2 failed',err);
       return false;
@@ -141,22 +191,19 @@
     try{
       const w=frame?.contentWindow,d=frame?.contentDocument;
       if(!w||!d||!d.body||!w.location.pathname.endsWith(RX_PATH))return;
-      let timer=null;
-      const schedule=()=>{
-        clearTimeout(timer);
-        timer=setTimeout(()=>apply(frame),30);
-      };
+
+      // Без MutationObserver. Інтерфейс після введення азимуту може змінювати
+      // текст, але геометрію вже виставлених блоків чіпати не потрібно.
       apply(frame);
-      [80,180,400,800,1400,2400,4000].forEach(ms=>setTimeout(()=>apply(frame),ms));
-      if(!d.documentElement.dataset.rx01LayoutObserver){
-        d.documentElement.dataset.rx01LayoutObserver='1';
-        new MutationObserver(schedule).observe(d.body,{subtree:true,childList:true,characterData:true});
-      }
+      [80,180,400,800,1400].forEach(ms=>setTimeout(()=>apply(frame),ms));
+
       if(!w.__rx01LayoutResizeBound){
         w.__rx01LayoutResizeBound=true;
         w.addEventListener('resize',()=>apply(frame),{passive:true});
       }
-    }catch(err){console.warn('RX-01 layout v2 arm failed',err)}
+    }catch(err){
+      console.warn('RX-01 layout v2 arm failed',err);
+    }
   }
 
   window.RX01_APPLY_LEVEL4_RX_LAYOUT=arm;
