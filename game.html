@@ -19,7 +19,7 @@
 </style>
 </head>
 <body>
-<a class="home" href="./#levels">← РІВНІ</a>
+<a class="home" id="homeLink" href="./#levels">← РІВНІ</a>
 <iframe id="frame" allow="fullscreen"></iframe>
 <div id="transition"><div><div class="small" id="trSmall"></div><div class="big" id="trBig"></div></div></div>
 <div id="complete"><div><h1>РІВЕНЬ 4<br>ВИКОНАНО</h1><p>Три джерела локалізовано. Звіт передано на штаб.</p></div></div>
@@ -32,7 +32,15 @@
 <script src="level4_intro_dali.js?v=20260827-l4-clean-3"></script>
 <script>
 const frame=document.getElementById('frame'),trans=document.getElementById('transition'),trSmall=document.getElementById('trSmall'),trBig=document.getElementById('trBig');
+const embedded=new URLSearchParams(location.search).get('embedded')==='1'&&window.parent!==window;
+const homeLink=document.getElementById('homeLink');
+homeLink.addEventListener('click',event=>{
+  if(!embedded)return;
+  event.preventDefault();
+  try{window.parent.postMessage({type:'RX01_GAME_BACK'},'*')}catch(e){}
+});
 function requestGameplayFullscreen(){
+  if(embedded)return;
   const mobileLike=window.matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if(!mobileLike)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
@@ -47,6 +55,7 @@ function requestGameplayFullscreen(){
   }catch(e){}
 }
 function armFrameFullscreen(){
+  if(embedded)return;
   try{
     const doc=frame.contentDocument;
     if(!doc)return;
