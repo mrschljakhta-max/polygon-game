@@ -39,30 +39,10 @@ homeLink.addEventListener('click',event=>{
   event.preventDefault();
   try{window.parent.postMessage({type:'RX01_GAME_BACK'},'*')}catch(e){}
 });
-function requestGameplayFullscreen(){
-  if(embedded)return;
-  const mobileLike=window.matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-  if(!mobileLike)return;
-  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-  if(standalone){try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(e){}return;}
-  if(document.fullscreenElement||document.webkitFullscreenElement)return;
-  const root=document.documentElement;
-  const request=root.requestFullscreen||root.webkitRequestFullscreen;
-  if(!request)return;
-  try{
-    const result=request.call(root);
-    if(result&&typeof result.then==='function')result.then(()=>{try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(e){}}).catch(()=>{});
-  }catch(e){}
-}
-function armFrameFullscreen(){
-  if(embedded)return;
-  try{
-    const doc=frame.contentDocument;
-    if(!doc)return;
-    doc.addEventListener('pointerdown',requestGameplayFullscreen,{once:true,capture:true});
-    doc.addEventListener('touchstart',requestGameplayFullscreen,{once:true,capture:true,passive:true});
-  }catch(e){}
-}
+// TEST MODE: fullscreen is intentionally disabled while the game is being reviewed.
+// Re-enable this function together with landscape locking for the final release.
+function requestGameplayFullscreen(){return;}
+function armFrameFullscreen(){return;}
 const CAMPAIGN_KEY='rx01_campaign_progress',CAMPAIGN_DEFAULT={1:100,2:35,3:0,4:0};
 function readCampaignProgress(){let saved={};try{saved=JSON.parse(localStorage.getItem(CAMPAIGN_KEY)||'{}')||{}}catch(e){}return Object.fromEntries([1,2,3,4].map(level=>[level,Math.max(0,Math.min(100,Number(saved[level]??CAMPAIGN_DEFAULT[level])||0))]))}
 function setCampaignProgress(level,value){const progress=readCampaignProgress();progress[level]=Math.max(progress[level]||0,Math.max(0,Math.min(100,Number(value)||0)));try{localStorage.setItem(CAMPAIGN_KEY,JSON.stringify(progress))}catch(e){}}
