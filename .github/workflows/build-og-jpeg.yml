@@ -1,0 +1,64 @@
+name: Build JPEG social preview
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create 1200x630 JPEG preview
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+
+          src = Path('assets/menu/poligon-start-bg.webp')
+          out = Path('assets/social/poligon-og.jpg')
+          out.parent.mkdir(parents=True, exist_ok=True)
+
+          im = Image.open(src).convert('RGB')
+          target_w, target_h = 1200, 630
+          src_ratio = im.width / im.height
+          target_ratio = target_w / target_h
+
+          if src_ratio > target_ratio:
+              new_h = target_h
+              new_w = round(new_h * src_ratio)
+          else:
+              new_w = target_w
+              new_h = round(new_w / src_ratio)
+
+          im = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+          left = (new_w - target_w) // 2
+          top = (new_h - target_h) // 2
+          im = im.crop((left, top, left + target_w, top + target_h))
+          im.save(out, 'JPEG', quality=88, optimize=True, progressive=True)
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old_webp = 'https://poligon-game.com/assets/menu/poligon-start-bg.webp?v=2'
+          new_jpg = 'https://poligon-game.com/assets/social/poligon-og.jpg?v=3'
+          s = s.replace(old_webp, new_jpg)
+          s = s.replace('<meta property="og:image:type" content="image/webp">', '<meta property="og:image:type" content="image/jpeg">')
+          s = s.replace('<meta property="og:image:width" content="1536">', '<meta property="og:image:width" content="1200">')
+          s = s.replace('<meta property="og:image:height" content="1024">', '<meta property="og:image:height" content="630">')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit JPEG preview
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets/social/poligon-og.jpg
+          git rm .github/workflows/build-og-jpeg.yml
+          git commit -m "Use JPEG Open Graph preview"
+          git push
