@@ -1,0 +1,36 @@
+name: Hide progress panel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hide-progress-panel.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove progress panel from menu
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '.active-progress .progress-panel{display:block}'
+          new = '.active-progress .progress-panel{display:none!important}'
+          if old not in s:
+              raise SystemExit('Target CSS rule not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit menu cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/hide-progress-panel.yml
+          git add index.html
+          git commit -m "Hide level progress panel"
+          git push
