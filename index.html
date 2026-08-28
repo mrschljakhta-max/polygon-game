@@ -103,6 +103,8 @@ button{font:inherit}
 .css-lock{position:relative;width:24%;aspect-ratio:1}
 .css-lock::before{content:"";position:absolute;left:22%;right:22%;top:5%;height:46%;border:.55vmin solid #8e855f;border-bottom:0;border-radius:50% 50% 0 0;filter:drop-shadow(0 .25vmin .3vmin #000)}
 .css-lock::after{content:"";position:absolute;left:11%;right:11%;bottom:6%;height:52%;background:linear-gradient(180deg,#8a8160,#504b38);border:1px solid #a9a07b;box-shadow:0 .35vmin .6vmin rgba(0,0,0,.72)}
+.css-lock{position:relative;width:26%;aspect-ratio:128/197;background:url("assets/menu/lock-silver.webp") center/contain no-repeat;filter:drop-shadow(0 .38vmin .65vmin rgba(0,0,0,.82))}
+.css-lock::before,.css-lock::after{display:none!important;content:none!important}
 .locked:hover .css-lock{animation:lockNudge .34s ease-in-out 1}
 @keyframes lockNudge{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
 .dev{cursor:not-allowed}
