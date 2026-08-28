@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020302">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Полігон">
 <title>Полігон</title>
 <meta name="description" content="Полігон — навчальна гра. Обери рівень і пройди випробування на навчальному полігоні.">
 <meta property="og:type" content="website">
@@ -269,6 +274,21 @@ function showToast(text){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
 }
+function requestGameFullscreen(){
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  if(standalone){try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}return;}
+  if(document.fullscreenElement||document.webkitFullscreenElement)return;
+  const root=document.documentElement;
+  const request=root.requestFullscreen||root.webkitRequestFullscreen;
+  if(!request)return;
+  try{
+    const result=request.call(root);
+    if(result&&typeof result.then==='function'){
+      result.then(()=>{try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(error){}}).catch(()=>{});
+    }
+  }catch(error){}
+}
+
 function openLevels(){
   if(!startReady||changing)return;
   if(reduceMotion){setScreens(true);history.replaceState(null,'','#levels');renderProgress();return}
@@ -302,7 +322,7 @@ function showLevelsImmediately(){
 }
 
 chooseLevel.addEventListener('animationend',event=>{if(event.animationName==='plateReveal')markStartReady()});
-chooseLevel.addEventListener('click',openLevels);
+chooseLevel.addEventListener('click',()=>{requestGameFullscreen();openLevels()});
 backBtn.addEventListener('click',openStart);
 document.querySelectorAll('.level-card').forEach(card=>card.addEventListener('click',()=>{
   if(changing)return;
