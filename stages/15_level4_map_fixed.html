@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RX-01 — карта</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020402}</style>
+</head>
+<body>
+<script>
+(async()=>{
+  try{
+    const response=await fetch('./15_level4_map.html?v=20260828-nullguard2',{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    let html=await response.text();
+
+    const patches=[
+      [
+        "document.getElementById('gridT').onchange=e=>document.getElementById('grid').style.display=e.target.checked?'block':'none';",
+        "(()=>{const ctl=document.getElementById('gridT');if(ctl)ctl.onchange=e=>{const el=document.getElementById('grid');if(el)el.style.display=e.target.checked?'block':'none'}})();"
+      ],
+      [
+        "document.getElementById('posT').onchange=e=>document.getElementById('me').style.visibility=e.target.checked?'visible':'hidden';",
+        "(()=>{const ctl=document.getElementById('posT');if(ctl)ctl.onchange=e=>{const el=document.getElementById('me');if(el)el.style.visibility=e.target.checked?'visible':'hidden'}})();"
+      ],
+      [
+        "document.getElementById('bearT').onchange=e=>document.querySelectorAll('.bearing').forEach(x=>x.style.visibility=e.target.checked?'visible':'hidden');",
+        "(()=>{const ctl=document.getElementById('bearT');if(ctl)ctl.onchange=e=>document.querySelectorAll('.bearing').forEach(x=>x.style.visibility=e.target.checked?'visible':'hidden')})();"
+      ]
+    ];
+
+    patches.forEach(([from,to])=>{html=html.split(from).join(to)});
+    document.open();
+    document.write(html);
+    document.close();
+  }catch(error){
+    console.error('Level 4 map loader failed:',error);
+    document.body.innerHTML='<div style="height:100%;display:grid;place-items:center;color:#d8ba55;font:700 14px Arial">Не вдалося завантажити карту</div>';
+  }
+})();
+</script>
+</body>
+</html>
