@@ -108,8 +108,8 @@ button{font:inherit}
 .locked:hover .css-lock{animation:lockNudge .34s ease-in-out 1}
 @keyframes lockNudge{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
 .dev{cursor:not-allowed}
-.dev .card-art{filter:grayscale(.95) brightness(.40) sepia(.18);opacity:.80}
-.dev-layer{position:absolute;inset:2%;z-index:10;display:flex;align-items:center;justify-content:center;overflow:hidden;background:repeating-linear-gradient(-45deg,rgba(8,10,6,.30) 0 8%,rgba(120,92,16,.12) 8% 12%)}
+.dev .card-art{filter:none;opacity:1}
+.dev-layer{display:none}
 .dev-stamp{width:114%;transform:rotate(-7deg);padding:6% 3%;color:#d0a329;background:rgba(8,9,6,.92);border-top:2px solid #a37b19;border-bottom:2px solid #a37b19;box-shadow:0 .45vmin .8vmin rgba(0,0,0,.75);font:900 clamp(7px,.62vw,13px)/1 Arial,sans-serif;letter-spacing:.09em;text-align:center}
 .dev-stamp small{display:block;margin-top:4%;color:#827b62;font-size:.62em;letter-spacing:.05em}
 .toast{position:absolute;left:50%;bottom:7.3%;transform:translate(-50%,18px);z-index:30;min-width:270px;max-width:72%;padding:.75em 1.25em;color:#e3cf8e;background:rgba(5,8,5,.95);border:1px solid #98761b;box-shadow:0 .55vmin 1.2vmin rgba(0,0,0,.65);font:700 clamp(10px,.72vw,14px)/1.25 Arial,sans-serif;letter-spacing:.035em;text-align:center;opacity:0;pointer-events:none;transition:.22s ease}
