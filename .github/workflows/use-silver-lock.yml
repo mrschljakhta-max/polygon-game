@@ -1,0 +1,35 @@
+name: Use silver lock artwork
+
+on:
+  push:
+    paths:
+      - '.github/workflows/use-silver-lock.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace CSS lock with artwork
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '.locked:hover .css-lock{animation:lockNudge .34s ease-in-out 1}'
+          override = '''.css-lock{position:relative;width:26%;aspect-ratio:128/197;background:url("assets/menu/lock-silver.webp") center/contain no-repeat;filter:drop-shadow(0 .38vmin .65vmin rgba(0,0,0,.82))}\n.css-lock::before,.css-lock::after{display:none!important;content:none!important}\n.locked:hover .css-lock{animation:lockNudge .34s ease-in-out 1}'''
+          if marker not in s:
+              raise SystemExit('lock marker not found')
+          s = s.replace(marker, override, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Use silver lock on locked levels"
+          git push
