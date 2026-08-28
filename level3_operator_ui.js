@@ -8,6 +8,12 @@
     '/stages/11_level3_task_09.html',
     '/stages/13_level3_task_10.html'
   ];
+  const COMPACT_LEVEL3_TASK_PATHS=[
+    '/stages/08_level3_task_06.html',
+    '/stages/09_level3_task_07.html',
+    '/stages/10_level3_task_08.html',
+    '/stages/11_level3_task_09.html'
+  ];
 
   const CSS=`
     #miniHud{display:none!important}
@@ -112,6 +118,32 @@
       animation:rxLockPulse .88s ease-in-out infinite;z-index:87!important;
     }
     @keyframes rxLockPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.75)}}
+
+    /* Missions 6–9: keep all LCD copy visible on short landscape screens. */
+    @media (orientation:landscape) and (max-height:500px){
+      body.rxCompactTaskCopy #taskPanel{padding:2.1% 3.1%!important}
+      body.rxCompactTaskCopy #taskTitle{
+        font-size:clamp(9px,1.18vw,17px)!important;
+        line-height:1.05!important;
+        letter-spacing:.045em!important;
+      }
+      body.rxCompactTaskCopy #taskText{
+        margin-top:2.6%!important;
+        font-size:clamp(7px,.92vw,13px)!important;
+        line-height:1.08!important;
+      }
+      body.rxCompactTaskCopy #taskProgress{
+        margin-top:3.2%!important;
+        font-size:clamp(7px,.78vw,11px)!important;
+        line-height:1.05!important;
+        letter-spacing:.11em!important;
+      }
+      body.rxCompactTaskCopy #taskState{
+        margin-top:2.6%!important;
+        font-size:clamp(7px,.78vw,11px)!important;
+        line-height:1.05!important;
+      }
+    }
   `;
 
   const classify=text=>{
@@ -226,6 +258,9 @@
       if(!d||!w)return;
       if(!LEVEL3_TASK_PATHS.some(path=>w.location.pathname.endsWith(path)))return;
       if(!d.getElementById('stage'))return;
+
+      const compactTaskCopy=COMPACT_LEVEL3_TASK_PATHS.some(path=>w.location.pathname.endsWith(path));
+      d.body?.classList.toggle('rxCompactTaskCopy',compactTaskCopy);
 
       let style=d.getElementById('rxOperatorUiStyle');
       if(!style){style=d.createElement('style');style.id='rxOperatorUiStyle';d.head.appendChild(style)}
