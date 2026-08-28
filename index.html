@@ -70,9 +70,11 @@ button{font:inherit}
 /* Екран рівнів */
 #levelsScreen .bg{background-image:url("assets/menu/poligon-levels-bg.webp");filter:brightness(.93) contrast(1.03)}
 @keyframes quietAppear{to{opacity:1}}
-.back-btn{position:absolute;top:7.3%;right:5.7%;z-index:15;padding:.72em 1.1em;border:1px solid rgba(190,143,24,.48);background:rgba(5,7,4,.68);color:#d4bb73;font:700 clamp(9px,.68vw,13px)/1 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;opacity:0;transition:.25s ease}
+.back-btn{position:absolute;top:5.8%;right:4.8%;z-index:15;width:13.5%;min-width:130px;padding:0;border:0;background:transparent;cursor:pointer;opacity:0;transition:transform .22s ease,filter .22s ease}
+.back-btn img{display:block;width:100%;height:auto;pointer-events:none;-webkit-user-drag:none}
 #levelsScreen.active .back-btn{animation:quietAppear .9s ease .42s forwards}
-.back-btn:hover,.back-btn:focus-visible{outline:none;color:#ffe8a0;border-color:rgba(233,178,34,.72);background:rgba(30,25,10,.78)}
+.back-btn:hover,.back-btn:focus-visible{outline:none;transform:scale(1.035);filter:brightness(1.12) drop-shadow(0 0 10px rgba(255,188,26,.20))}
+.back-btn:active{transform:scale(.985);filter:brightness(.96)}
 .cards{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:88.2%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.35%;align-items:center;z-index:8}
 .level-card{position:relative;width:100%;aspect-ratio:1086/1448;border:0;background:transparent;padding:0;margin:0;cursor:pointer;outline:none;isolation:isolate;opacity:0;transform:translateY(22px);filter:drop-shadow(0 1vmin 1.35vmin rgba(0,0,0,.76));transition:transform .18s ease,filter .18s ease}
 #levelsScreen.active .level-card{animation:cardReveal .72s var(--ease) forwards}
@@ -117,7 +119,7 @@ button{font:inherit}
   .stage{width:100vw;height:100svh;aspect-ratio:auto}
   .bg{background-size:cover}
   .choose-level{left:20%;top:66%;width:60%}
-  .back-btn{top:3%;right:4%;font-size:9px}
+  .back-btn{top:2.5%;right:3%;width:28%;min-width:118px}
   .cards{top:11%;bottom:3%;left:4%;width:92%;height:auto;transform:none;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px 10px;overflow-y:auto;overscroll-behavior:contain;padding:8px 7px 24px;scrollbar-width:thin;scrollbar-color:#806415 transparent}
   .level-card:nth-child(5){grid-column:1/-1;width:48%;justify-self:center}
   .progress-panel{font-size:8px}
@@ -150,7 +152,7 @@ button{font:inherit}
     <section class="screen" id="levelsScreen" aria-label="Вибір рівня" aria-hidden="true">
       <div class="bg"></div>
       <div class="vignette"></div>
-      <button class="back-btn" id="backBtn" type="button">← НАЗАД</button>
+      <button class="back-btn" id="backBtn" type="button" aria-label="Назад"><img src="assets/menu/back-button.svg" alt="Назад" draggable="false"></button>
       <div class="cards" aria-label="Рівні гри">
         <button class="level-card" data-level="1" type="button">
           <img class="card-art" src="assets/menu/level-1.webp" alt="Рівень 1 — Підготовка" draggable="false">
