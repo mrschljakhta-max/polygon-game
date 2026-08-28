@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180" role="img" aria-label="Назад">
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d69b08"/>
+      <stop offset="0.18" stop-color="#ffca2b"/>
+      <stop offset="0.42" stop-color="#73520b"/>
+      <stop offset="0.75" stop-color="#17140a"/>
+      <stop offset="1" stop-color="#9c6d08"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#19170f"/>
+      <stop offset="0.5" stop-color="#3d2d08"/>
+      <stop offset="1" stop-color="#0b0b08"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <path d="M38 12h524l26 78-26 78H38L12 90z" fill="#070705" stroke="#3d2b05" stroke-width="7"/>
+  <path d="M48 20h504l22 70-22 70H48L26 90z" fill="url(#metal)" stroke="#f1b513" stroke-width="4"/>
+  <path d="M62 34h476l17 56-17 56H62L45 90z" fill="url(#face)" stroke="#8c650a" stroke-width="3"/>
+  <path d="M85 90l42-40 18 0-32 31h54v18h-54l32 31h-18z" fill="#f0b719" filter="url(#glow)"/>
+  <path d="M145 90l42-40 18 0-32 31h38v18h-38l32 31h-18z" fill="#b78510" opacity=".92"/>
+  <text x="365" y="115" text-anchor="middle" font-family="Impact, Arial Narrow, sans-serif" font-size="76" font-weight="900" letter-spacing="8" fill="#d89d0b" stroke="#0b0904" stroke-width="3">НАЗАД</text>
+  <path d="M70 29h410" stroke="#ffd44c" stroke-width="3" opacity=".45"/>
+  <path d="M118 151h390" stroke="#ffbb16" stroke-width="4" opacity=".5"/>
+  <circle cx="52" cy="44" r="6" fill="#0a0905" stroke="#e5a40d" stroke-width="3"/>
+  <circle cx="548" cy="136" r="6" fill="#0a0905" stroke="#e5a40d" stroke-width="3"/>
+</svg>
