@@ -1,0 +1,45 @@
+name: Update back button
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace back button
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old_css = '.back-btn{position:absolute;top:7.3%;right:5.7%;z-index:15;padding:.72em 1.1em;border:1px solid rgba(190,143,24,.48);background:rgba(5,7,4,.68);color:#d4bb73;font:700 clamp(9px,.68vw,13px)/1 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;opacity:0;transition:.25s ease}'
+          new_css = '.back-btn{position:absolute;top:5.8%;right:4.8%;z-index:15;width:13.5%;min-width:130px;padding:0;border:0;background:transparent;cursor:pointer;opacity:0;transition:transform .22s ease,filter .22s ease}\n.back-btn img{display:block;width:100%;height:auto;pointer-events:none;-webkit-user-drag:none}'
+          old_hover = '.back-btn:hover,.back-btn:focus-visible{outline:none;color:#ffe8a0;border-color:rgba(233,178,34,.72);background:rgba(30,25,10,.78)}'
+          new_hover = '.back-btn:hover,.back-btn:focus-visible{outline:none;transform:scale(1.035);filter:brightness(1.12) drop-shadow(0 0 10px rgba(255,188,26,.20))}\n.back-btn:active{transform:scale(.985);filter:brightness(.96)}'
+          old_mobile = '.back-btn{top:3%;right:4%;font-size:9px}'
+          new_mobile = '.back-btn{top:2.5%;right:3%;width:28%;min-width:118px}'
+          old_html = '<button class="back-btn" id="backBtn" type="button">← НАЗАД</button>'
+          new_html = '<button class="back-btn" id="backBtn" type="button" aria-label="Назад"><img src="assets/menu/back-button.svg" alt="Назад" draggable="false"></button>'
+
+          pairs = [(old_css,new_css),(old_hover,new_hover),(old_mobile,new_mobile),(old_html,new_html)]
+          for old,new in pairs:
+              if old not in s:
+                  raise SystemExit(f'Expected fragment not found: {old[:80]}')
+              s = s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          rm .github/workflows/update-back-button.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/update-back-button.yml
+          git commit -m "Replace back button with industrial plaque"
+          git push
