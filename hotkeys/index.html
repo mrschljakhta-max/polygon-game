@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#020808">
+  <title>VIDLIK — Клавіатурний полігон</title>
+  <meta name="description" content="Практичний тренажер комбінацій клавіш у повноекранному режимі.">
+  <style>
+    :root{--cyan:#28dfcf;--cyan2:#13aaa0;--ink:#020808;--panel:rgba(5,21,20,.94);--line:rgba(67,211,198,.25);--text:#effffc;--muted:#799b98}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010606;color:var(--text)}
+    body{font-family:"Segoe UI",Inter,Arial,sans-serif}.shell{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#0c2927,#04100f 43%,#010404 76%)}
+    .stage{position:relative;width:min(100vw,calc(100svh * 848 / 566));height:min(100svh,calc(100vw * 566 / 848));aspect-ratio:848/566;overflow:hidden;isolation:isolate;background:#020908;box-shadow:0 0 80px #00b3a622}
+    .stage:fullscreen{width:min(100vw,calc(100vh * 848 / 566));height:min(100vh,calc(100vw * 566 / 848))}
+    .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}.vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,transparent 45%,#0009 100%),linear-gradient(#00100f22,#00100f44)}
+    button{font:inherit}.glass{position:absolute;z-index:8;border:1px solid var(--line);background:linear-gradient(135deg,rgba(7,26,25,.96),rgba(5,15,15,.93));box-shadow:0 8px 30px #0009,inset 0 1px #b5fff711;backdrop-filter:blur(12px)}
+    .task{left:1.7%;top:2.2%;width:29.6%;height:12.7%;padding:1.5% 1.8%;border-radius:7px}.task .micro,.eyebrow{color:#55c9bf;font-weight:700;letter-spacing:.09em;font-size:clamp(7px,.64vw,12px)}
+    .task h1{margin:.42em 0 .15em;font-size:clamp(11px,1.02vw,19px);font-weight:550;line-height:1.15}.task p{margin:0;color:#6f9290;font-size:clamp(7px,.62vw,12px)}
+    .levels{left:34.4%;top:4.3%;width:35.7%;height:8.3%;border-radius:999px;display:flex;align-items:center;justify-content:space-evenly;padding:0 1%}.levels i{width:7.4%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-style:normal;color:#587573;background:#122625;font-size:clamp(7px,.7vw,13px)}.levels i.done{color:#7caaa6;background:#183432}.levels i.active{color:#fff;background:#13a99d;border:1px solid #84fff5;box-shadow:0 0 14px #16d8ca}
+    .stats{position:absolute;z-index:8;right:1.6%;top:2.3%;width:24.7%;height:11.6%;display:grid;grid-template-columns:repeat(3,1fr);gap:3%}.stats div{border:1px solid #43b9ae20;background:#071615ee;display:grid;place-items:center;align-content:center;gap:8%;border-radius:7px}.stats span{color:#6b8987;font-size:clamp(7px,.57vw,11px)}.stats b{font-size:clamp(10px,1.05vw,19px);font-weight:500}
+    .monitor{position:absolute;z-index:6;left:24.2%;top:18.3%;width:45.4%;height:32.6%;border-radius:4px;overflow:hidden;background:#021010;box-shadow:inset 0 0 28px #000,0 0 22px #14cfc929}.desktop{position:relative;width:100%;height:100%;overflow:hidden;color:#bffbf4;background:radial-gradient(circle at 52% 40%,#123d3b,#08201f 45%,#020b0b);font-size:clamp(7px,.54vw,10px)}
+    .topbar{height:11%;display:flex;align-items:center;justify-content:space-between;padding:0 3%;color:#648b88;background:#020908b8;border-bottom:1px solid #43d9ca12}.icons{position:relative;height:89%;padding:4% 3%;display:flex;flex-direction:column;gap:2%}.icon{width:25%;min-width:54px;display:flex;align-items:center;gap:8%;padding:2%;border:1px solid transparent;border-radius:4px;color:#a9cfcc}.icon em{font-style:normal;font-size:1.8em}.icon.sel{background:#15746f66;border-color:#43ddd0a0;box-shadow:0 0 12px #15c8ba2e}.icon.cut{opacity:.42;border-style:dashed}
+    .target{position:absolute;inset:25% 28%;display:grid;place-items:center;align-content:center;gap:6%;border:1px dashed #39d8ca;background:#0b3936e8;border-radius:8px;color:#d7fffb;animation:pulse 1s ease-in-out infinite alternate}.target strong{font-size:3em}.badge{position:absolute;right:5%;top:10%;padding:4% 5%;border:1px solid #4ce2d5;border-radius:6px;background:#0a2826ed}
+    .doc{position:absolute;inset:4%;background:#cfd6d3;color:#1c2625;border-radius:4px;overflow:hidden;box-shadow:0 12px 30px #0007}.win{height:14%;display:flex;justify-content:space-between;align-items:center;padding:0 3%;background:#122b29;color:#a9cfcc}.toolbar{height:14%;background:#e8edeb;display:flex;align-items:center;gap:2%;padding:0 3%;border-bottom:1px solid #aab8b5}.toolbar b{min-width:8%;height:62%;display:grid;place-items:center;border-radius:2px}.toolbar b.on{background:#0aa99c;color:#fff}.paper{margin:4% auto;width:82%;height:60%;background:#fff;padding:5%;box-shadow:0 2px 7px #0003;font-size:clamp(7px,.48vw,9px)}.paper p{line-height:1.45;color:#53605e}.selection{color:#fff;background:#159a90;padding:1px 3px;font-weight:400}.search{position:absolute;z-index:2;right:3%;top:16%;width:43%;height:17%;display:flex;align-items:center;gap:5%;padding:0 4%;background:#fff;border:2px solid #13a99d;border-radius:3px;color:#687875}.print{height:72%;display:grid;place-items:center;align-content:center;gap:8%;color:#214d49}.print strong{font-size:3em}.unsaved{position:absolute;right:3%;bottom:2%;color:#9b463f}.success{position:absolute;inset:0;z-index:5;display:grid;place-items:center;align-content:center;gap:8%;color:#fff;font-weight:700;background:#033d38e8;animation:success .25s ease-out}.success strong{width:18%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:2.6em;background:#17b6a8;box-shadow:0 0 25px #43fff0}
+    .reader{left:31.5%;bottom:2.5%;width:37%;height:10.2%;border-radius:9px;display:grid;grid-template-rows:43% 57%;place-items:center;padding:.7% 2%;transition:.2s}.reader>span{color:#9bb6b3;font-size:clamp(7px,.67vw,13px)}.combo{display:flex;align-items:center;gap:clamp(12px,1.2vw,23px)}.key{position:relative;min-width:clamp(27px,2.2vw,42px);padding:.42em .7em;text-align:center;border-radius:4px;background:linear-gradient(#17302e,#0a1817);color:#d7f5f2;border:1px solid #4e7773;box-shadow:0 2px #020706,inset 0 1px #d6fff021;font-size:clamp(8px,.64vw,12px)}.key+.key:before{content:"+";position:absolute;left:-13px;color:#607f7c}.reader.wrong{border-color:#ff6868aa;box-shadow:0 0 25px #ff303044}.reader.wrong>span{color:#ff9797}.reader.correct{border-color:#5bffdcbb;box-shadow:0 0 28px #12e7cf55}.reader.correct>span{color:#8dffed}
+    .hint,.exit{bottom:3%;height:7.6%;border-radius:6px;color:#6f9490;cursor:pointer;transition:.2s}.hint:hover,.exit:hover{color:#d7fffb;border-color:#35bdb1}.hint{left:1.8%;width:26.2%;display:flex;align-items:center;gap:4%;padding:0 2%;text-align:left}.hint .q{font-size:1.4em;color:#34c8bb}.hint span{display:grid;font-size:clamp(7px,.55vw,10px)}.hint b{color:#8db0ad}.exit{right:1.7%;width:13%;display:flex;align-items:center;justify-content:center;gap:12%}.exit kbd{padding:.42em .65em;border:1px solid #31514e;border-radius:4px;background:#0e1b1a;color:#8eb0ad;font-size:.8em}.glow{position:absolute;z-index:7;width:2%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:2px;background:#5effec88;box-shadow:0 0 14px 5px #28f4dfaa;pointer-events:none}
+    .card{position:absolute;z-index:20;left:50%;top:50%;transform:translate(-50%,-50%);width:min(58%,660px);padding:5% 6%;text-align:center;border:1px solid #61eadd42;border-radius:20px;background:linear-gradient(145deg,#081d1cf7,#020a0af7);box-shadow:0 30px 100px #000,inset 0 1px #b5fff71a,0 0 45px #0cc7b82b;backdrop-filter:blur(18px);animation:card .5s cubic-bezier(.2,.8,.2,1)}.seal{margin:0 auto 4%;width:clamp(42px,5.2vw,76px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;color:#8fffee;background:#0a3a35;border:1px solid #3ad8ca;box-shadow:0 0 28px #11d4c055;font-size:2em}.card h1{margin:.25em 0 .3em;font-size:clamp(24px,3.1vw,56px);line-height:1;letter-spacing:-.03em}.card .copy{margin:0 auto 4%;max-width:44rem;color:#9bb5b2;font-size:clamp(11px,1vw,18px);line-height:1.45}.rules{display:flex;justify-content:center;gap:4%;margin-bottom:5%;color:#89aaa7;font-size:clamp(8px,.72vw,13px)}
+    .primary,.secondary{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:.85em 1.5em;border-radius:8px;cursor:pointer;font-weight:700;border:1px solid #5df4e5;transition:.18s;font-size:clamp(10px,.88vw,16px)}.primary{background:linear-gradient(#26d7c7,#0b9d91);color:#001512;box-shadow:0 8px 28px #12d5c344}.secondary{background:#0b1c1b;color:#a8c8c5;border-color:#365c58}.primary:hover,.secondary:hover{transform:translateY(-2px);box-shadow:0 10px 30px #16e1ce55}.card small{display:block;margin-top:3%;color:#5c7775;font-size:clamp(7px,.6vw,11px)}
+    .pause{position:absolute;inset:0;z-index:30;display:grid;place-items:center;background:#000b;backdrop-filter:blur(10px)}.pause .card{position:relative;left:auto;top:auto;transform:none;width:min(44%,490px);padding:4%;animation:none}.result{width:min(52%,600px);padding-block:4%}.result h1{color:#86fff0;text-shadow:0 0 25px #16d7c5}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2%;margin:4% 0}.grid div{padding:12% 5%;display:grid;gap:5px;border:1px solid #2a5f5a;border-radius:8px;background:#0a1b1a}.grid span{color:#6f8d8a;font-size:clamp(7px,.56vw,11px)}.grid b{font-size:clamp(10px,1vw,18px)}.actions{display:flex;justify-content:center;gap:3%}.note{position:absolute;z-index:12;bottom:12%;left:50%;transform:translateX(-50%);padding:.7em 1em;border:1px solid #7b6c39;border-radius:6px;background:#17150fe8;color:#d4c990;font-size:clamp(7px,.6vw,11px)}
+    @keyframes card{from{opacity:0;transform:translate(-50%,-46%) scale(.96)}}@keyframes success{from{opacity:0;transform:scale(.92)}}@keyframes pulse{to{box-shadow:0 0 24px #29e5d260}}
+    @media(max-aspect-ratio:4/5){.stage{width:100vw;height:auto}.card{width:86%;padding:7%}.rules{display:grid;gap:5px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <main class="shell"><section class="stage" id="stage" aria-label="Клавіатурний полігон">
+    <img class="bg" src="workstation.png" alt="Темна комп'ютерна робоча станція"><div class="vignette"></div>
+    <div id="game"></div>
+  </section></main>
+  <script>
+    const TASKS=[
+      {title:'Підготовка робочого столу',text:'Виділіть усі файли на робочому столі.',main:'KeyA',labels:['Ctrl','A'],result:'Усі файли виділено',scene:'select'},
+      {title:'Копіювання',text:'Скопіюйте виділений файл.',main:'KeyC',labels:['Ctrl','C'],result:'Файл скопійовано',scene:'copy'},
+      {title:'Вставлення',text:'Вставте скопійований файл у папку «Документи».',main:'KeyV',labels:['Ctrl','V'],result:'Файл вставлено',scene:'paste'},
+      {title:'Переміщення',text:'Виріжте виділений файл, щоб перемістити його.',main:'KeyX',labels:['Ctrl','X'],result:'Файл готовий до переміщення',scene:'cut'},
+      {title:'Виправлення помилки',text:'Ви випадково видалили файл. Скасуйте останню дію.',main:'KeyZ',labels:['Ctrl','Z'],result:'Останню дію скасовано',scene:'undo'},
+      {title:'Повторення дії',text:'Повторіть щойно скасовану дію.',main:'KeyY',labels:['Ctrl','Y'],result:'Дію повторено',scene:'redo'},
+      {title:'Збереження',text:'Збережіть зміни у відкритому документі.',main:'KeyS',labels:['Ctrl','S'],result:'Документ збережено',scene:'save'},
+      {title:'Пошук у документі',text:'Відкрийте пошук слова в документі.',main:'KeyF',labels:['Ctrl','F'],result:'Пошук відкрито',scene:'find'},
+      {title:'Друк',text:'Відкрийте вікно друку документа.',main:'KeyP',labels:['Ctrl','P'],result:'Вікно друку відкрито',scene:'print'},
+      {title:'Форматування',text:'Зробіть виділений текст напівжирним.',main:'KeyB',labels:['Ctrl','B'],result:'Напівжирний стиль застосовано',scene:'bold'}
+    ];
+    const POS={ControlLeft:[23.8,77.8],KeyA:[31.2,73.4],KeyB:[49.8,76],KeyC:[43.2,76],KeyF:[39.2,73.4],KeyP:[56.3,70.7],KeyS:[33.7,73.4],KeyV:[46.3,76],KeyX:[40.2,76],KeyY:[45.5,70.7],KeyZ:[37.1,76]};
+    const game=document.getElementById('game'),stage=document.getElementById('stage');
+    let phase='intro',index=0,errors=0,hints=0,seconds=0,pressed=new Set(),feedback='idle',hint=false,paused=false,lockOK=true,timer=null,nextTimer=null;
+    const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+    const label=c=>c.startsWith('Key')?c.slice(3):c.startsWith('Control')?'Ctrl':c;
+    const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    function desktop(t){
+      const files=['select','copy','paste','cut','undo','redo'].includes(t.scene);
+      let body='';
+      if(files){
+        body=`<div class="icons"><div class="icon ${t.scene==='select'?'sel':''}"><em>📁</em><span>Документи</span></div><div class="icon sel ${t.scene==='cut'?'cut':''}"><em>📄</em><span>Звіт.txt</span></div><div class="icon ${t.scene==='select'?'sel':''}"><em>📄</em><span>Навчання.docx</span></div>${t.scene==='paste'?'<div class="target"><strong>📁</strong><span>Документи</span></div>':''}${t.scene==='undo'?'<div class="badge">↶ Файл видалено</div>':''}${t.scene==='redo'?'<div class="badge">↻ Дію можна повторити</div>':''}</div>`;
+      }else{
+        body=`<div class="doc"><div class="win"><span>Навчальний звіт</span><span>— □ ×</span></div><div class="toolbar"><b class="${t.scene==='bold'?'on':''}">B</b><b>I</b><b>U</b><span>│ Абзац</span></div>${t.scene==='find'?'<div class="search">⌕ Введіть слово для пошуку…</div>':''}${t.scene==='print'?'<div class="print"><strong>▤</strong><span>Підготовка до друку</span></div>':`<div class="paper"><b class="${t.scene==='bold'?'selection':''}">Цифрова грамотність</b><p>Комбінації клавіш допомагають виконувати типові дії швидше та впевненіше.</p><p>Використовуйте клавіатуру для роботи з документами.</p></div>`}${t.scene==='save'?'<div class="unsaved">● Зміни не збережено</div>':''}</div>`;
+      }
+      return `<div class="desktop"><div class="topbar"><span>VIDLIK OS</span><span>19:24 · УКР</span></div>${body}${feedback==='correct'?`<div class="success"><strong>✓</strong><span>${esc(t.result)}</span></div>`:''}</div>`;
+    }
+    function playing(){
+      const t=TASKS[index],shown=[...pressed].sort(c=>c.startsWith('Control')?-1:1).map(label),keys=shown.length?shown:hint?t.labels:['—','—'];
+      return `<section class="glass task"><span class="micro">ЗАВДАННЯ ${String(index+1).padStart(2,'0')} / ${TASKS.length}</span><h1>${esc(t.text)}</h1><p>${esc(t.title)}</p></section>
+      <nav class="glass levels">${TASKS.map((_,i)=>`<i class="${i<index?'done':i===index?'active':''}">${i+1}</i>`).join('')}</nav>
+      <section class="stats"><div><span>Час</span><b>${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Прогрес</span><b>${Math.round(index/TASKS.length*100)}%</b></div></section>
+      <div class="monitor">${desktop(t)}</div>
+      <div class="glass reader ${feedback}"><span>${feedback==='correct'?esc(t.result):feedback==='wrong'?'Спробуйте іншу комбінацію':'Очікується комбінація клавіш…'}</span><div class="combo">${keys.map(k=>`<span class="key">${esc(k)}</span>`).join('')}</div></div>
+      <button class="glass hint" id="hint"><span class="q">?</span><span><b>Підказка</b>${hint?t.labels.join(' + '):'Показати комбінацію'}</span></button>
+      <button class="glass exit" id="exit"><span>Вийти</span><kbd>Esc</kbd></button>
+      ${[...pressed].filter(c=>POS[c]).map(c=>`<i class="glow" style="left:${POS[c][0]}%;top:${POS[c][1]}%"></i>`).join('')}
+      ${!lockOK?'<div class="note">Браузер не підтримує повне блокування системних клавіш, але основні комбінації працюють.</div>':''}`;
+    }
+    function render(){
+      if(phase==='intro')game.innerHTML=`<section class="card"><div class="seal">⌨</div><p class="eyebrow">VIDLIK · ЦИФРОВА ГРАМОТНІСТЬ</p><h1>Клавіатурний полігон</h1><p class="copy">Виконайте 10 практичних завдань, натискаючи комбінації на фізичній клавіатурі. Розкладка мови не має значення.</p><div class="rules"><span>✓ Справжні натискання</span><span>✓ Повноекранний режим</span><span>✓ Результат і помилки</span></div><button class="primary" id="start">▶ Розпочати вправу</button><small>Для виходу натисніть Esc або кнопку «Вийти».</small></section>`;
+      else if(phase==='complete'){const score=Math.max(0,1000-errors*20-hints*10+Math.max(0,120-seconds));game.innerHTML=`<section class="card result"><div class="seal">✓</div><p class="eyebrow">ТРЕНУВАННЯ ЗАВЕРШЕНО</p><h1>${score} XP</h1><p class="copy">Ви виконали всі 10 завдань.</p><div class="grid"><div><span>Правильно</span><b>10 / 10</b></div><div><span>Час</span><b>${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Підказки</span><b>${hints}</b></div></div><div class="actions"><button class="primary" id="repeat">↻ Повторити</button><button class="secondary" id="leave">↪ Вийти</button></div></section>`;}
+      else{game.innerHTML=playing();if(paused)game.insertAdjacentHTML('beforeend','<div class="pause"><section class="card"><div class="seal">Ⅱ</div><h2>Вправу призупинено</h2><p class="copy">Таймер зупинено. Поверніться у повноекранний режим, щоб продовжити.</p><button class="primary" id="resume">▶ Продовжити</button></section></div>')}
+      bind();
+    }
+    function bind(){
+      document.getElementById('start')?.addEventListener('click',start);
+      document.getElementById('resume')?.addEventListener('click',enter);
+      document.getElementById('repeat')?.addEventListener('click',()=>{index=errors=hints=seconds=0;feedback='idle';hint=false;start()});
+      document.getElementById('leave')?.addEventListener('click',leave);
+      document.getElementById('exit')?.addEventListener('click',leave);
+      document.getElementById('hint')?.addEventListener('click',()=>{if(!hint)hints++;hint=true;render()});
+    }
+    async function enter(){
+      try{if(!document.fullscreenElement)await stage.requestFullscreen({navigationUI:'hide'})}catch(e){}
+      if(navigator.keyboard?.lock){try{await navigator.keyboard.lock()}catch(e){lockOK=false}}else lockOK=false;
+      paused=false;phase='playing';runTimer();render();
+    }
+    function start(){phase='playing';paused=false;runTimer();enter()}
+    async function leave(){navigator.keyboard?.unlock?.();if(document.fullscreenElement)try{await document.exitFullscreen()}catch(e){};paused=true;stopTimer();render()}
+    function runTimer(){stopTimer();timer=setInterval(()=>{if(phase==='playing'&&!paused){seconds++;render()}},1000)}function stopTimer(){clearInterval(timer)}
+    document.addEventListener('fullscreenchange',()=>{if(phase==='playing'&&!document.fullscreenElement){paused=true;stopTimer();render()}});
+    window.addEventListener('keydown',e=>{
+      if(phase!=='playing'||paused)return;if(e.code==='Escape'){e.preventDefault();leave();return}if(e.ctrlKey||e.metaKey||e.altKey||e.code.startsWith('Control'))e.preventDefault();pressed.add(e.code);render();if(e.repeat||e.code.startsWith('Control')||e.code.startsWith('Shift')||e.code.startsWith('Alt'))return;
+      const t=TASKS[index];if(e.ctrlKey&&e.code===t.main&&!e.shiftKey&&!e.altKey){feedback='correct';render();clearTimeout(nextTimer);nextTimer=setTimeout(()=>{if(index===TASKS.length-1){phase='complete';navigator.keyboard?.unlock?.();stopTimer()}else{index++;feedback='idle';hint=false}render()},1050)}else{errors++;feedback='wrong';render();setTimeout(()=>{if(feedback==='wrong'){feedback='idle';render()}},620)}
+    },true);
+    window.addEventListener('keyup',e=>{pressed.delete(e.code);if(phase==='playing'&&!paused)render()},true);
+    render();
+  </script>
+</body>
+</html>
