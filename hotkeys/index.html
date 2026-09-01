@@ -6,13 +6,14 @@
   <meta name="theme-color" content="#020808">
   <title>VIDLIK — Клавіатурний полігон</title>
   <meta name="description" content="Практичний тренажер комбінацій клавіш у повноекранному режимі.">
+  <link rel="preload" as="image" href="workstation-clean.png?v=1" fetchpriority="high">
   <style>
     :root{--cyan:#28dfcf;--cyan2:#13aaa0;--ink:#020808;--panel:rgba(5,21,20,.94);--line:rgba(67,211,198,.25);--text:#effffc;--muted:#799b98}
     *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010606;color:var(--text)}
     body{font-family:"Segoe UI",Inter,Arial,sans-serif}.shell{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#0c2927,#04100f 43%,#010404 76%)}
-    .stage{position:relative;width:min(100vw,150svh);height:min(100svh,66.667vw);aspect-ratio:3/2;overflow:hidden;isolation:isolate;background:#020908;box-shadow:0 0 80px #00b3a622}
+    .stage{position:relative;width:min(100vw,150svh);height:min(100svh,66.667vw);aspect-ratio:3/2;overflow:hidden;isolation:isolate;background:#020908 url('workstation-clean.png?v=1') center/cover no-repeat;box-shadow:0 0 80px #00b3a622}
     .stage:fullscreen{width:min(100vw,150vh);height:min(100vh,66.667vw)}
-    .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}.vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,transparent 45%,#0009 100%),linear-gradient(#00100f22,#00100f44)}
+    .bg{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}.vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,transparent 45%,#0009 100%),linear-gradient(#00100f22,#00100f44)}
     button{font:inherit}.glass{position:absolute;z-index:8;border:1px solid var(--line);background:linear-gradient(135deg,rgba(7,26,25,.96),rgba(5,15,15,.93));box-shadow:0 8px 30px #0009,inset 0 1px #b5fff711;backdrop-filter:blur(12px)}
     .task{left:1.7%;top:2.2%;width:29.6%;height:12.7%;padding:1.5% 1.8%;border-radius:7px}.task .micro,.eyebrow{color:#55c9bf;font-weight:700;letter-spacing:.09em;font-size:clamp(7px,.64vw,12px)}
     .task h1{margin:.42em 0 .15em;font-size:clamp(11px,1.02vw,19px);font-weight:550;line-height:1.15}.task p{margin:0;color:#6f9290;font-size:clamp(7px,.62vw,12px)}
@@ -70,7 +71,7 @@
 </head>
 <body>
   <main class="shell"><section class="stage" id="stage" aria-label="Клавіатурний полігон">
-    <img class="bg" src="workstation.png?v=4" alt="Темна комп'ютерна робоча станція"><div class="vignette"></div>
+    <img class="bg" src="workstation-clean.png?v=1" alt="Темна комп'ютерна робоча станція" loading="eager" fetchpriority="high" decoding="sync"><div class="vignette"></div>
     <div id="game"></div>
   </section></main>
   <script>
@@ -87,7 +88,7 @@
       {title:'Форматування',text:'Зробіть виділений текст напівжирним.',main:'KeyB',labels:['Ctrl','B'],result:'Напівжирний стиль застосовано',scene:'bold'}
     ];
     const game=document.getElementById('game'),stage=document.getElementById('stage');
-    let phase='intro',index=0,errors=0,hints=0,seconds=0,pressed=new Set(),shownCombo=[],feedback='idle',hint=false,paused=false,lockOK=true,timer=null,nextTimer=null;
+    let phase='intro',index=0,errors=0,hints=0,seconds=0,pressed=new Set(),shownCombo=[],feedback='idle',hint=false,paused=false,comboLocked=false,lockOK=true,timer=null,nextTimer=null;
     const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
     const label=c=>c.startsWith('Key')?c.slice(3):c.startsWith('Control')?'Ctrl':c;
     const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -121,7 +122,7 @@
     function bind(){
       document.getElementById('start')?.addEventListener('click',start);
       document.getElementById('resume')?.addEventListener('click',enter);
-      document.getElementById('repeat')?.addEventListener('click',()=>{index=errors=hints=seconds=0;shownCombo=[];feedback='idle';hint=false;start()});
+      document.getElementById('repeat')?.addEventListener('click',()=>{index=errors=hints=seconds=0;shownCombo=[];feedback='idle';hint=false;comboLocked=false;start()});
       document.getElementById('leave')?.addEventListener('click',leave);
       document.getElementById('exit')?.addEventListener('click',leave);
       document.getElementById('hint')?.addEventListener('click',()=>{if(!hint)hints++;hint=true;render()});
@@ -131,15 +132,24 @@
       if(navigator.keyboard?.lock){try{await navigator.keyboard.lock()}catch(e){lockOK=false}}else lockOK=false;
       paused=false;phase='playing';runTimer();render();
     }
-    function start(){phase='playing';paused=false;runTimer();enter()}
+    function start(){phase='playing';paused=false;comboLocked=false;enter()}
     async function leave(){navigator.keyboard?.unlock?.();if(document.fullscreenElement)try{await document.exitFullscreen()}catch(e){};paused=true;stopTimer();render()}
     function runTimer(){stopTimer();timer=setInterval(()=>{if(phase==='playing'&&!paused){seconds++;const el=document.getElementById('timeValue');if(el)el.textContent=fmt(seconds)}},1000)}function stopTimer(){clearInterval(timer)}
     document.addEventListener('fullscreenchange',()=>{if(phase==='playing'&&!document.fullscreenElement){paused=true;stopTimer();render()}});
     window.addEventListener('keydown',e=>{
-      if(phase!=='playing'||paused)return;if(e.code==='Escape'){e.preventDefault();leave();return}if(e.ctrlKey||e.metaKey||e.altKey||e.code.startsWith('Control'))e.preventDefault();pressed.add(e.code);render();if(e.repeat||e.code.startsWith('Control')||e.code.startsWith('Shift')||e.code.startsWith('Alt'))return;
-      const t=TASKS[index];if(e.ctrlKey&&e.code===t.main&&!e.shiftKey&&!e.altKey){shownCombo=[...t.labels];feedback='correct';render();clearTimeout(nextTimer);nextTimer=setTimeout(()=>{shownCombo=[];if(index===TASKS.length-1){phase='complete';navigator.keyboard?.unlock?.();stopTimer()}else{index++;feedback='idle';hint=false}render()},2000)}else{errors++;feedback='wrong';render();setTimeout(()=>{if(feedback==='wrong'){feedback='idle';render()}},620)}
+      if(phase!=='playing'||paused)return;
+      if(e.code==='Escape'){e.preventDefault();leave();return}
+      if(e.ctrlKey||e.metaKey||e.altKey||e.code.startsWith('Control'))e.preventDefault();
+      if(e.repeat||comboLocked)return;
+      pressed.add(e.code);
+      if(e.code.startsWith('Control')||e.code.startsWith('Shift')||e.code.startsWith('Alt')){render();return}
+      const t=TASKS[index];
+      if(e.ctrlKey&&e.code===t.main&&!e.shiftKey&&!e.altKey){
+        comboLocked=true;shownCombo=[...t.labels];feedback='correct';render();clearTimeout(nextTimer);
+        nextTimer=setTimeout(()=>{shownCombo=[];comboLocked=false;if(index===TASKS.length-1){phase='complete';navigator.keyboard?.unlock?.();stopTimer()}else{index++;feedback='idle';hint=false}render()},2000)
+      }else{errors++;feedback='wrong';render();setTimeout(()=>{if(feedback==='wrong'&&!comboLocked){feedback='idle';render()}},620)}
     },true);
-    window.addEventListener('keyup',e=>{pressed.delete(e.code);if(phase==='playing'&&!paused)render()},true);
+    window.addEventListener('keyup',e=>{pressed.delete(e.code);if(phase==='playing'&&!paused&&!comboLocked)render()},true);
     render();
   </script>
 </body>
