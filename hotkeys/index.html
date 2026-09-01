@@ -51,11 +51,26 @@
     .hint .q{width:clamp(22px,2vw,38px);aspect-ratio:1;display:grid;place-items:center;border:1px solid rgba(75,226,211,.32);border-radius:50%;background:#0b2927;color:#61eee0;box-shadow:inset 0 0 12px #17c7b722}.hint span{gap:.16em}.hint b{color:#a8c8c5;letter-spacing:.04em}.hint:hover{transform:translateY(-2px);box-shadow:0 18px 38px #0009,0 0 20px rgba(35,214,196,.12)}
     .exit{right:1.45%;width:14%;clip-path:polygon(12% 0,100% 0,100% 72%,88% 100%,0 100%,0 28%);gap:15%}.exit kbd{border-color:rgba(91,210,199,.28);background:linear-gradient(#19302e,#081312);box-shadow:0 3px 0 #020606;color:#b5d2cf}.exit:hover{transform:translateY(-2px);box-shadow:0 18px 38px #0009,0 0 20px rgba(35,214,196,.12)}
     @keyframes energy{to{filter:brightness(1.5);transform:scaleX(.82)}}@keyframes hudShake{25%{transform:translateX(-5px)}55%{transform:translateX(4px)}80%{transform:translateX(-2px)}}
+
+    /* HUD V3 — ambient depth and live-system motion */
+    .task,.levels,.reader,.hint,.exit,.stats{background-image:linear-gradient(115deg,rgba(105,255,240,.035),transparent 32%,rgba(0,0,0,.12)),repeating-linear-gradient(90deg,transparent 0,transparent 31px,rgba(74,208,196,.018) 32px),repeating-linear-gradient(0deg,transparent 0,transparent 31px,rgba(74,208,196,.014) 32px)}
+    .task:before{width:42%;animation:edgeFlow 4.8s ease-in-out infinite}.task:after{animation:railBreath 2.6s ease-in-out infinite}
+    .levels i.active{animation:nodePulse 1.7s ease-in-out infinite}.levels i.done:after{content:"";position:absolute;width:24%;aspect-ratio:1;border-radius:50%;background:#58dfd2;box-shadow:0 0 7px #32cbbb;bottom:9%}
+    .stats:after{content:"";position:absolute;right:7%;top:10%;width:5px;aspect-ratio:1;border-radius:50%;background:#63f8e9;box-shadow:0 0 10px #28e0ce;animation:liveDot 1.4s steps(1) infinite}
+    .reader:not(.correct):after{animation:idleEnergy 3.4s ease-in-out infinite}.reader.correct .key{animation:keyConfirm .55s cubic-bezier(.2,.85,.25,1) both}
+    .reader.correct>span{color:#9ffff2;text-shadow:0 0 14px rgba(83,255,234,.42);letter-spacing:.055em}.reader.wrong>span{text-shadow:0 0 12px rgba(255,83,90,.26)}
+    .hint:hover .q{background:#10514b;border-color:#71fff0;box-shadow:0 0 18px rgba(54,242,222,.3),inset 0 0 12px rgba(23,199,183,.18)}
+    @keyframes edgeFlow{0%,100%{transform:translateX(-18%);opacity:.48}50%{transform:translateX(135%);opacity:1}}
+    @keyframes railBreath{0%,100%{opacity:.38;filter:brightness(.8)}50%{opacity:1;filter:brightness(1.35)}}
+    @keyframes nodePulse{0%,100%{transform:scale(1.08);filter:drop-shadow(0 0 7px #22e7d6)}50%{transform:scale(1.2);filter:drop-shadow(0 0 15px #4ffff0)}}
+    @keyframes liveDot{0%,72%{opacity:1}73%,100%{opacity:.18}}
+    @keyframes idleEnergy{0%,100%{opacity:.3;transform:scaleX(.65)}50%{opacity:.75;transform:scaleX(1)}}
+    @keyframes keyConfirm{0%{transform:translateY(4px);filter:brightness(.75)}55%{transform:translateY(-2px);filter:brightness(1.4)}100%{transform:translateY(0);filter:brightness(1)}}
   </style>
 </head>
 <body>
   <main class="shell"><section class="stage" id="stage" aria-label="Клавіатурний полігон">
-    <img class="bg" src="workstation.png?v=2" alt="Темна комп'ютерна робоча станція"><div class="vignette"></div>
+    <img class="bg" src="workstation.png?v=4" alt="Темна комп'ютерна робоча станція"><div class="vignette"></div>
     <div id="game"></div>
   </section></main>
   <script>
@@ -90,7 +105,7 @@
       const t=TASKS[index],live=[...pressed].sort(c=>c.startsWith('Control')?-1:1).map(label),keys=shownCombo.length?shownCombo:live.length?live:hint?t.labels:['—','—'];
       return `<section class="glass task"><span class="micro">ЗАВДАННЯ ${String(index+1).padStart(2,'0')} / ${TASKS.length}</span><h1>${esc(t.text)}</h1><p>${esc(t.title)}</p></section>
       <nav class="glass levels">${TASKS.map((_,i)=>`<i class="${i<index?'done':i===index?'active':''}">${i+1}</i>`).join('')}</nav>
-      <section class="stats"><div><span>Час</span><b>${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Прогрес</span><b>${Math.round(index/TASKS.length*100)}%</b></div></section>
+      <section class="stats"><div><span>Час</span><b id="timeValue">${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Прогрес</span><b>${Math.round(index/TASKS.length*100)}%</b></div></section>
       <div class="monitor">${desktop(t)}</div>
       <div class="glass reader ${feedback}"><span>${feedback==='correct'?esc(t.result):feedback==='wrong'?'Спробуйте іншу комбінацію':'Очікується комбінація клавіш…'}</span><div class="combo">${keys.map(k=>`<span class="key">${esc(k)}</span>`).join('')}</div></div>
       <button class="glass hint" id="hint"><span class="q">?</span><span><b>Підказка</b>${hint?t.labels.join(' + '):'Показати комбінацію'}</span></button>
@@ -118,7 +133,7 @@
     }
     function start(){phase='playing';paused=false;runTimer();enter()}
     async function leave(){navigator.keyboard?.unlock?.();if(document.fullscreenElement)try{await document.exitFullscreen()}catch(e){};paused=true;stopTimer();render()}
-    function runTimer(){stopTimer();timer=setInterval(()=>{if(phase==='playing'&&!paused){seconds++;render()}},1000)}function stopTimer(){clearInterval(timer)}
+    function runTimer(){stopTimer();timer=setInterval(()=>{if(phase==='playing'&&!paused){seconds++;const el=document.getElementById('timeValue');if(el)el.textContent=fmt(seconds)}},1000)}function stopTimer(){clearInterval(timer)}
     document.addEventListener('fullscreenchange',()=>{if(phase==='playing'&&!document.fullscreenElement){paused=true;stopTimer();render()}});
     window.addEventListener('keydown',e=>{
       if(phase!=='playing'||paused)return;if(e.code==='Escape'){e.preventDefault();leave();return}if(e.ctrlKey||e.metaKey||e.altKey||e.code.startsWith('Control'))e.preventDefault();pressed.add(e.code);render();if(e.repeat||e.code.startsWith('Control')||e.code.startsWith('Shift')||e.code.startsWith('Alt'))return;
