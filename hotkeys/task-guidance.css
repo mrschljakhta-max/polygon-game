@@ -1,0 +1,23 @@
+/* VIDLIK: чіткіші формулювання завдань і сильніший візуальний акцент */
+.taskbox{
+  width:31.5%!important;
+}
+.taskbox h3{
+  font-size:clamp(18px,1.55vw,30px)!important;
+  line-height:1.04!important;
+  font-weight:760!important;
+  letter-spacing:0!important;
+  max-width:100%!important;
+  text-wrap:balance;
+}
+.taskbox h3::before{
+  font-size:clamp(7px,.48vw,9px)!important;
+  margin-bottom:.78em!important;
+}
+@media(max-width:800px){
+  .taskbox{width:33%!important}
+  .taskbox h3{
+    font-size:clamp(15px,1.9vw,22px)!important;
+    line-height:1.06!important;
+  }
+}
