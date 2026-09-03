@@ -4,16 +4,111 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020808">
-<title>VIDLIK — Клавіатурний полігон</title>
-<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#010606}#gameFrame{display:block;width:100%;height:100%;border:0;background:#010606}</style>
+<title>VIDLIK — Комбінації клавіш</title>
+<style>
+:root{--cyan:#52e2d5;--cyan-hot:#92fff5;--white:#f2fbfa;--dark:#020908}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010606;font-family:Inter,"Segoe UI",Arial,sans-serif}
+body{display:grid;place-items:center}
+.stage{position:relative;width:min(100vw,calc(100vh * 16 / 9));height:min(100vh,calc(100vw * 9 / 16));aspect-ratio:16/9;overflow:hidden;isolation:isolate;background:#010606}
+.bg{position:absolute;inset:-.25%;z-index:0;background:url("workstation-clean.png?v=6") center/cover no-repeat;transform-origin:center;animation:ambient 14s ease-in-out infinite alternate}
+@keyframes ambient{from{transform:scale(1)}to{transform:scale(1.005)}}
+.vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 49% 39%,transparent 0 52%,rgba(0,0,0,.07) 78%,rgba(0,0,0,.18) 100%)}
+.monitor-glow{position:absolute;z-index:1;left:28.2%;top:17%;width:41.3%;height:37.2%;border-radius:10px;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 48%,rgba(43,206,194,.06),rgba(43,206,194,.018) 58%,transparent 100%);box-shadow:0 0 55px rgba(42,202,190,.035);animation:wake 2.8s ease-out .1s forwards}
+@keyframes wake{from{opacity:0}to{opacity:1}}
+.sticky{position:absolute;z-index:2;width:5.45%;aspect-ratio:1/1.04;background:linear-gradient(145deg,#e8ce78,#c9aa52);box-shadow:0 8px 15px rgba(0,0,0,.26),inset 0 0 0 1px rgba(93,66,20,.24);transform:rotate(-1.2deg);filter:saturate(.86) brightness(.91);overflow:hidden}
+.sticky::after{content:"";position:absolute;right:0;bottom:0;border-style:solid;border-width:0 0 .65vw .65vw;border-color:transparent transparent rgba(101,77,30,.22) transparent}
+.sticky-one{left:79.75%;top:26.3%;transform:rotate(-1.4deg)}
+.sticky-two{left:82.0%;top:39.8%;transform:rotate(.9deg);display:flex;align-items:center;justify-content:center;padding:.5% .45%;color:#382914;font-family:"Segoe Print","Comic Sans MS",cursive;font-size:clamp(8px,.73vw,14px);font-weight:600;line-height:1.12;text-align:center}
+.sticky-one svg{width:100%;height:100%;display:block;padding:14%}
+.sticky-one path,.sticky-one circle,.sticky-one ellipse{fill:none;stroke:#463416;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.78}
+.menu{position:absolute;z-index:3;left:49.2%;top:36.3%;transform:translate(-50%,-50%);width:min(43%,735px);display:flex;flex-direction:column;align-items:center;gap:clamp(31px,3.5vh,45px);text-align:center}
+.title-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:1.2em;padding-bottom:13px;transition:opacity .58s ease,transform .58s ease}
+.title{margin:0;color:var(--white);font-size:clamp(30px,2.72vw,52px);font-weight:680;letter-spacing:.055em;line-height:1;text-transform:uppercase;white-space:nowrap;text-shadow:0 3px 24px rgba(0,0,0,.42)}
+.title .accent{color:var(--cyan-hot);font-weight:760}
+.title-cursor{display:inline-block;width:2px;height:.95em;margin-left:.16em;vertical-align:-.05em;background:var(--cyan);box-shadow:0 0 10px rgba(82,226,213,.55);animation:blink .78s steps(1,end) infinite;transition:opacity .6s ease}
+.title-rule{position:absolute;left:50%;bottom:0;width:0;height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 9px rgba(82,226,213,.2);opacity:0;transition:width 1.15s cubic-bezier(.22,.8,.22,1),opacity .35s ease}
+.title-wrap.ready .title-rule{width:68%;opacity:.72}.title-wrap.ready .title-cursor{opacity:.38}
+@keyframes blink{0%,44%{opacity:1}45%,100%{opacity:0}}
+.terminal-action{appearance:none;-webkit-appearance:none;position:relative;display:inline-flex;align-items:baseline;justify-content:center;gap:.22em;padding:7px 10px 10px;border:0;background:transparent;color:#8ab2ae;font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:clamp(17px,1.38vw,27px);font-weight:600;letter-spacing:.045em;cursor:pointer;opacity:0;transform:translateY(7px);pointer-events:none;transition:opacity 1.65s ease,transform 1.65s cubic-bezier(.22,.8,.22,1),color .18s ease,text-shadow .18s ease}
+.terminal-action.visible{opacity:1;transform:none;pointer-events:auto}
+.prompt{color:var(--cyan);font-weight:700;margin-right:.14em;text-shadow:0 0 8px rgba(82,226,213,.25);transition:transform .18s ease,color .18s ease,text-shadow .18s ease}
+.command-text{color:#d9efec;transition:color .18s ease,text-shadow .18s ease}
+.command-cursor{display:inline-block;width:.58em;height:1.02em;margin-left:.04em;vertical-align:-.13em;background:var(--cyan);opacity:.9;box-shadow:0 0 8px rgba(82,226,213,.25);animation:cmdBlink .88s steps(1,end) infinite;transition:background .18s ease,box-shadow .18s ease}
+@keyframes cmdBlink{0%,48%{opacity:.92}49%,100%{opacity:.12}}
+.terminal-action::after{content:"";position:absolute;left:50%;bottom:0;width:0;height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;box-shadow:0 0 12px rgba(82,226,213,.22);transition:width .32s ease,opacity .22s ease}
+.terminal-action:hover,.terminal-action:focus-visible{color:var(--cyan-hot);outline:none;text-shadow:0 0 13px rgba(82,226,213,.1)}
+.terminal-action:hover .prompt,.terminal-action:focus-visible .prompt{color:var(--cyan-hot);transform:translateX(2px);text-shadow:0 0 11px rgba(82,226,213,.42)}
+.terminal-action:hover .command-text,.terminal-action:focus-visible .command-text{color:#fff}
+.terminal-action:hover::after,.terminal-action:focus-visible::after{width:100%;opacity:.8}
+.terminal-action.accepted .prompt,.terminal-action.accepted .command-text{color:var(--cyan-hot)}
+.terminal-action.accepted .command-cursor{animation:none;opacity:1;background:#bafff8;box-shadow:0 0 18px rgba(117,255,244,.55)}
+.terminal-action.accepted::after{width:112%;opacity:1;transition:width .18s ease,opacity .18s ease}
+.stage.leaving .terminal-action{opacity:0;transform:translateY(4px);transition-duration:.25s}.stage.leaving .title-wrap{opacity:0;transform:translateY(-4px);transition-delay:.16s}
+.fade{position:absolute;inset:0;z-index:5;pointer-events:none;background:var(--dark);opacity:0;transition:opacity .8s ease .38s}.stage.leaving .fade{opacity:.2}
+@media(max-aspect-ratio:4/3){.menu{top:35.5%;width:min(70%,710px)}.title{white-space:normal;text-align:center}}
+@media(max-width:720px){.menu{top:35%;width:80%}.title{font-size:clamp(24px,6.5vw,39px);white-space:normal;text-align:center}.terminal-action{font-size:clamp(16px,4.6vw,23px)}}
+@media(prefers-reduced-motion:reduce){.bg,.monitor-glow,.title-cursor,.command-cursor{animation:none!important}.terminal-action{transition:opacity .2s ease;transform:none}}
+</style>
 </head>
 <body>
-<iframe id="gameFrame" src="game.html" title="VIDLIK — Клавіатурний полігон" allow="fullscreen; keyboard-map"></iframe>
-<script src="runtime-compat.js"></script>
-<script src="enhanced-visuals.js"></script>
-<script src="task-guidance.js"></script>
-<script src="pause-enhancement.js?v=3"></script>
-<script src="sector-switcher.js?v=4"></script>
-<script src="start-menu-lite.js?v=1"></script>
+<main id="stage" class="stage" aria-label="Стартове меню клавіатурного полігону">
+  <div class="bg" aria-hidden="true"></div>
+  <div class="monitor-glow" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="sticky sticky-one" aria-hidden="true">
+    <svg viewBox="0 0 100 100" role="presentation">
+      <path d="M49 14 L25 72 Q49 82 73 72 Z"/>
+      <ellipse cx="49" cy="72" rx="24" ry="9"/>
+      <circle cx="67" cy="64" r="17"/>
+      <path d="M49 14 L49 72" opacity=".42"/>
+    </svg>
+  </div>
+  <div class="sticky sticky-two" aria-hidden="true">здати<br>на каву<br>до першого<br>числа</div>
+
+  <section class="menu">
+    <div id="titleWrap" class="title-wrap">
+      <h1 class="title"><span id="typed"></span><span class="title-cursor" aria-hidden="true"></span></h1>
+      <span class="title-rule" aria-hidden="true"></span>
+    </div>
+
+    <button id="terminalAction" class="terminal-action" type="button" aria-label="Розпочати">
+      <span class="prompt">&gt;</span>
+      <span class="command-text">РОЗПОЧАТИ</span>
+      <span class="command-cursor" aria-hidden="true"></span>
+    </button>
+  </section>
+
+  <div class="fade" aria-hidden="true"></div>
+</main>
+<script>
+(()=>{
+  const parts=[{text:"КОМБІНАЦІЇ ",accent:false},{text:"КЛАВІШ",accent:true}];
+  const flat=parts.map(p=>p.text).join("");
+  const stage=document.getElementById("stage");
+  const typed=document.getElementById("typed");
+  const wrap=document.getElementById("titleWrap");
+  const action=document.getElementById("terminalAction");
+  const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function renderText(count){let remain=count;typed.innerHTML="";parts.forEach(part=>{if(remain<=0)return;const n=Math.min(remain,part.text.length);const span=document.createElement("span");span.textContent=part.text.slice(0,n);if(part.accent)span.className="accent";typed.appendChild(span);remain-=n})}
+  function delayFor(ch,i){let d=64+Math.random()*40;if(i%5===0)d+=18+Math.random()*22;if(ch===" ")d=175;if(i===parts[0].text.length-2)d+=120;return d}
+  function revealCommand(){setTimeout(()=>{wrap.classList.add("ready");setTimeout(()=>action.classList.add("visible"),520)},520)}
+  function typeNext(i=0){if(i>=flat.length){revealCommand();return}renderText(i+1);setTimeout(()=>typeNext(i+1),delayFor(flat[i],i))}
+
+  if(reduced){renderText(flat.length);wrap.classList.add("ready");action.classList.add("visible")}else{setTimeout(()=>typeNext(0),1450)}
+
+  function activate(){
+    if(stage.classList.contains("leaving")||!action.classList.contains("visible"))return;
+    action.classList.add("accepted");
+    setTimeout(()=>stage.classList.add("leaving"),180);
+    setTimeout(()=>{window.location.href="desktop-sectors.html?v=10"},980);
+  }
+
+  action.addEventListener("click",activate);
+  document.addEventListener("keydown",e=>{if(!action.classList.contains("visible"))return;if(e.key==="Enter"){e.preventDefault();activate()}});
+})();
+</script>
 </body>
 </html>
