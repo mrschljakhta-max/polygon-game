@@ -1,0 +1,64 @@
+/* Compact landscape / DevTools responsive mode */
+@media (max-height:520px){
+  .menu{
+    top:3%!important;
+    left:5%!important;
+    width:90%!important;
+    height:94%!important;
+    padding:2.2%!important;
+    border-radius:16px!important;
+    overflow:hidden!important;
+  }
+  .topline{gap:2%!important}
+  .main-menu .topline h2{
+    margin:.18em 0!important;
+    font-size:clamp(17px,2vw,28px)!important;
+    line-height:1!important;
+  }
+  .summary{gap:10px!important;font-size:clamp(7px,.6vw,10px)!important}
+  .summary b{font-size:1.2em!important}
+  .main-menu .hero{
+    height:76%!important;
+    grid-template-columns:1.48fr .72fr!important;
+    gap:3%!important;
+    align-items:center!important;
+  }
+  .hero h1{
+    margin:.12em 0!important;
+    font-size:clamp(30px,4vw,52px)!important;
+    line-height:.92!important;
+  }
+  .menu p{
+    margin:.38em 0!important;
+    font-size:clamp(8px,.68vw,11px)!important;
+    line-height:1.25!important;
+  }
+  .hero-actions{
+    padding:4%!important;
+    gap:5px!important;
+    border-radius:11px!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+  }
+  .hero-actions>span,.hero-actions>small{font-size:clamp(8px,.68vw,11px)!important}
+  .primary,.secondary{
+    padding:.65em .85em!important;
+    border-radius:8px!important;
+  }
+  .progress{height:5px!important}
+  .level-grid{
+    margin-top:1.5%!important;
+    height:72%!important;
+    gap:1%!important;
+  }
+  .level{padding:6% 7%!important;border-radius:10px!important}
+  .level .num{margin:.25em 0 .2em!important;font-size:clamp(20px,2vw,32px)!important}
+  .level small{font-size:clamp(7px,.58vw,10px)!important}
+}
+
+@media (max-width:900px) and (max-height:520px){
+  .level-grid{
+    grid-template-columns:repeat(5,1fr)!important;
+    grid-template-rows:repeat(2,1fr)!important;
+  }
+}
