@@ -42,7 +42,7 @@
     .levels i{position:relative;z-index:1;width:8.3%;border-radius:0;clip-path:polygon(25% 6%,75% 6%,96% 50%,75% 94%,25% 94%,4% 50%);background:linear-gradient(145deg,#142c2a,#071211);border:0;color:#658582;box-shadow:none;font-weight:600;transition:.25s ease}.levels i.done{color:#79a5a1;background:linear-gradient(145deg,#173b37,#0a1c1a)}
     .levels i.active{color:#f5fffd;background:linear-gradient(145deg,#61ffef,#0ba99d 58%,#075d57);border:0;filter:drop-shadow(0 0 8px #22e7d6);text-shadow:0 1px 2px #004841;transform:scale(1.13)}
     .stats{right:1.25%;top:.7%;width:20.63%;height:11.4%;gap:0;padding:0 .85%;border:1px solid rgba(78,223,210,.19);border-radius:15px 4px 15px 15px;background:linear-gradient(145deg,rgba(5,23,22,.91),rgba(2,10,10,.72));box-shadow:0 20px 45px #0007,inset 0 1px rgba(210,255,249,.06);clip-path:polygon(7% 0,100% 0,100% 82%,93% 100%,0 100%,0 18%)}
-    .stats:before{content:"SYSTEM / LIVE";position:absolute;left:7%;top:9%;color:rgba(87,211,199,.5);font-size:clamp(5px,.42vw,8px);font-weight:700;letter-spacing:.14em}.stats div{margin-top:15%;height:68%;border:0;border-left:1px solid rgba(80,208,196,.14);border-radius:0;background:transparent;gap:4%;box-shadow:none}.stats div:first-child{border-left:0}.stats span{letter-spacing:.05em;color:#6f9692}.stats b{color:#f3fffd;text-shadow:0 0 16px rgba(61,239,222,.18);font-weight:550}
+    .stats:before{display:none}.stats div{margin-top:0;height:100%;border:0;border-left:1px solid rgba(80,208,196,.14);border-radius:0;background:transparent;gap:4%;box-shadow:none}.stats div:first-child{border-left:0}.stats span{letter-spacing:.05em;color:#6f9692}.stats b{color:#f3fffd;text-shadow:0 0 16px rgba(61,239,222,.18);font-weight:550}
     .reader{left:34%;bottom:1.45%;width:32%;height:11.8%;border-radius:17px 17px 5px 5px;clip-path:polygon(5% 0,95% 0,100% 23%,100% 100%,0 100%,0 23%);background:linear-gradient(180deg,rgba(7,27,26,.96),rgba(2,10,10,.93));border-color:rgba(83,236,221,.28);box-shadow:0 22px 46px #000a,inset 0 1px rgba(191,255,249,.09),0 0 32px rgba(20,208,191,.07)}
     .reader:after{content:"";position:absolute;left:9%;right:9%;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#21ddcc 30%,#74fff0 50%,#21ddcc 70%,transparent);box-shadow:0 0 14px #21d8c8;opacity:.58}.reader>span{font-weight:550;letter-spacing:.035em;color:#9cc0bc}.combo{gap:clamp(14px,1.4vw,27px)}
     .key{min-width:clamp(34px,2.8vw,54px);padding:.5em .85em;border-radius:7px;background:linear-gradient(155deg,#243f3c 0,#0d1d1c 55%,#07100f 100%);border:1px solid rgba(119,215,206,.38);color:#eafffc;box-shadow:0 5px 0 #020706,0 8px 18px #0009,inset 0 1px rgba(216,255,251,.16);font-weight:650;letter-spacing:.025em}
@@ -76,7 +76,7 @@
     /* Frameless corner HUD — content only */
     .task,.stats,.hint,.exit{border:0;background:none;background-image:none;box-shadow:none;backdrop-filter:none;clip-path:none;overflow:visible}
     .task:before,.task:after,.hint:before,.exit:before{display:none}
-    .stats div{border-left:0}
+    .stats{grid-template-columns:repeat(2,1fr)}.stats div{border-left:0}
     .hint:hover,.exit:hover{box-shadow:none}
     .folder-open{position:absolute;inset:4%;display:grid;grid-template-rows:16% 1fr;border:1px solid rgba(76,220,207,.28);border-radius:5px;background:#061817;overflow:hidden}.folder-head{display:flex;align-items:center;gap:3%;padding:0 4%;color:#a6d2cd;background:#092522;border-bottom:1px solid rgba(74,202,190,.2)}.folder-head strong{color:#e7fffc}.folder-empty{display:grid;place-items:center;align-content:center;gap:7%;color:#5f8884}.folder-empty em{font-size:3em;font-style:normal;filter:drop-shadow(0 0 12px rgba(45,220,202,.22))}
     @keyframes progressRail{0%,100%{opacity:.3;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1)}}
@@ -120,12 +120,12 @@
       const t=TASKS[index],progress=Math.round(index/TASKS.length*100),choosing=t.scene==='paste'&&!folderOpen,expected=choosing?['↑ / ↓','Enter']:t.labels,live=[...pressed].sort(c=>c.startsWith('Control')?-1:1).map(label),keys=shownCombo.length?shownCombo:live.length?live:hint?expected:['—','—'];
       const taskText=choosing?'Стрілками оберіть папку «Документи» та відкрийте її клавішею Enter.':t.scene==='paste'?'Папку відкрито. Вставте скопійований файл.':t.text;
       const readerText=feedback==='correct'?esc(t.result):feedback==='wrong'?'Спробуйте іншу дію':choosing?'Оберіть папку стрілками й натисніть Enter':'Очікується комбінація клавіш…';
-      return `<section class="glass task"><span class="micro">ЗАВДАННЯ ${String(index+1).padStart(2,'0')} / ${TASKS.length}</span><h1>${esc(taskText)}</h1><p>${esc(choosing?'Навігація клавіатурою':t.title)}</p></section>
+      return `<section class="glass task"><h1>${esc(taskText)}</h1></section>
       <section class="glass progresshud"><div class="progress-head"><span>ПРОГРЕС ТРЕНУВАННЯ</span><strong>${progress}%</strong></div><div class="progress-track"><i style="--progress:${progress}%"></i></div><div class="progress-meta"><span>${index} виконано</span><span>${TASKS.length-index} залишилось</span></div></section>
-      <section class="stats"><div><span>Час</span><b id="timeValue">${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Прогрес</span><b>${Math.round(index/TASKS.length*100)}%</b></div></section>
+      <section class="stats"><div><span>Час</span><b id="timeValue">${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div></section>
       <div class="monitor">${desktop(t)}</div>
       <div class="glass reader ${feedback}"><span>${readerText}</span><div class="combo">${keys.map(k=>`<span class="key">${esc(k)}</span>`).join('')}</div></div>
-      <button class="glass hint" id="hint"><span class="q">?</span><span><b>Підказка</b>${hint?expected.join(' → '):choosing?'Показати керування':'Показати комбінацію'}</span></button>
+      <button class="glass hint" id="hint"><span class="q">?</span><span><b>Підказка</b></span></button>
       <button class="glass exit" id="exit"><span>Вийти</span><kbd>Esc</kbd></button>
       ${!lockOK?'<div class="note">Браузер не підтримує повне блокування системних клавіш, але основні комбінації працюють.</div>':''}`;
     }
