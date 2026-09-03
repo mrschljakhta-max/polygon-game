@@ -36,12 +36,12 @@ frame.addEventListener('load',()=>{
         background:radial-gradient(ellipse at 50% 49%,transparent 76%,rgba(0,0,0,.19) 100%),linear-gradient(to bottom,rgba(0,16,15,.008),rgba(0,12,11,.028))!important;
       }
 
-      /* Завдання: без плашки, компактний акцентний текст */
+      /* Завдання: без плашки; рівень зверху, сама команда нижче */
       .taskbox{
         left:2.25%!important;
-        top:2.45%!important;
+        top:2.3%!important;
         width:27.5%!important;
-        min-height:10.5%!important;
+        min-height:12.6%!important;
         padding:.2% 0 .2% 1.55%!important;
         background:transparent!important;
         border:0!important;
@@ -60,7 +60,7 @@ frame.addEventListener('load',()=>{
       }
       .taskbox .kicker{
         display:block!important;
-        margin:0 0 .8em!important;
+        margin:0 0 1.75em!important;
         color:#63ddd3!important;
         font-size:clamp(7px,.56vw,10px)!important;
         letter-spacing:.13em!important;
@@ -80,7 +80,7 @@ frame.addEventListener('load',()=>{
       .taskbox h3::before{
         content:"ЗАВДАННЯ";
         display:block;
-        margin:0 0 .48em;
+        margin:0 0 .58em;
         color:#789c98;
         font-size:clamp(6px,.45vw,8px);
         line-height:1;
@@ -235,7 +235,8 @@ frame.addEventListener('load',()=>{
 
       @media(max-width:800px){
         .monitor{left:28.5938%!important;top:17.5%!important;width:37.5%!important;height:33.3333%!important}
-        .taskbox{left:2%!important;top:2.1%!important;width:30%!important}
+        .taskbox{left:2%!important;top:2.05%!important;width:30%!important;min-height:13%!important}
+        .taskbox .kicker{margin-bottom:1.55em!important}
         .taskbox h3{font-size:clamp(12px,1.6vw,18px)!important}
         .progresshud{left:35.4%!important;top:2.55%!important;width:29.2%!important}
         .hud{right:1.9%!important;top:2.1%!important;width:24%!important}
@@ -245,6 +246,23 @@ frame.addEventListener('load',()=>{
       }
     `;
     doc.head.appendChild(style);
+
+    /* У контрольній місії команда має називати конкретну дію/комбінацію, а не абстрактну мету. */
+    const taskTitleFixes={
+      'Підготуйте документ':'ВИДІЛІТЬ УВЕСЬ ТЕКСТ'
+    };
+    const normalizeTaskTitle=()=>{
+      const title=doc.querySelector('.taskbox h3');
+      if(!title)return;
+      const current=title.textContent.trim();
+      if(taskTitleFixes[current])title.textContent=taskTitleFixes[current];
+    };
+    const gameRoot=doc.getElementById('game');
+    if(gameRoot){
+      const taskObserver=new MutationObserver(normalizeTaskTitle);
+      taskObserver.observe(gameRoot,{childList:true,subtree:true,characterData:true});
+    }
+    normalizeTaskTitle();
   }catch(e){console.error('VIDLIK geometry injection failed',e)}
 });
 </script>
