@@ -110,11 +110,14 @@
       let body='';
       if(files){
         if(t.scene==='paste'&&folderOpen)body='<div class="folder-open"><div class="folder-head"><span>←</span><strong>Документи</strong></div><div class="folder-empty"><em>📂</em><span>Папку відкрито · вставте файл</span></div></div>';
-        else body=`<div class="icons"><div class="icon ${(t.scene==='select'||t.scene==='paste'&&navIndex===0)?'sel':''}"><em>📁</em><span>Документи</span></div><div class="icon ${(t.scene!=='paste'||navIndex===1)?'sel':''} ${t.scene==='cut'?'cut':''}"><em>📄</em><span>Звіт.txt</span></div><div class="icon ${(t.scene==='select'||t.scene==='paste'&&navIndex===2)?'sel':''}"><em>📄</em><span>Навчання.docx</span></div>${t.scene==='undo'?'<div class="badge">↶ Файл видалено</div>':''}${t.scene==='redo'?'<div class="badge">↻ Дію можна повторити</div>':''}</div>`;
+        else{
+          const selectAll=t.scene==='select'&&feedback==='correct';
+          body=`<div class="icons"><div class="icon ${(selectAll||t.scene==='paste'&&navIndex===0)?'sel':''}"><em>📁</em><span>Документи</span></div><div class="icon ${(t.scene!=='paste'||navIndex===1)?'sel':''} ${t.scene==='cut'?'cut':''}"><em>📄</em><span>Звіт.txt</span></div><div class="icon ${(selectAll||t.scene==='paste'&&navIndex===2)?'sel':''}"><em>📄</em><span>Навчання.docx</span></div>${selectAll?'<div class="badge">✓ Усі файли виділено</div>':''}${t.scene==='undo'?'<div class="badge">↶ Файл видалено</div>':''}${t.scene==='redo'?'<div class="badge">↻ Дію можна повторити</div>':''}</div>`;
+        }
       }else{
         body=`<div class="doc"><div class="win"><span>Навчальний звіт</span><span>— □ ×</span></div><div class="toolbar"><b class="${t.scene==='bold'?'on':''}">B</b><b>I</b><b>U</b><span>│ Абзац</span></div>${t.scene==='find'?'<div class="search">⌕ Введіть слово для пошуку…</div>':''}${t.scene==='print'?'<div class="print"><strong>▤</strong><span>Підготовка до друку</span></div>':`<div class="paper"><b class="${t.scene==='bold'?'selection':''}">Цифрова грамотність</b><p>Комбінації клавіш допомагають виконувати типові дії швидше та впевненіше.</p><p>Використовуйте клавіатуру для роботи з документами.</p></div>`}${t.scene==='save'?'<div class="unsaved">● Зміни не збережено</div>':''}</div>`;
       }
-      return `<div class="desktop"><div class="topbar"><span>VIDLIK OS</span><span>19:24 · УКР</span></div>${body}${feedback==='correct'?`<div class="success"><strong>✓</strong><span>${esc(t.result)}</span></div>`:''}</div>`;
+      return `<div class="desktop"><div class="topbar"><span>VIDLIK OS</span><span>19:24 · УКР</span></div>${body}${feedback==='correct'&&t.scene!=='select'?`<div class="success"><strong>✓</strong><span>${esc(t.result)}</span></div>`:''}</div>`;
     }
     function playing(){
       const t=TASKS[index],progress=Math.round(index/TASKS.length*100),choosing=t.scene==='paste'&&!folderOpen,expected=choosing?['↑ / ↓','Enter']:t.labels,live=[...pressed].sort(c=>c.startsWith('Control')?-1:1).map(label),keys=shownCombo.length?shownCombo:live.length?live:hint?expected:['—','—'];
