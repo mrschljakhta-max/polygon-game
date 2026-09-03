@@ -1,0 +1,10 @@
+/* Hard background fix: use the exact clean workstation asset that fixed sector 01. */
+.ds-stage{
+  background-color:#020908!important;
+  background-image:url('./workstation-clean.png?v=4')!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+}
+.ds-bg{display:none!important}
+#ds-app{background:transparent!important}
