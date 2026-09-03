@@ -36,13 +36,14 @@ frame.addEventListener('load',()=>{
         background:radial-gradient(ellipse at 50% 49%,transparent 76%,rgba(0,0,0,.19) 100%),linear-gradient(to bottom,rgba(0,16,15,.008),rgba(0,12,11,.028))!important;
       }
 
-      /* Завдання: без плашки; рівень зверху, сама команда нижче */
+      /* Завдання: без плашки; лінія лише на висоту текстового контенту */
       .taskbox{
         left:2.25%!important;
         top:2.3%!important;
         width:27.5%!important;
-        min-height:12.6%!important;
-        padding:.2% 0 .2% 1.55%!important;
+        min-height:0!important;
+        height:auto!important;
+        padding:.2% 0 .55% 1.55%!important;
         background:transparent!important;
         border:0!important;
         border-radius:0!important;
@@ -53,9 +54,11 @@ frame.addEventListener('load',()=>{
       .taskbox::before{
         content:"";
         position:absolute;
-        left:0;top:0;
-        width:2px;height:100%;
-        background:linear-gradient(180deg,#5ff5e8 0%,#27d9cb 68%,rgba(39,217,203,.18) 100%);
+        left:0;
+        top:-.12em;
+        width:2px;
+        height:calc(100% + .24em);
+        background:linear-gradient(180deg,#5ff5e8 0%,#27d9cb 76%,rgba(39,217,203,.18) 100%);
         box-shadow:0 0 9px rgba(39,217,203,.28);
       }
       .taskbox .kicker{
@@ -174,7 +177,7 @@ frame.addEventListener('load',()=>{
 
       .reader{left:28.8%!important;bottom:2.4%!important;width:42.4%!important;height:10.7%!important}
 
-      /* Підказка: без рамки, тільки SVG-іконка + текст */
+      /* Підказка: без рамки, SVG-іконка + текст; іконка видима навіть у контрольній місії */
       .hint{
         left:3.1%!important;bottom:3.1%!important;width:14.5%!important;height:6.4%!important;
         padding:0!important;
@@ -185,6 +188,8 @@ frame.addEventListener('load',()=>{
         box-shadow:none!important;backdrop-filter:none!important;
         font-size:0!important;
         letter-spacing:.04em!important;
+        opacity:1!important;
+        visibility:visible!important;
       }
       .hint::before{
         content:"";display:block;flex:0 0 auto;
@@ -200,8 +205,10 @@ frame.addEventListener('load',()=>{
         font-weight:600;
         white-space:pre;
       }
-      .hint:hover::before{transform:translateY(-1px);filter:drop-shadow(0 0 7px rgba(69,217,206,.45))}
-      .hint:hover::after{color:#8bfff5}
+      .hint:disabled{opacity:.55!important;cursor:default!important}
+      .hint:hover:not(:disabled)::before{transform:translateY(-1px);filter:drop-shadow(0 0 7px rgba(69,217,206,.45))}
+      .hint:hover:not(:disabled)::after{color:#8bfff5}
+      .vidlik-static-hint{pointer-events:none!important}
 
       /* Вихід: без рамки, тільки SVG-іконка + текст */
       .exit{
@@ -235,7 +242,7 @@ frame.addEventListener('load',()=>{
 
       @media(max-width:800px){
         .monitor{left:28.5938%!important;top:17.5%!important;width:37.5%!important;height:33.3333%!important}
-        .taskbox{left:2%!important;top:2.05%!important;width:30%!important;min-height:13%!important}
+        .taskbox{left:2%!important;top:2.05%!important;width:30%!important;min-height:0!important;height:auto!important}
         .taskbox .kicker{margin-bottom:1.55em!important}
         .taskbox h3{font-size:clamp(12px,1.6vw,18px)!important}
         .progresshud{left:35.4%!important;top:2.55%!important;width:29.2%!important}
@@ -257,12 +264,30 @@ frame.addEventListener('load',()=>{
       const current=title.textContent.trim();
       if(taskTitleFixes[current])title.textContent=taskTitleFixes[current];
     };
+
+    /* У рівнях без підказок зберігаємо службову іконку/підпис у HUD, але не активуємо саму підказку. */
+    const ensureHintHud=()=>{
+      if(doc.querySelector('.hint'))return;
+      const gameRoot=doc.getElementById('game');
+      if(!gameRoot)return;
+      const hint=doc.createElement('button');
+      hint.type='button';
+      hint.className='hint vidlik-static-hint';
+      hint.disabled=true;
+      hint.setAttribute('aria-label','Підказка недоступна в контрольній місії');
+      gameRoot.appendChild(hint);
+    };
+
+    const syncUi=()=>{
+      normalizeTaskTitle();
+      ensureHintHud();
+    };
     const gameRoot=doc.getElementById('game');
     if(gameRoot){
-      const taskObserver=new MutationObserver(normalizeTaskTitle);
+      const taskObserver=new MutationObserver(syncUi);
       taskObserver.observe(gameRoot,{childList:true,subtree:true,characterData:true});
     }
-    normalizeTaskTitle();
+    syncUi();
   }catch(e){console.error('VIDLIK geometry injection failed',e)}
 });
 </script>
