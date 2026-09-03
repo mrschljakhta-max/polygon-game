@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020808">
+<title>VIDLIK — Сектор 01</title>
+<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#010606}#gameFrame{display:block;width:100%;height:100%;border:0;background:#010606;opacity:0;transition:opacity .28s ease}.ready #gameFrame{opacity:1}.boot{position:fixed;inset:0;display:grid;place-items:center;background:#010606;color:#73d9cf;font:600 13px/1.4 Consolas,monospace;letter-spacing:.12em;z-index:4;transition:opacity .25s ease}.ready .boot{opacity:0;pointer-events:none}</style>
+</head>
+<body>
+<div class="boot">СЕКТОР 01 · ЗАВАНТАЖЕННЯ</div>
+<iframe id="gameFrame" src="game.html?v=sector1-direct-2" title="Сектор 01 — базові комбінації" allow="fullscreen; keyboard-map"></iframe>
+<script src="runtime-compat.js"></script>
+<script src="enhanced-visuals.js"></script>
+<script src="task-guidance.js"></script>
+<script src="pause-enhancement.js?v=3"></script>
+<script>
+(()=>{
+ const frame=document.getElementById('gameFrame');
+ function openLevels(){
+   try{
+     const d=frame.contentDocument;
+     if(!d)return;
+     const sector=d.getElementById('sector');
+     if(sector) sector.click();
+     d.addEventListener('click',e=>{
+       const back=e.target.closest&&e.target.closest('#back');
+       if(back){e.preventDefault();e.stopImmediatePropagation();location.href='desktop-sectors.html?v=12'}
+     },true);
+     setTimeout(()=>document.body.classList.add('ready'),90);
+   }catch(e){document.body.classList.add('ready')}
+ }
+ frame.addEventListener('load',()=>setTimeout(openLevels,180));
+})();
+</script>
+</body>
+</html>
