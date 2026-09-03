@@ -72,7 +72,7 @@
         btn.textContent='СЕКТОРИ 01–08';
         btn.setAttribute('aria-label','Відкрити всі навчальні сектори');
         btn.addEventListener('click',()=>{
-          frame.contentWindow.location.href='desktop-sectors.html?v=2';
+          frame.contentWindow.location.href='desktop-sectors.html?v=7';
         });
 
         sectorBtn.parentNode.insertBefore(nav,sectorBtn);
