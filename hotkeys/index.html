@@ -36,7 +36,62 @@ frame.addEventListener('load',()=>{
         background:radial-gradient(ellipse at 50% 49%,transparent 76%,rgba(0,0,0,.19) 100%),linear-gradient(to bottom,rgba(0,16,15,.008),rgba(0,12,11,.028))!important;
       }
 
-      .taskbox{left:1.9%!important;top:2.1%!important;width:28.4%!important}
+      /* Завдання: без плашки, компактний акцентний текст */
+      .taskbox{
+        left:2.25%!important;
+        top:2.45%!important;
+        width:27.5%!important;
+        min-height:10.5%!important;
+        padding:.2% 0 .2% 1.55%!important;
+        background:transparent!important;
+        border:0!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+        backdrop-filter:none!important;
+        overflow:visible!important;
+      }
+      .taskbox::before{
+        content:"";
+        position:absolute;
+        left:0;top:0;
+        width:2px;height:100%;
+        background:linear-gradient(180deg,#5ff5e8 0%,#27d9cb 68%,rgba(39,217,203,.18) 100%);
+        box-shadow:0 0 9px rgba(39,217,203,.28);
+      }
+      .taskbox .kicker{
+        display:block!important;
+        margin:0 0 .8em!important;
+        color:#63ddd3!important;
+        font-size:clamp(7px,.56vw,10px)!important;
+        letter-spacing:.13em!important;
+        font-weight:800!important;
+      }
+      .taskbox h3{
+        margin:0!important;
+        color:#f4fffd!important;
+        font-size:clamp(14px,1.28vw,23px)!important;
+        line-height:1.05!important;
+        font-weight:720!important;
+        letter-spacing:.005em!important;
+        text-transform:uppercase!important;
+        text-shadow:0 2px 14px rgba(0,0,0,.35)!important;
+        animation:vidlikTaskIn .28s ease-out both;
+      }
+      .taskbox h3::before{
+        content:"ЗАВДАННЯ";
+        display:block;
+        margin:0 0 .48em;
+        color:#789c98;
+        font-size:clamp(6px,.45vw,8px);
+        line-height:1;
+        letter-spacing:.15em;
+        font-weight:750;
+      }
+      .taskbox p{display:none!important}
+      @keyframes vidlikTaskIn{
+        from{opacity:.25;transform:translateX(-6px)}
+        to{opacity:1;transform:translateX(0)}
+      }
 
       /* Мінімалістичний прогрес: без плашки */
       .progresshud{
@@ -180,7 +235,8 @@ frame.addEventListener('load',()=>{
 
       @media(max-width:800px){
         .monitor{left:28.5938%!important;top:17.5%!important;width:37.5%!important;height:33.3333%!important}
-        .taskbox{left:1.9%!important;top:2.1%!important;width:28.4%!important}
+        .taskbox{left:2%!important;top:2.1%!important;width:30%!important}
+        .taskbox h3{font-size:clamp(12px,1.6vw,18px)!important}
         .progresshud{left:35.4%!important;top:2.55%!important;width:29.2%!important}
         .hud{right:1.9%!important;top:2.1%!important;width:24%!important}
         .reader{left:28.8%!important;width:42.4%!important}
