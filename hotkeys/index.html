@@ -31,7 +31,7 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010606;fon
 .title .accent{color:var(--cyan-hot);font-weight:760}
 .title-cursor{display:inline-block;width:2px;height:.95em;margin-left:.16em;vertical-align:-.05em;background:var(--cyan);box-shadow:0 0 10px rgba(82,226,213,.55);animation:blink .78s steps(1,end) infinite;transition:opacity .6s ease}
 .title-rule{position:absolute;left:50%;bottom:0;width:0;height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 9px rgba(82,226,213,.2);opacity:0;transition:width 1.15s cubic-bezier(.22,.8,.22,1),opacity .35s ease}
-.title-wrap.ready .title-rule{width:68%;opacity:.72}.title-wrap.ready .title-cursor{opacity:.38}
+.title-wrap.ready .title-rule{width:68%;opacity:.72}.title-wrap.ready .title-cursor{opacity:0;animation:none;box-shadow:none}
 @keyframes blink{0%,44%{opacity:1}45%,100%{opacity:0}}
 
 .terminal-action{appearance:none;-webkit-appearance:none;position:absolute;left:48.002%;top:37.396%;display:inline-flex;align-items:baseline;justify-content:center;gap:.22em;padding:7px 10px 10px;border:0;background:transparent;color:#8ab2ae;font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:1.38vw;font-weight:600;letter-spacing:.045em;cursor:pointer;opacity:0;transform:translate(-50%,-50%) translateY(7px);pointer-events:none;transition:opacity 1.65s ease,transform 1.65s cubic-bezier(.22,.8,.22,1),color .18s ease,text-shadow .18s ease}
