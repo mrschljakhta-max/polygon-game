@@ -20,12 +20,7 @@ frame.addEventListener('load',()=>{
     const style=doc.createElement('style');
     style.id='vidlik-workstation-geometry';
     style.textContent=`
-      /*
-        Геометрія виміряна у VIDLIK Screen Contour Sandbox.
-        Еталонний кадр: 1920×1080.
-        Внутрішня область фізичного монітора:
-        TL 549,191 · TR 1269,189 · BR 1267,549 · BL 552,547
-      */
+      /* Геометрія екрана з VIDLIK Screen Contour Sandbox */
       .stage{
         width:min(100vw,calc(100vh * 1920 / 1080))!important;
         height:min(100vh,calc(100vw * 1080 / 1920))!important;
@@ -33,61 +28,164 @@ frame.addEventListener('load',()=>{
         background:#020908!important;
       }
       .bg{
-        width:100%!important;
-        height:100%!important;
-        object-fit:contain!important;
-        object-position:center center!important;
-        opacity:1!important;
-        filter:none!important;
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;object-position:center center!important;
+        opacity:1!important;filter:none!important;
       }
       .vignette{
         background:radial-gradient(ellipse at 50% 49%,transparent 76%,rgba(0,0,0,.19) 100%),linear-gradient(to bottom,rgba(0,16,15,.008),rgba(0,12,11,.028))!important;
       }
 
       .taskbox{left:1.9%!important;top:2.1%!important;width:28.4%!important}
-      .progresshud{left:35.4%!important;top:2.05%!important;width:29.2%!important;height:8.8%!important}
-      .hud{right:1.9%!important;top:2.1%!important;width:22%!important}
+
+      /* Мінімалістичний прогрес: без плашки */
+      .progresshud{
+        left:35.4%!important;top:2.55%!important;width:29.2%!important;height:7.9%!important;
+        padding:.2% .25%!important;
+        background:transparent!important;
+        border:0!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+        backdrop-filter:none!important;
+        gap:10%!important;
+      }
+      .progresshud .progress-head span{color:#79aaa5!important}
+      .progresshud .progress-head strong{color:#8affef!important}
+      .progresshud .progress-track{
+        height:clamp(3px,.28vw,6px)!important;
+        border:0!important;
+        background:rgba(35,84,79,.38)!important;
+        box-shadow:none!important;
+      }
+      .progresshud .progress-track i{box-shadow:0 0 10px rgba(40,223,207,.38)!important}
+      .progresshud .progress-track i:after{display:none!important}
+      .progresshud .progress-meta{color:#5e8580!important}
+
+      /* Час і помилки: тільки іконка + текст */
+      .hud{
+        right:2.2%!important;top:2.35%!important;width:21.5%!important;
+        display:grid!important;grid-template-columns:1fr 1fr!important;gap:8%!important;
+      }
+      .hud>div{
+        position:relative!important;
+        min-height:56px!important;
+        padding:0 0 0 32%!important;
+        display:grid!important;
+        grid-template-rows:auto auto!important;
+        align-content:center!important;
+        text-align:left!important;
+        background:transparent!important;
+        border:0!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+        backdrop-filter:none!important;
+      }
+      .hud>div::before{
+        content:"";
+        position:absolute;
+        left:4%;top:50%;transform:translateY(-50%);
+        width:25%;aspect-ratio:1;
+        background:#42d6ca;
+        -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+        -webkit-mask-position:center;mask-position:center;
+        -webkit-mask-size:contain;mask-size:contain;
+        opacity:.92;
+      }
+      .hud>div:first-child::before{
+        -webkit-mask-image:url('./assets/ui/stopwatch.svg');
+        mask-image:url('./assets/ui/stopwatch.svg');
+      }
+      .hud>div:nth-child(2)::before{
+        -webkit-mask-image:url('./assets/ui/alert-triangle.svg');
+        mask-image:url('./assets/ui/alert-triangle.svg');
+      }
+      .hud>div:nth-child(2){
+        border-left:1px solid rgba(91,146,140,.24)!important;
+        padding-left:38%!important;
+      }
+      .hud>div:nth-child(2)::before{left:10%}
+      .hud span{color:#6f918d!important;font-size:clamp(7px,.53vw,10px)!important}
+      .hud b{color:#f2fffc!important;font-size:clamp(12px,1.08vw,20px)!important;font-weight:650!important}
 
       /* Точний bbox з JSON користувача */
       .monitor{
-        left:28.5938%!important;
-        top:17.5%!important;
-        width:37.5%!important;
-        height:33.3333%!important;
-        border:0!important;
-        border-radius:0!important;
-        overflow:hidden!important;
-        background:transparent!important;
-        box-shadow:none!important;
-        /* Точний 4-точковий контур відносно bbox */
-        clip-path:polygon(
-          0% 0.5556%,
-          100% 0%,
-          99.7222% 100%,
-          0.4167% 99.4444%
-        )!important;
+        left:28.5938%!important;top:17.5%!important;
+        width:37.5%!important;height:33.3333%!important;
+        border:0!important;border-radius:0!important;overflow:hidden!important;
+        background:transparent!important;box-shadow:none!important;
+        clip-path:polygon(0% .5556%,100% 0%,99.7222% 100%,.4167% 99.4444%)!important;
       }
-      .monitor>.desktop{
-        width:100%!important;
-        height:100%!important;
-      }
+      .monitor>.desktop{width:100%!important;height:100%!important}
 
       .reader{left:28.8%!important;bottom:2.4%!important;width:42.4%!important;height:10.7%!important}
-      .hint{left:1.9%!important;bottom:2.6%!important;width:19.8%!important;height:7.7%!important}
-      .exit{right:1.9%!important;bottom:2.6%!important;width:15%!important;height:7.7%!important}
+
+      /* Підказка: без рамки, тільки SVG-іконка + текст */
+      .hint{
+        left:3.1%!important;bottom:3.1%!important;width:14.5%!important;height:6.4%!important;
+        padding:0!important;
+        display:flex!important;align-items:center!important;justify-content:flex-start!important;
+        gap:10%!important;
+        color:#54d9ce!important;
+        background:transparent!important;border:0!important;border-radius:0!important;
+        box-shadow:none!important;backdrop-filter:none!important;
+        font-size:0!important;
+        letter-spacing:.04em!important;
+      }
+      .hint::before{
+        content:"";display:block;flex:0 0 auto;
+        width:clamp(26px,2.15vw,40px);aspect-ratio:1;
+        background:#45d9ce;
+        -webkit-mask:url('./assets/ui/help-hexagon.svg') center/contain no-repeat;
+        mask:url('./assets/ui/help-hexagon.svg') center/contain no-repeat;
+        transition:.18s ease;
+      }
+      .hint::after{
+        content:"ПІДКАЗКА    F1";
+        font-size:clamp(10px,.86vw,16px);
+        font-weight:600;
+        white-space:pre;
+      }
+      .hint:hover::before{transform:translateY(-1px);filter:drop-shadow(0 0 7px rgba(69,217,206,.45))}
+      .hint:hover::after{color:#8bfff5}
+
+      /* Вихід: без рамки, тільки SVG-іконка + текст */
+      .exit{
+        right:3.1%!important;bottom:3.1%!important;width:13.5%!important;height:6.4%!important;
+        padding:0!important;
+        display:flex!important;align-items:center!important;justify-content:flex-end!important;
+        gap:8%!important;
+        color:#54d9ce!important;
+        background:transparent!important;border:0!important;border-radius:0!important;
+        box-shadow:none!important;backdrop-filter:none!important;
+        font-size:0!important;
+      }
+      .exit::before{
+        content:"";display:block;flex:0 0 auto;
+        width:clamp(25px,2vw,38px);aspect-ratio:1;
+        background:#45d9ce;
+        -webkit-mask:url('./assets/ui/logout.svg') center/contain no-repeat;
+        mask:url('./assets/ui/logout.svg') center/contain no-repeat;
+        transition:.18s ease;
+      }
+      .exit::after{
+        content:"ВИЙТИ · ESC";
+        font-size:clamp(10px,.86vw,16px);
+        font-weight:600;
+        white-space:nowrap;
+      }
+      .exit:hover::before{transform:translateX(2px);filter:drop-shadow(0 0 7px rgba(69,217,206,.45))}
+      .exit:hover::after{color:#8bfff5}
+
       .note{bottom:14.8%!important}
 
       @media(max-width:800px){
-        .monitor{
-          left:28.5938%!important;
-          top:17.5%!important;
-          width:37.5%!important;
-          height:33.3333%!important;
-        }
+        .monitor{left:28.5938%!important;top:17.5%!important;width:37.5%!important;height:33.3333%!important}
         .taskbox{left:1.9%!important;top:2.1%!important;width:28.4%!important}
-        .progresshud{left:35.4%!important;top:2.05%!important;width:29.2%!important}
-        .hud{right:1.9%!important;top:2.1%!important;width:22%!important}
+        .progresshud{left:35.4%!important;top:2.55%!important;width:29.2%!important}
+        .hud{right:1.9%!important;top:2.1%!important;width:24%!important}
         .reader{left:28.8%!important;width:42.4%!important}
+        .hint{left:2%!important;width:18%!important}
+        .exit{right:2%!important;width:16%!important}
       }
     `;
     doc.head.appendChild(style);
