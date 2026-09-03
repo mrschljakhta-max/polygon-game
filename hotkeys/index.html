@@ -80,6 +80,17 @@
     .hint:hover,.exit:hover{box-shadow:none}
     .folder-open{position:absolute;inset:4%;display:grid;grid-template-rows:16% 1fr;border:1px solid rgba(76,220,207,.28);border-radius:5px;background:#061817;overflow:hidden}.folder-head{display:flex;align-items:center;gap:3%;padding:0 4%;color:#a6d2cd;background:#092522;border-bottom:1px solid rgba(74,202,190,.2)}.folder-head strong{color:#e7fffc}.folder-empty{display:grid;place-items:center;align-content:center;gap:7%;color:#5f8884}.folder-empty em{font-size:3em;font-style:normal;filter:drop-shadow(0 0 12px rgba(45,220,202,.22))}
     @keyframes progressRail{0%,100%{opacity:.3;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1)}}
+
+    /* Campaign menu */
+    .menu-card{position:absolute;z-index:20;left:50%;top:50%;transform:translate(-50%,-50%);width:min(76%,1080px);min-height:72%;padding:3.1% 3.6%;overflow:hidden;border:1px solid rgba(83,238,223,.28);border-radius:22px;background:linear-gradient(145deg,rgba(5,23,22,.965),rgba(1,8,8,.94));box-shadow:0 35px 110px #000,inset 0 1px rgba(218,255,251,.09),0 0 48px rgba(17,213,194,.12);backdrop-filter:blur(24px) saturate(1.12);animation:card .5s cubic-bezier(.2,.8,.2,1)}
+    .menu-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(98,255,240,.045),transparent 28%),repeating-linear-gradient(90deg,transparent 0,transparent 39px,rgba(73,208,195,.018) 40px),repeating-linear-gradient(0deg,transparent 0,transparent 39px,rgba(73,208,195,.014) 40px)}
+    .menu-card>*{position:relative;z-index:1}.menu-top{display:flex;align-items:flex-start;justify-content:space-between;gap:4%}.menu-brand{display:grid;gap:.25em}.menu-brand span,.menu-kicker{color:#66d9cd;font-size:clamp(6px,.52vw,10px);font-weight:750;letter-spacing:.15em}.menu-brand b{font-size:clamp(10px,.9vw,17px);letter-spacing:.04em}.profile{display:flex;gap:1.4em;text-align:right;color:#729995;font-size:clamp(6px,.5vw,10px)}.profile b{display:block;margin-top:.25em;color:#dffffb;font-size:1.4em}
+    .menu-hero{display:grid;grid-template-columns:1.35fr .65fr;align-items:center;gap:6%;padding:4.2% 1% 3%}.menu-copy h1{margin:.12em 0 .28em;font-size:clamp(28px,3.35vw,62px);line-height:.95;letter-spacing:-.045em;text-shadow:0 0 30px rgba(42,232,213,.17)}.menu-copy p{max-width:40rem;margin:0;color:#8aaba8;font-size:clamp(9px,.82vw,15px);line-height:1.45}.menu-action{display:grid;gap:1em}.menu-action .primary{width:100%;min-height:clamp(46px,4.4vw,72px);font-size:clamp(10px,.92vw,17px)}.resume-meta{display:flex;justify-content:space-between;color:#648783;font-size:clamp(6px,.5vw,10px)}
+    .menu-progress{height:clamp(5px,.46vw,9px);overflow:hidden;border-radius:99px;background:#03100f;box-shadow:inset 0 2px 7px #000}.menu-progress i{display:block;width:var(--menu-progress);height:100%;border-radius:inherit;background:linear-gradient(90deg,#08776e,#22dfcd,#8ffff1);box-shadow:0 0 16px #1cd6c5}
+    .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4%}.mode-card{position:relative;min-height:clamp(82px,9vw,150px);padding:7% 7%;display:grid;align-content:space-between;text-align:left;color:#dffffb;border:1px solid rgba(74,209,196,.22);border-radius:13px;background:linear-gradient(145deg,rgba(10,39,36,.78),rgba(3,13,13,.8));cursor:pointer;transition:.2s;box-shadow:inset 0 1px rgba(209,255,250,.05)}.mode-card:hover:not(:disabled){transform:translateY(-3px);border-color:rgba(89,255,238,.52);box-shadow:0 16px 34px #0008,0 0 24px rgba(30,216,198,.12)}.mode-card span{color:#54c9be;font-size:clamp(6px,.48vw,9px);font-weight:750;letter-spacing:.13em}.mode-card strong{display:block;margin:.25em 0;font-size:clamp(12px,1.15vw,21px)}.mode-card small{color:#6e918e;font-size:clamp(6px,.52vw,10px)}.mode-card:disabled{cursor:not-allowed;opacity:.43}.mode-card .lock{position:absolute;right:7%;top:12%;font-size:1.1em}
+    .menu-foot{display:flex;justify-content:space-between;margin-top:2.2%;color:#526f6c;font-size:clamp(6px,.48vw,9px)}
+    .campaign-card{width:min(84%,1240px);height:82%;min-height:0;padding:2.5% 3%}.campaign-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.2%}.campaign-title h2{margin:.15em 0 0;font-size:clamp(20px,2.2vw,40px)}.back-btn{padding:.7em 1.1em;border:1px solid rgba(76,204,192,.28);border-radius:8px;color:#9dc3bf;background:#071817;cursor:pointer}.back-btn:hover{color:#e8fffc;border-color:#47d9ca}.sector-grid,.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2.2%;height:76%}.sector,.level-tile{position:relative;display:grid;align-content:space-between;padding:9%;text-align:left;border:1px solid rgba(74,198,187,.18);border-radius:12px;color:#cde8e5;background:linear-gradient(145deg,rgba(8,31,29,.78),rgba(2,11,11,.8));box-shadow:inset 0 1px rgba(211,255,251,.04)}.sector:not(:disabled),.level-tile:not(:disabled){cursor:pointer}.sector:not(:disabled):hover,.level-tile:not(:disabled):hover{transform:translateY(-2px);border-color:#49dacc;box-shadow:0 13px 28px #0008,0 0 19px rgba(36,221,203,.1)}.sector:disabled,.level-tile:disabled{opacity:.36;cursor:not-allowed}.sector-no,.level-no{color:#5ce1d5;font-size:clamp(7px,.55vw,10px);font-weight:750;letter-spacing:.12em}.sector strong{font-size:clamp(9px,.82vw,15px);line-height:1.15}.sector small,.level-tile small{color:#678985;font-size:clamp(6px,.48vw,9px)}.sector.open,.level-tile.open{border-color:rgba(83,238,223,.42);background:linear-gradient(145deg,rgba(11,55,50,.88),rgba(3,18,17,.86));box-shadow:0 0 28px rgba(29,214,196,.1)}.sector.done,.level-tile.done{border-color:rgba(100,255,231,.5)}.sector.done:after,.level-tile.done:after{content:"✓";position:absolute;right:8%;top:8%;color:#78ffed;text-shadow:0 0 12px #20d9c7}.level-tile{padding:10%;text-align:center;place-items:center;align-content:center;gap:8%}.level-tile strong{font-size:clamp(16px,2vw,36px)}.campaign-summary{display:flex;align-items:center;gap:1.2em;color:#789c98;font-size:clamp(7px,.58vw,11px)}.campaign-summary b{color:#dffffb;font-size:1.35em}
+    @media(max-width:800px){.menu-card{width:88%;min-height:76%;padding:4%}.menu-hero{grid-template-columns:1fr;gap:4%}.mode-grid{grid-template-columns:1fr}.mode-card{min-height:58px}.campaign-card{height:88%}.sector-grid,.level-grid{grid-template-columns:repeat(2,1fr);overflow:auto}.profile{display:none}}
   </style>
 </head>
 <body>
@@ -100,11 +111,26 @@
       {title:'Друк',text:'Відкрийте вікно друку документа.',main:'KeyP',labels:['Ctrl','P'],result:'Вікно друку відкрито',scene:'print'},
       {title:'Форматування',text:'Зробіть виділений текст напівжирним.',main:'KeyB',labels:['Ctrl','B'],result:'Напівжирний стиль застосовано',scene:'bold'}
     ];
+    const SECTORS=['Базові комбінації','Навігація і виділення','Файли та папки','Робота з документами','Браузер','Windows','Excel','PowerPoint','Робота без миші','Професійний полігон'];
+    const LEVEL_ONE_NAMES=['Основні комбінації','Копіювання і вставлення','Вирізання та переміщення','Скасування і повторення','Виділення всього','Збереження документа','Пошук інформації','Друк документа','Форматування','Контрольна місія'];
+    const PROFILE_KEY='vidlik-hotkeys-profile-v1';
+    let profile={xp:0,completed:[],bestScore:0,bestTime:null,bestErrors:null};
+    try{profile={...profile,...JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')};if(!Array.isArray(profile.completed))profile.completed=[]}catch(e){}
     const game=document.getElementById('game'),stage=document.getElementById('stage'),shell=document.getElementById('shell');
     let phase='intro',index=0,errors=0,hints=0,seconds=0,pressed=new Set(),shownCombo=[],feedback='idle',hint=false,paused=false,comboLocked=false,folderOpen=false,navIndex=1,lockOK=true,timer=null,nextTimer=null;
     const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
     const label=c=>c.startsWith('Key')?c.slice(3):c.startsWith('Control')?'Ctrl':({ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',Enter:'Enter'}[c]||c);
     const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const scoreValue=()=>Math.max(0,1000-errors*20-hints*10+Math.max(0,120-seconds));
+    function saveProfile(){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile))}catch(e){}}
+    function finishLevel(){
+      const score=scoreValue();
+      if(!profile.completed.includes(1))profile.completed.push(1);
+      profile.bestScore=Math.max(profile.bestScore||0,score);profile.xp=profile.bestScore;
+      profile.bestTime=profile.bestTime==null?seconds:Math.min(profile.bestTime,seconds);
+      profile.bestErrors=profile.bestErrors==null?errors:Math.min(profile.bestErrors,errors);
+      saveProfile();phase='complete';navigator.keyboard?.unlock?.();stopTimer();
+    }
     function desktop(t){
       const files=['select','copy','paste','cut','undo','redo'].includes(t.scene);
       let body='';
@@ -118,6 +144,25 @@
         body=`<div class="doc"><div class="win"><span>Навчальний звіт</span><span>— □ ×</span></div><div class="toolbar"><b class="${t.scene==='bold'?'on':''}">B</b><b>I</b><b>U</b><span>│ Абзац</span></div>${t.scene==='find'?'<div class="search">⌕ Введіть слово для пошуку…</div>':''}${t.scene==='print'?'<div class="print"><strong>▤</strong><span>Підготовка до друку</span></div>':`<div class="paper"><b class="${t.scene==='bold'?'selection':''}">Цифрова грамотність</b><p>Комбінації клавіш допомагають виконувати типові дії швидше та впевненіше.</p><p>Використовуйте клавіатуру для роботи з документами.</p></div>`}${t.scene==='save'?'<div class="unsaved">● Зміни не збережено</div>':''}</div>`;
       }
       return `<div class="desktop"><div class="topbar"><span>VIDLIK OS</span><span>19:24 · УКР</span></div>${body}${feedback==='correct'&&t.scene!=='select'?`<div class="success"><strong>✓</strong><span>${esc(t.result)}</span></div>`:''}</div>`;
+    }
+    function mainMenu(){
+      const done=profile.completed.includes(1),completed=profile.completed.length,best=profile.bestTime==null?'—':fmt(profile.bestTime);
+      return `<section class="menu-card">
+        <header class="menu-top"><div class="menu-brand"><span>VIDLIK · ЦИФРОВА ГРАМОТНІСТЬ</span><b>КЛАВІАТУРНИЙ ПОЛІГОН</b></div><div class="profile"><span>СТАТУС<b>${done?'ОПЕРАТОР':'КУРСАНТ'}</b></span><span>ДОСВІД<b>${profile.xp||0} XP</b></span></div></header>
+        <div class="menu-hero"><div class="menu-copy"><span class="menu-kicker">КАМПАНІЯ · 100 РІВНІВ</span><h1>Клавіатурний<br>полігон</h1><p>Навчіться впевнено керувати комп’ютером за допомогою клавіатури — від перших комбінацій до професійних робочих сценаріїв.</p></div><div class="menu-action"><button class="primary" id="start">▶ ${done?'ПОВТОРИТИ РІВЕНЬ 01':'РОЗПОЧАТИ НАВЧАННЯ'}</button><div class="resume-meta"><span>Рівень 01 · Основні комбінації</span><span>10 вправ</span></div><div class="menu-progress" aria-label="Прогрес кампанії"><i style="--menu-progress:${completed}%"></i></div><div class="resume-meta"><span>${completed} пройдено</span><span>${100-completed} залишилось</span></div></div></div>
+        <div class="mode-grid"><button class="mode-card" id="campaign"><span>01 · ОСНОВНИЙ РЕЖИМ</span><strong>Кампанія</strong><small>10 секторів · 100 рівнів</small></button><button class="mode-card" id="training"><span>02 · ВІЛЬНА ПРАКТИКА</span><strong>Тренування</strong><small>Базові комбінації · найкращий час ${best}</small></button><button class="mode-card" disabled><span>03 · ВИПРОБУВАННЯ</span><strong>Режим на час</strong><small>Відкриється після наступних рівнів</small><b class="lock">⌁</b></button></div>
+        <footer class="menu-foot"><span>Керуйте меню мишею або клавішею Tab</span><span>Прогрес зберігається автоматично</span></footer>
+      </section>`;
+    }
+    function campaignMenu(){
+      const done=profile.completed.includes(1);
+      const sectors=SECTORS.map((name,i)=>`<button class="sector ${i===0?'open':''} ${i===0&&done?'done':''}" ${i?'disabled':''} id="${i===0?'sector1':''}"><span class="sector-no">СЕКТОР ${String(i+1).padStart(2,'0')}</span><strong>${esc(name)}</strong><small>${i===0?(done?'1 / 10 рівнів':'Рівні 01–10'):`Рівні ${String(i*10+1).padStart(2,'0')}–${(i+1)*10}`} ${i?'· ЗАБЛОКОВАНО':''}</small></button>`).join('');
+      return `<section class="menu-card campaign-card"><header class="campaign-head"><div class="campaign-title"><span class="menu-kicker">КАРТА ПІДГОТОВКИ</span><h2>Кампанія</h2></div><div class="campaign-summary"><span>Загальний прогрес</span><b>${profile.completed.length} / 100</b><button class="back-btn" id="backMenu">← Меню</button></div></header><div class="sector-grid">${sectors}</div></section>`;
+    }
+    function sectorMenu(){
+      const done=profile.completed.includes(1);
+      const levels=LEVEL_ONE_NAMES.map((name,i)=>`<button class="level-tile ${i===0?'open':''} ${i===0&&done?'done':''}" ${i?'disabled':''} id="${i===0?'level1':''}"><span class="level-no">РІВЕНЬ</span><strong>${String(i+1).padStart(2,'0')}</strong><small>${esc(name)}${i?' · У РОЗРОБЦІ':''}</small></button>`).join('');
+      return `<section class="menu-card campaign-card"><header class="campaign-head"><div class="campaign-title"><span class="menu-kicker">СЕКТОР 01 · РІВНІ 01–10</span><h2>Базові комбінації</h2></div><div class="campaign-summary"><span>Пройдено</span><b>${done?1:0} / 10</b><button class="back-btn" id="backCampaign">← Сектори</button></div></header><div class="level-grid">${levels}</div></section>`;
     }
     function playing(){
       const t=TASKS[index],progress=Math.round(index/TASKS.length*100),choosing=t.scene==='paste'&&!folderOpen,expected=choosing?['↑ / ↓','Enter']:t.labels,live=[...pressed].sort(c=>c.startsWith('Control')?-1:1).map(label),keys=shownCombo.length?shownCombo:live.length?live:hint?expected:['—','—'];
@@ -133,15 +178,23 @@
       ${!lockOK?'<div class="note">Браузер не підтримує повне блокування системних клавіш, але основні комбінації працюють.</div>':''}`;
     }
     function render(){
-      if(phase==='intro')game.innerHTML=`<section class="card"><div class="seal">⌨</div><p class="eyebrow">VIDLIK · ЦИФРОВА ГРАМОТНІСТЬ</p><h1>Клавіатурний полігон</h1><p class="copy">Виконайте 10 практичних завдань, натискаючи комбінації на фізичній клавіатурі. Розкладка мови не має значення.</p><div class="rules"><span>✓ Справжні натискання</span><span>✓ Повноекранний режим</span><span>✓ Результат і помилки</span></div><button class="primary" id="start">▶ Розпочати вправу</button><small>Для виходу натисніть Esc або кнопку «Вийти».</small></section>`;
-      else if(phase==='complete'){const score=Math.max(0,1000-errors*20-hints*10+Math.max(0,120-seconds));game.innerHTML=`<section class="card result"><div class="seal">✓</div><p class="eyebrow">ТРЕНУВАННЯ ЗАВЕРШЕНО</p><h1>${score} XP</h1><p class="copy">Ви виконали всі 10 завдань.</p><div class="grid"><div><span>Правильно</span><b>10 / 10</b></div><div><span>Час</span><b>${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Підказки</span><b>${hints}</b></div></div><div class="actions"><button class="primary" id="repeat">↻ Повторити</button><button class="secondary" id="leave">↪ Вийти</button></div></section>`;}
+      if(phase==='intro')game.innerHTML=mainMenu();
+      else if(phase==='campaign')game.innerHTML=campaignMenu();
+      else if(phase==='sector')game.innerHTML=sectorMenu();
+      else if(phase==='complete'){const score=scoreValue();game.innerHTML=`<section class="card result"><div class="seal">✓</div><p class="eyebrow">РІВЕНЬ 01 ЗАВЕРШЕНО</p><h1>${score} XP</h1><p class="copy">Ви виконали всі 10 завдань. Результат збережено у профілі.</p><div class="grid"><div><span>Правильно</span><b>10 / 10</b></div><div><span>Час</span><b>${fmt(seconds)}</b></div><div><span>Помилки</span><b>${errors}</b></div><div><span>Підказки</span><b>${hints}</b></div></div><div class="actions"><button class="primary" id="repeat">↻ Повторити</button><button class="secondary" id="leave">⌂ До меню</button></div></section>`;}
       else{game.innerHTML=playing();if(paused)game.insertAdjacentHTML('beforeend','<div class="pause"><section class="card"><div class="seal">Ⅱ</div><h2>Вправу призупинено</h2><p class="copy">Таймер зупинено. Поверніться у повноекранний режим, щоб продовжити.</p><button class="primary" id="resume">▶ Продовжити</button></section></div>')}
       bind();
     }
     function bind(){
       document.getElementById('start')?.addEventListener('click',start);
+      document.getElementById('training')?.addEventListener('click',start);
+      document.getElementById('campaign')?.addEventListener('click',()=>{phase='campaign';render()});
+      document.getElementById('sector1')?.addEventListener('click',()=>{phase='sector';render()});
+      document.getElementById('level1')?.addEventListener('click',start);
+      document.getElementById('backMenu')?.addEventListener('click',()=>{phase='intro';render()});
+      document.getElementById('backCampaign')?.addEventListener('click',()=>{phase='campaign';render()});
       document.getElementById('resume')?.addEventListener('click',enter);
-      document.getElementById('repeat')?.addEventListener('click',()=>{index=errors=hints=seconds=0;shownCombo=[];feedback='idle';hint=false;comboLocked=false;folderOpen=false;navIndex=1;start()});
+      document.getElementById('repeat')?.addEventListener('click',start);
       document.getElementById('leave')?.addEventListener('click',leave);
       document.getElementById('exit')?.addEventListener('click',leave);
       document.getElementById('hint')?.addEventListener('click',()=>{if(!hint)hints++;hint=true;render()});
@@ -151,8 +204,8 @@
       if(navigator.keyboard?.lock){try{await navigator.keyboard.lock()}catch(e){lockOK=false}}else lockOK=false;
       paused=false;phase='playing';runTimer();render();
     }
-    function start(){phase='playing';paused=false;comboLocked=false;folderOpen=false;navIndex=1;enter()}
-    async function leave(){navigator.keyboard?.unlock?.();if(document.fullscreenElement)try{await document.exitFullscreen()}catch(e){};paused=true;stopTimer();render()}
+    function start(){clearTimeout(nextTimer);index=errors=hints=seconds=0;pressed.clear();shownCombo=[];feedback='idle';hint=false;phase='playing';paused=false;comboLocked=false;folderOpen=false;navIndex=1;enter()}
+    async function leave(){navigator.keyboard?.unlock?.();clearTimeout(nextTimer);stopTimer();phase='intro';paused=false;if(document.fullscreenElement)try{await document.exitFullscreen()}catch(e){};render()}
     function runTimer(){stopTimer();timer=setInterval(()=>{if(phase==='playing'&&!paused){seconds++;const el=document.getElementById('timeValue');if(el)el.textContent=fmt(seconds)}},1000)}function stopTimer(){clearInterval(timer)}
     document.addEventListener('fullscreenchange',()=>{if(phase==='playing'&&!document.fullscreenElement){paused=true;stopTimer();render()}});
     window.addEventListener('keydown',e=>{
@@ -172,7 +225,7 @@
       }
       if(e.ctrlKey&&e.code===t.main&&!e.shiftKey&&!e.altKey&&(t.scene!=='paste'||folderOpen)){
         comboLocked=true;shownCombo=[...t.labels];feedback='correct';render();clearTimeout(nextTimer);
-        nextTimer=setTimeout(()=>{shownCombo=[];comboLocked=false;if(index===TASKS.length-1){phase='complete';navigator.keyboard?.unlock?.();stopTimer()}else{index++;feedback='idle';hint=false;if(TASKS[index].scene==='paste'){folderOpen=false;navIndex=1}}render()},2000)
+        nextTimer=setTimeout(()=>{shownCombo=[];comboLocked=false;if(index===TASKS.length-1)finishLevel();else{index++;feedback='idle';hint=false;if(TASKS[index].scene==='paste'){folderOpen=false;navIndex=1}}render()},2000)
       }else{errors++;feedback='wrong';render();setTimeout(()=>{if(feedback==='wrong'&&!comboLocked){feedback='idle';render()}},620)}
     },true);
     window.addEventListener('keyup',e=>{pressed.delete(e.code);if(phase==='playing'&&!paused&&!comboLocked)render()},true);
