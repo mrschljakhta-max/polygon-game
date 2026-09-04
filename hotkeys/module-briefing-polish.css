@@ -7,6 +7,18 @@
   padding:.45em .7em!important;
 }
 
+/* Hide the redundant top-left back hint; Esc navigation remains active. */
+.mbf-screen.mbf-v3 .mbf-back{
+  display:none!important;
+}
+
+/* Bottom keyboard hints stay visible, but without the neon container frame/glow. */
+.mbf-screen.mbf-v3 .mbf-actions{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+
 /* Level numbers: no green tile, no leading zero, larger and clearer. */
 .mbf-screen.mbf-v3 .mbf-level-icon,
 .mbf-screen.mbf-v3 .mbf-level.is-done .mbf-level-icon,
