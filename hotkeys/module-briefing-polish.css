@@ -1,0 +1,62 @@
+/* VIDLIK briefing polish: large navigation label, clean numbering, burgundy completion marks. */
+.mbf-screen.mbf-v3 .mbf-page-toggle{
+  font-size:clamp(10px,.82vw,16px)!important;
+  line-height:1.08!important;
+  font-weight:900!important;
+  letter-spacing:.045em!important;
+  padding:.45em .7em!important;
+}
+
+/* Level numbers: no green tile, no leading zero, larger and clearer. */
+.mbf-screen.mbf-v3 .mbf-level-icon,
+.mbf-screen.mbf-v3 .mbf-level.is-done .mbf-level-icon,
+.mbf-screen.mbf-v3 .mbf-level.is-current .mbf-level-icon{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  overflow:visible!important;
+  padding:0!important;
+}
+.mbf-screen.mbf-v3 .mbf-level-icon .mbf-digit{display:none!important}
+.mbf-screen.mbf-v3 .mbf-level-icon .mbf-number-fallback,
+.mbf-screen.mbf-v3 .mbf-level-icon .mbf-simple-number{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  font:900 clamp(12px,.9vw,18px)/1 "Arial Narrow","Segoe UI",Arial,sans-serif!important;
+  color:#2f2b25!important;
+  letter-spacing:.015em!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.18)!important;
+}
+.mbf-screen.mbf-v3 .mbf-level.is-current .mbf-level-icon .mbf-simple-number,
+.mbf-screen.mbf-v3 .mbf-level.is-current .mbf-level-icon .mbf-number-fallback{
+  color:#173f39!important;
+}
+
+/* Completion mark: custom bold icon, burgundy instead of the tiny default glyph. */
+.mbf-screen.mbf-v3 .mbf-level-check{
+  color:transparent!important;
+  text-shadow:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.mbf-screen.mbf-v3 .mbf-level.is-done .mbf-level-check::before{
+  content:""!important;
+  display:block;
+  width:72%;
+  height:72%;
+  background:#7a2030;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5 9.2 18 20.5 5.5' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5 9.2 18 20.5 5.5' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 1px 1px rgba(58,7,17,.24));
+  transform:rotate(-5deg);
+}
+
+/* Sector 03: keep the redesigned text comfortably readable inside the larger paper areas. */
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-page-toggle{
+  font-size:clamp(11px,.9vw,17px)!important;
+}
