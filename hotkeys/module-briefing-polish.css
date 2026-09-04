@@ -1,10 +1,24 @@
 /* VIDLIK briefing polish: large navigation label, clean numbering, burgundy completion marks. */
 .mbf-screen.mbf-v3 .mbf-page-toggle{
   font-size:clamp(10px,.82vw,16px)!important;
-  line-height:1.08!important;
+  line-height:1.02!important;
   font-weight:900!important;
   letter-spacing:.045em!important;
-  padding:.45em .7em!important;
+  padding:.42em .7em!important;
+  flex-direction:column!important;
+  gap:.16em!important;
+  white-space:nowrap!important;
+}
+.mbf-screen.mbf-v3 .mbf-page-toggle .mbf-page-toggle-label{
+  display:block;
+  line-height:1!important;
+}
+.mbf-screen.mbf-v3 .mbf-page-toggle .mbf-page-toggle-range{
+  display:block;
+  font-size:.88em!important;
+  line-height:1!important;
+  letter-spacing:.08em!important;
+  opacity:.9;
 }
 
 /* Hide the redundant top-left back hint; Esc navigation remains active. */
