@@ -6,41 +6,48 @@
 <meta name="theme-color" content="#020808">
 <title>VIDLIK — Брифінг модуля</title>
 <link rel="stylesheet" href="module-briefing.css?v=4">
+<link rel="stylesheet" href="module-briefing-v2.css?v=1">
 </head>
 <body>
 <main id="mbf-screen" class="mbf-screen">
   <button id="mbf-back" class="mbf-back" type="button">← СЕКТОРИ · ESC</button>
 
-  <section class="mbf-shell" aria-live="polite">
-    <div id="mbf-art" class="mbf-art" role="img" aria-label=""></div>
+  <div class="mbf-stage">
+    <section class="mbf-shell" aria-live="polite">
+      <div id="mbf-art" class="mbf-art" role="img" aria-label=""></div>
 
-    <div class="mbf-title">
-      <span id="mbf-kicker" class="mbf-kicker"></span>
-      <strong id="mbf-title"></strong>
-    </div>
-
-    <ol id="mbf-levels-list" class="mbf-levels-list" aria-label="Рівні модуля"></ol>
-
-    <div class="mbf-summary">
-      <b id="mbf-page-heading">РІВНІ 01–05</b>
-      <p id="mbf-summary"></p>
-    </div>
-
-    <div class="mbf-progress-wrap" aria-label="Прогрес модуля">
-      <div class="mbf-progress-track"><i id="mbf-progress-fill"></i></div>
-    </div>
-
-    <div class="mbf-stat">
-      <span>ПРОГРЕС</span>
-      <strong id="mbf-progress">0%</strong>
-      <small id="mbf-levels">0 / 10</small>
-      <div class="mbf-page-nav" aria-label="Сторінки рівнів">
-        <button id="mbf-prev-page" type="button" aria-label="Показати рівні 1–5">←</button>
-        <b id="mbf-page-label">1 / 2</b>
-        <button id="mbf-next-page" type="button" aria-label="Показати рівні 6–10">→</button>
+      <div class="mbf-title">
+        <span id="mbf-kicker" class="mbf-kicker"></span>
+        <strong id="mbf-title"></strong>
       </div>
-    </div>
-  </section>
+
+      <ol id="mbf-levels-list" class="mbf-levels-list" aria-label="Рівні модуля"></ol>
+
+      <button id="mbf-page-toggle" class="mbf-page-toggle" type="button">ДАЛІ 06–10 →</button>
+
+      <div class="mbf-summary">
+        <b id="mbf-page-heading">РІВНІ 01–05</b>
+        <p id="mbf-summary"></p>
+      </div>
+
+      <div class="mbf-progress-wrap" aria-label="Прогрес модуля">
+        <div class="mbf-progress-track"><i id="mbf-progress-fill"></i></div>
+      </div>
+
+      <div class="mbf-stat">
+        <span>ПРОГРЕС</span>
+        <strong id="mbf-progress">0%</strong>
+        <small id="mbf-levels">0 / 10</small>
+        <div class="mbf-page-nav" aria-label="Сторінки рівнів">
+          <button id="mbf-prev-page" type="button" aria-label="Показати рівні 1–5">←</button>
+          <b id="mbf-page-label">1 / 2</b>
+          <button id="mbf-next-page" type="button" aria-label="Показати рівні 6–10">→</button>
+        </div>
+      </div>
+
+      <img id="mbf-stamp" class="mbf-stamp" alt="ПРОЙДЕНО">
+    </section>
+  </div>
 
   <div class="mbf-actions">
     <span><kbd>←</kbd><kbd>→</kbd> РІВНІ</span>
@@ -48,7 +55,7 @@
     <span><kbd>ENTER</kbd> <b id="mbf-action-label">РОЗПОЧАТИ</b></span>
   </div>
 </main>
-<script src="module-briefing-data.js?v=3"></script>
-<script src="module-briefing.js?v=4"></script>
+<script src="module-briefing-data.js?v=4"></script>
+<script src="module-briefing.js?v=5"></script>
 </body>
 </html>
