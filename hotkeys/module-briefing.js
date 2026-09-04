@@ -16,8 +16,11 @@ function readCompleted(){
   try{const p=JSON.parse(localStorage.getItem('vidlik-hotkeys-desktop-sectors-v1')||'{}')||{};return Array.isArray(p[sector])?p[sector].map(Number).filter(n=>n>=1&&n<=10):[]}catch(e){return[]}
 }
 const completedSet=new Set(readCompleted()),completed=Math.min(10,completedSet.size),pct=Math.round(completed/10*100);
-const firstOpenIndex=levels.findIndex((_,i)=>!completedSet.has(i+1)),nextLevel=firstOpenIndex>=0?firstOpenIndex+1:10;
-let page=nextLevel>5?1:0,leaving=false,pageTimer=0;
+const firstOpenIndex=levels.findIndex((_,i)=>!completedSet.has(i+1));
+const nextLevel=firstOpenIndex>=0?firstOpenIndex+1:10;
+const maxAccessibleLevel=nextLevel;
+let selectedLevel=maxAccessibleLevel;
+let page=selectedLevel>5?1:0,leaving=false,pageTimer=0;
 
 screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.webp")';
 const shell=document.querySelector('.mbf-shell'),art=document.getElementById('mbf-art'),stamp=document.getElementById('mbf-stamp');
@@ -90,19 +93,37 @@ function digitIcon(n){
   digits.forEach(d=>{const img=document.createElement('img');img.className='mbf-digit';img.alt='';img.src=`${cfg.numberIconsBase}number-${d}-small.svg`;img.onload=()=>{loaded++;if(!failed&&loaded===digits.length)icon.classList.add('has-digit-art')};img.onerror=()=>{failed=true;imgs.forEach(x=>x.remove());icon.classList.remove('has-digit-art')};imgs.push(img);icon.appendChild(img)});
   return icon;
 }
+function selectionRect(i){
+  const boxes=[layout.numberSlots&&layout.numberSlots[i],layout.textSlots&&layout.textSlots[i],layout.checkSlots&&layout.checkSlots[i]].filter(Boolean);
+  if(!boxes.length)return null;
+  const left=Math.min(...boxes.map(b=>Number(b.xPct)||0));
+  const top=Math.min(...boxes.map(b=>Number(b.yPct)||0));
+  const right=Math.max(...boxes.map(b=>(Number(b.xPct)||0)+(Number(b.widthPct)||0)));
+  const bottom=Math.max(...boxes.map(b=>(Number(b.yPct)||0)+(Number(b.heightPct)||0)));
+  const padX=.45,padY=.35;
+  return {xPct:Math.max(0,left-padX),yPct:Math.max(0,top-padY),widthPct:Math.min(100,right-left+padX*2),heightPct:Math.min(100,bottom-top+padY*2),angleDeg:0,z:60};
+}
 function updateSummary(){
-  if(completed===10){pageHeading.textContent='МОДУЛЬ ЗАВЕРШЕНО';summaryEl.textContent=cfg.summary;return}
-  pageHeading.textContent=`ПОТОЧНИЙ РІВЕНЬ ${String(nextLevel).padStart(2,'0')}`;
-  const custom=Array.isArray(cfg.levelSummaries)?cfg.levelSummaries[nextLevel-1]:'';
+  pageHeading.textContent=`ОБРАНИЙ УРОК ${String(selectedLevel).padStart(2,'0')}`;
+  const custom=Array.isArray(cfg.levelSummaries)?cfg.levelSummaries[selectedLevel-1]:'';
   summaryEl.textContent=custom||cfg.summary;
 }
 function renderPage(){
   const start=page*5;list.innerHTML='';
   levels.slice(start,start+5).forEach((title,i)=>{
-    const n=start+i+1,state=levelState(n),li=document.createElement('li');li.className=`mbf-level is-${state}`;li.dataset.level=String(n);
+    const n=start+i+1,state=levelState(n),li=document.createElement('li');
+    li.className=`mbf-level is-${state}${n===selectedLevel?' is-selected':''}`;
+    li.dataset.level=String(n);
+    li.setAttribute('aria-selected',n===selectedLevel?'true':'false');
     const icon=digitIcon(n),text=document.createElement('span'),check=document.createElement('span');
     text.className='mbf-level-text';text.textContent=title;check.className='mbf-level-check';
     setBox(icon,layout.numberSlots[i]);setBox(text,layout.textSlots[i]);setBox(check,layout.checkSlots[i]);
+    if(n===selectedLevel){
+      const frame=document.createElement('span');
+      frame.className='mbf-level-selection';
+      setBox(frame,selectionRect(i));
+      li.append(frame);
+    }
     li.append(icon,text,check);list.appendChild(li);
   });
   pageLabel.textContent=`${page+1} / 2`;prevBtn.disabled=page===0;nextBtn.disabled=page===1;
@@ -123,9 +144,26 @@ function changePage(next){
   list.style.setProperty('--page-shift',`${direction}px`);list.classList.add('is-changing');
   pageTimer=setTimeout(()=>{page=next;renderPage();requestAnimationFrame(()=>list.classList.remove('is-changing'))},110);
 }
+function selectLevel(next){
+  next=Math.max(1,Math.min(maxAccessibleLevel,next));
+  if(next===selectedLevel)return;
+  selectedLevel=next;
+  const targetPage=selectedLevel>5?1:0;
+  if(targetPage!==page){changePage(targetPage);return}
+  renderPage();
+}
 renderPage();
 function goBack(){if(leaving)return;leaving=true;screen.classList.add('mbf-leaving');setTimeout(()=>location.href='desktop-sectors.html?v=14',360)}
-function goForward(){if(leaving)return;leaving=true;screen.classList.add('mbf-leaving');const target=cfg.target||(sector===1?'sector1.html?v=1':`desktop-sectors.html?directSector=${sector}&v=14`);setTimeout(()=>location.href=target,360)}
+function goForward(){
+  if(leaving)return;
+  leaving=true;
+  screen.classList.add('mbf-leaving');
+  try{sessionStorage.setItem('vidlik-hotkeys-selected-lesson-v1',JSON.stringify({sector,level:selectedLevel}))}catch(e){}
+  const rawTarget=cfg.target||(sector===1?'sector1.html?v=1':`desktop-sectors.html?directSector=${sector}&v=14`);
+  let target=rawTarget;
+  try{const u=new URL(rawTarget,location.href);u.searchParams.set('level',String(selectedLevel));target=u.href}catch(e){}
+  setTimeout(()=>location.href=target,360);
+}
 document.getElementById('mbf-back').addEventListener('click',e=>{e.stopPropagation();goBack()});
 prevBtn.addEventListener('click',e=>{e.stopPropagation();changePage(0)});
 nextBtn.addEventListener('click',e=>{e.stopPropagation();changePage(1)});
@@ -133,6 +171,8 @@ if(pageToggle)pageToggle.addEventListener('click',e=>{e.stopPropagation();change
 screen.addEventListener('click',e=>{if(e.target.closest('#mbf-back,.mbf-page-nav,#mbf-page-toggle'))return;goForward()});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();goBack();return}
+  if(e.key==='ArrowUp'){e.preventDefault();selectLevel(selectedLevel-1);return}
+  if(e.key==='ArrowDown'){e.preventDefault();selectLevel(selectedLevel+1);return}
   if(e.key==='ArrowLeft'){e.preventDefault();changePage(page-1);return}
   if(e.key==='ArrowRight'){e.preventDefault();changePage(page+1);return}
   if(e.key==='PageUp'){e.preventDefault();changePage(0);return}
