@@ -7,7 +7,16 @@ window.VIDLIK_DIRECT_SECTOR=n;
 let tries=0;
 function open(){
   const btn=document.querySelector(`[data-sector="${n}"]`);
-  if(btn){btn.click();params.delete('directSector');const q=params.toString();history.replaceState(null,'',location.pathname+(q?'?'+q:''));window.VIDLIK_DIRECT_SECTOR=0;return}
+  if(btn){
+    /* Temporarily disable mission-board interception so the original desktop sector handler opens its level grid. */
+    document.body.classList.remove('mb-hub-active');
+    btn.click();
+    params.delete('directSector');
+    const q=params.toString();
+    history.replaceState(null,'',location.pathname+(q?'?'+q:''));
+    window.VIDLIK_DIRECT_SECTOR=0;
+    return;
+  }
   if(++tries<40)setTimeout(open,50);
 }
 setTimeout(open,0);
