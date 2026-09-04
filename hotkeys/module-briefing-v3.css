@@ -43,6 +43,12 @@
 .mbf-screen.mbf-v3 .mbf-actions{bottom:5.2%;gap:1.25em;padding:.78em 1.1em;font-size:clamp(9px,.72vw,14px);background:rgba(1,10,9,.72);border-color:rgba(97,210,199,.28);box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 14px rgba(54,180,169,.08)}
 .mbf-screen.mbf-v3 .mbf-actions kbd{min-width:2.25em;padding:.36em .5em;border-color:#5b8f89;color:#c8fff9}
 .mbf-screen.mbf-v3 .mbf-actions b{color:#b6fff7}
+/* Sector 03: its paper areas are physically larger, so typography is scaled up independently. */
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-summary{padding:.85% 1%}
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-summary b{font-size:clamp(8px,.64vw,12px);line-height:1.05;margin-bottom:.48em}
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-summary p{font-size:clamp(10px,.78vw,15px);line-height:1.28;-webkit-line-clamp:4}
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-stat>span{font-size:clamp(8px,.6vw,12px);line-height:1.05}
+.mbf-screen.mbf-v3.mbf-sector-3 .mbf-stat>small{font-size:clamp(8px,.58vw,11px);line-height:1.05;margin-top:.15em}
 @keyframes mbfV3Reveal{to{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1)}}
 @keyframes mbfV3Stamp{0%{opacity:0;transform:rotate(var(--mbf-rotate,0deg)) scale(1.32)}65%{opacity:.96;transform:rotate(var(--mbf-rotate,0deg)) scale(.96)}100%{opacity:.9;transform:rotate(var(--mbf-rotate,0deg)) scale(1)}}
 @media(max-aspect-ratio:4/3){.mbf-screen.mbf-v3 .mbf-stage{width:100vw}.mbf-screen.mbf-v3 .mbf-level-text{font-size:7px}.mbf-screen.mbf-v3 .mbf-title strong{font-size:14px}}
