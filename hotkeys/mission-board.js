@@ -73,30 +73,31 @@ function syncTutorial(hub){
   const done=source.classList.contains('done')||/пройден/i.test(source.textContent);link.classList.toggle('done',done);setText(link,done?'✓ 00 · ІНСТРУКТАЖ':'00 · ІНСТРУКТАЖ');
 }
 
-/* Every thread is tied to the visible push-pin near the top centre of each dossier. */
-function pinPoint(cardId,hub){
-  const card=qsSector(cardId,hub);if(!card)return null;
+/* Anchor geometry and curve formula intentionally match the approved sandbox. */
+function anchorPoint(cardId,anchorName,hub){
+  const card=qsSector(cardId,hub),a=CFG.anchors?.[anchorName]||{x:.5,y:.5};if(!card)return null;
   const r=card.getBoundingClientRect(),hr=hub.getBoundingClientRect();
-  return{x:r.left-hr.left+r.width*.50,y:r.top-hr.top+r.height*.055};
+  return{x:r.left-hr.left+r.width*a.x,y:r.top-hr.top+r.height*a.y};
 }
-function makeThreadPath(p1,p2,index){
-  const dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.max(1,Math.hypot(dx,dy));
-  const tinyVariation=((index%3)-1)*1.25;
-  const sag=Math.min(18,Math.max(5,dist*.028))+tinyVariation;
-  const mx=(p1.x+p2.x)/2,my=(p1.y+p2.y)/2+sag;
-  return`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+function makeThreadPath(p1,p2){
+  const dx=p2.x-p1.x;
+  const curve=Math.max(24,Math.abs(dx)*.18);
+  const c1={x:p1.x+curve,y:p1.y};
+  const c2={x:p2.x-curve,y:p2.y};
+  return`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)}, ${c2.x.toFixed(1)} ${c2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
 }
 function renderThreads(){
   const hub=APP.querySelector('.mb-board');if(!hub)return;const svg=hub.querySelector('.mb-strings');if(!svg)return;
   const hr=hub.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${Math.max(1,hr.width)} ${Math.max(1,hr.height)}`);svg.innerHTML='';
   (CFG.threads||[]).forEach((t,i)=>{
-    const p1=pinPoint(t.from[0],hub),p2=pinPoint(t.to[0],hub);if(!p1||!p2)return;
-    const d=makeThreadPath(p1,p2,i),a=t.from[0],b=t.to[0],delay=(1.82+i*.075).toFixed(2)+'s';
-    const shadow=document.createElementNS('http://www.w3.org/2000/svg','path');
-    shadow.setAttribute('class','mb-thread-shadow');shadow.setAttribute('pathLength','1');shadow.setAttribute('d',d);shadow.style.setProperty('--d',delay);
+    const p1=anchorPoint(t.from[0],t.from[1],hub),p2=anchorPoint(t.to[0],t.to[1],hub);if(!p1||!p2)return;
+    const d=makeThreadPath(p1,p2),a=t.from[0],b=t.to[0];
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
     const string=document.createElementNS('http://www.w3.org/2000/svg','path');
-    string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('data-path',d);string.setAttribute('pathLength','1');string.setAttribute('d',d);string.style.setProperty('--d',delay);
-    svg.append(shadow,string);
+    string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('pathLength','1');string.setAttribute('d',d);
+    const pin1=document.createElementNS('http://www.w3.org/2000/svg','circle');pin1.setAttribute('cx',p1.x);pin1.setAttribute('cy',p1.y);pin1.setAttribute('r','4');pin1.setAttribute('class','mb-thread-pin');
+    const pin2=document.createElementNS('http://www.w3.org/2000/svg','circle');pin2.setAttribute('cx',p2.x);pin2.setAttribute('cy',p2.y);pin2.setAttribute('r','4');pin2.setAttribute('class','mb-thread-pin');
+    g.append(string,pin1,pin2);svg.appendChild(g);
   });setConnected(selected);
 }
 function scheduleThreadRender(){cancelAnimationFrame(resizeRAF);resizeRAF=requestAnimationFrame(()=>requestAnimationFrame(renderThreads))}
@@ -105,7 +106,7 @@ function scheduleHint(hub){clearTimeout(hintTimer);const hint=hub.querySelector(
 function dismissHint(){clearTimeout(hintTimer);const hint=APP.querySelector('.mb-keyhint');if(hint){hint.classList.remove('show');hint.classList.add('dismissed')}}
 function setConnected(n){const hub=APP.querySelector('.mb-board');if(!hub)return;hub.querySelectorAll('.mb-string').forEach(p=>p.classList.toggle('hot',+p.dataset.a===n||+p.dataset.b===n))}
 
-/* Digital layer is reduced to one tiny moving point on a physical string. */
+/* A tiny signal dot keeps the digital layer subtle while the thread stays physical. */
 function pulseConnection(a,b){
   const hub=APP.querySelector('.mb-board');if(!hub)return;const svg=hub.querySelector('.mb-strings');if(!svg)return;
   let paths=[...hub.querySelectorAll('.mb-string')].filter(p=>(+p.dataset.a===a&&+p.dataset.b===b)||(+p.dataset.a===b&&+p.dataset.b===a));
@@ -125,7 +126,7 @@ function selectSector(n,signal=true){
 }
 function nextByArrow(key){const map=CFG.navigation?.[key];return +(map?.[selected]||selected)}
 
-/* Keep the board physically stable; pointer movement only shifts a faint ambient reflection. */
+/* Board stays physically stable; pointer movement only shifts a faint ambient reflection. */
 function setupParallax(hub){
   if(hub.dataset.parallaxBound)return;hub.dataset.parallaxBound='1';
   hub.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hub.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;hub.style.setProperty('--mx',`${50+nx*4}%`);hub.style.setProperty('--my',`${45+ny*4}%`)});
