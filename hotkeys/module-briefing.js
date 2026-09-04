@@ -106,7 +106,15 @@ function renderPage(){
     li.append(icon,text,check);list.appendChild(li);
   });
   pageLabel.textContent=`${page+1} / 2`;prevBtn.disabled=page===0;nextBtn.disabled=page===1;
-  if(pageToggle)pageToggle.textContent=page===0?'ДАЛІ 06–10 →':'← НАЗАД 01–05';
+  if(pageToggle){
+    if(page===0){
+      pageToggle.innerHTML='<span class="mbf-page-toggle-label">ДАЛІ →</span><span class="mbf-page-toggle-range">06–10</span>';
+      pageToggle.setAttribute('aria-label','Далі, рівні 06–10');
+    }else{
+      pageToggle.innerHTML='<span class="mbf-page-toggle-label">← НАЗАД</span><span class="mbf-page-toggle-range">01–05</span>';
+      pageToggle.setAttribute('aria-label','Назад, рівні 01–05');
+    }
+  }
   updateSummary();
 }
 function changePage(next){
