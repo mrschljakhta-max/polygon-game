@@ -27,7 +27,6 @@
 }
 @keyframes mbBoardIn{0%{opacity:0;filter:brightness(.58)}55%{opacity:.82;filter:brightness(.82)}100%{opacity:1;filter:brightness(1)}}
 
-/* Existing dashboard header is not part of the visual scene. */
 .mb-board .ds-hub-head{display:none!important}
 
 /* Sandbox coordinates are measured against the whole 16:9 board. */
@@ -63,14 +62,19 @@
   filter:drop-shadow(0 15px 17px rgba(0,0,0,.34));
   transition:filter .30s ease,transform .30s cubic-bezier(.2,.72,.2,1);
 }
-/* No rectangular neon frame: highlight follows the alpha silhouette of the dossier artwork. */
-.mb-folder:hover,.mb-folder:focus-visible{--lift:-2px!important;--scale:1.004;outline:0!important;filter:brightness(1.025)!important}
-.mb-folder.mb-selected{--lift:-4px!important;--scale:1.007;outline:0!important;filter:brightness(1.045)!important}
+
+/* Glow follows the real transparent silhouette of the dossier; never a rectangular frame. */
+.mb-folder:hover,.mb-folder:focus-visible{--lift:-2px!important;--scale:1.004;outline:0!important;filter:brightness(1.035)!important}
+.mb-folder.mb-selected{--lift:-5px!important;--scale:1.012;outline:0!important;filter:brightness(1.085)!important;z-index:8!important}
 .mb-folder:hover .mb-card-art,.mb-folder:focus-visible .mb-card-art{
-  filter:drop-shadow(0 18px 20px rgba(0,0,0,.40)) drop-shadow(0 0 3px rgba(76,220,208,.10));
+  filter:drop-shadow(0 18px 20px rgba(0,0,0,.42)) drop-shadow(0 0 5px rgba(83,226,213,.22));
 }
 .mb-folder.mb-selected .mb-card-art{
-  filter:drop-shadow(0 20px 22px rgba(0,0,0,.43)) drop-shadow(0 0 4px rgba(91,235,222,.18)) drop-shadow(0 0 12px rgba(68,205,193,.055));
+  animation:mbSelectedGlow 2.65s ease-in-out infinite;
+}
+@keyframes mbSelectedGlow{
+  0%,100%{filter:drop-shadow(0 20px 22px rgba(0,0,0,.46)) drop-shadow(0 0 5px rgba(91,245,232,.46)) drop-shadow(0 0 14px rgba(47,226,212,.30)) drop-shadow(0 0 28px rgba(30,183,173,.16))}
+  50%{filter:drop-shadow(0 21px 24px rgba(0,0,0,.48)) drop-shadow(0 0 7px rgba(111,255,243,.88)) drop-shadow(0 0 18px rgba(54,238,222,.58)) drop-shadow(0 0 36px rgba(31,198,186,.32)) drop-shadow(0 0 58px rgba(21,139,131,.16))}
 }
 
 /* Missing files do not break the menu. */
@@ -94,20 +98,20 @@
 .mb-folder.mb-unlocked .mb-status{animation:mbUnlock .7s ease both}
 @keyframes mbUnlock{0%{transform:rotate(-8deg);filter:brightness(.7)}35%{transform:rotate(5deg);filter:brightness(1.45)}65%{transform:rotate(-2deg)}100%{transform:rotate(0);filter:none}}
 
-/* Physical thread layer: thin warm fibre, dark shadow, very mild sag, always behind folders. */
-.mb-strings{position:absolute;z-index:2;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.mb-thread-shadow{fill:none;stroke:#020504;stroke-width:2.6;opacity:.26;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mbDrawString 1.35s cubic-bezier(.25,.72,.24,1) forwards;animation-delay:var(--d)}
-.mb-string{fill:none;stroke:#a69b84;stroke-width:1.28;opacity:.30;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mbDrawString 1.35s cubic-bezier(.25,.72,.24,1) forwards;animation-delay:var(--d);transition:stroke .26s ease,opacity .26s ease,stroke-width .26s ease}
-.mb-string.hot{stroke:#c8bea8;opacity:.72;stroke-width:1.45}
-@keyframes mbDrawString{to{stroke-dashoffset:0}}
-.mb-signal-dot{fill:#9ff7ef;opacity:0;filter:drop-shadow(0 0 3px rgba(86,230,217,.65));animation:mbDotLife .72s ease both;pointer-events:none}
-@keyframes mbDotLife{0%{opacity:0}16%{opacity:.94}72%{opacity:.88}100%{opacity:0}}
+/* Thread rendering intentionally matches the approved sandbox: same width, colour and cubic shape. */
+.mb-strings{position:absolute;z-index:2;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;opacity:0;animation:mbThreadsIn .65s ease 1.55s forwards}
+@keyframes mbThreadsIn{to{opacity:1}}
+.mb-string{fill:none;stroke:rgba(197,183,162,.92);stroke-width:2.2;opacity:1;vector-effect:non-scaling-stroke;stroke-linecap:round;filter:drop-shadow(0 0 1px rgba(0,0,0,.8));transition:stroke .20s ease,opacity .20s ease,stroke-width .20s ease}
+.mb-string.hot{stroke:rgba(218,207,184,.98);stroke-width:2.25;opacity:1;filter:drop-shadow(0 0 1px rgba(0,0,0,.86))}
+.mb-thread-pin{fill:#3d4547;stroke:#0b1113;stroke-width:1;vector-effect:non-scaling-stroke}
+.mb-signal-dot{fill:#a4fff6;opacity:0;filter:drop-shadow(0 0 4px rgba(86,230,217,.72));animation:mbDotLife .72s ease both;pointer-events:none}
+@keyframes mbDotLife{0%{opacity:0}16%{opacity:.96}72%{opacity:.90}100%{opacity:0}}
 
 /* Opening a mission: quiet focus rather than a bright UI burst. */
 .mb-board.mb-opening .mb-folder:not(.mb-opening-card){opacity:.42!important;filter:brightness(.70) saturate(.75)!important;transition:.34s ease!important}
-.mb-board.mb-opening .mb-string,.mb-board.mb-opening .mb-thread-shadow{opacity:.09!important;transition:.28s}
-.mb-folder.mb-opening-card{z-index:12!important;--lift:-6px!important;--scale:1.018!important;filter:brightness(1.08)!important;transition:.34s ease!important}
-.mb-folder.mb-opening-card .mb-card-art{filter:drop-shadow(0 25px 27px rgba(0,0,0,.54)) drop-shadow(0 0 5px rgba(83,226,213,.15))}
+.mb-board.mb-opening .mb-string{opacity:.10!important;transition:.28s}
+.mb-folder.mb-opening-card{z-index:12!important;--lift:-7px!important;--scale:1.025!important;filter:brightness(1.12)!important;transition:.34s ease!important}
+.mb-folder.mb-opening-card .mb-card-art{animation:none!important;filter:drop-shadow(0 25px 27px rgba(0,0,0,.54)) drop-shadow(0 0 8px rgba(94,246,232,.50)) drop-shadow(0 0 22px rgba(56,222,208,.28))}
 
 /* Keyboard-first hint. */
 .mb-keyhint{position:absolute;z-index:12;left:50%;bottom:1.45%;transform:translateX(-50%) translateY(5px);display:flex;align-items:center;gap:2em;padding:.48em .88em;border-radius:8px;background:rgba(1,9,8,.48);border:1px solid rgba(79,131,125,.18);color:#648f8a;font:700 clamp(6px,.48vw,9px)/1 Consolas,monospace;letter-spacing:.055em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.35s ease}
@@ -122,4 +126,4 @@
 .mb-tutorial-link.done{color:#72bdb5}
 
 @media (max-aspect-ratio:4/3){.mb-keyhint{gap:.8em}.mb-status{font-size:7px}}
-@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-string,.mb-thread-shadow,.mb-status{animation:none!important}.mb-folder{opacity:1!important}.mb-string,.mb-thread-shadow{stroke-dashoffset:0!important}}
+@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-strings,.mb-status,.mb-folder.mb-selected .mb-card-art{animation:none!important}.mb-folder,.mb-strings{opacity:1!important}}
