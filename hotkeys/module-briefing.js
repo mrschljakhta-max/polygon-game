@@ -12,11 +12,16 @@ let profile={};try{profile=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}cat
 const completed=sector===1?0:(Array.isArray(profile[sector])?profile[sector].length:0);
 const pct=Math.max(0,Math.min(100,Math.round(completed/10*100)));
 
-screen.style.backgroundImage='url("assets/backgrounds/sectors-board.webp")';
+screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.webp")';
 const art=document.getElementById('mbf-art');
 art.src=cfg.image;
 art.alt=`Сектор ${String(sector).padStart(2,'0')} — ${cfg.title}`;
-art.onerror=()=>{art.style.opacity='.18'};
+art.onload=()=>screen.classList.add('mbf-art-ready');
+art.onerror=()=>{
+  screen.classList.add('mbf-art-missing');
+  art.removeAttribute('src');
+  art.alt='';
+};
 document.getElementById('mbf-kicker').textContent=`VIDLIK · СЕКТОР ${String(sector).padStart(2,'0')}`;
 document.getElementById('mbf-title').textContent=cfg.title;
 document.getElementById('mbf-summary').textContent=cfg.summary;
