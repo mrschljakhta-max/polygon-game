@@ -31,6 +31,24 @@
   border:0!important;
   outline:0!important;
   box-shadow:none!important;
+  gap:1.05em!important;
+}
+
+/* Selected lesson: one restrained burgundy frame around the whole row. */
+.mbf-screen.mbf-v3 .mbf-level-selection{
+  position:absolute;
+  box-sizing:border-box;
+  pointer-events:none;
+  border:2px solid #7a2030;
+  border-radius:2px;
+  background:rgba(122,32,48,.035);
+  box-shadow:0 0 0 1px rgba(63,12,24,.2),inset 0 0 0 1px rgba(255,235,220,.08);
+  transform-origin:center center;
+  animation:mbfSelectedLessonIn .16s ease-out both;
+}
+@keyframes mbfSelectedLessonIn{
+  from{opacity:.35}
+  to{opacity:1}
 }
 
 /* Level numbers: no green tile, no leading zero, larger and clearer. */
