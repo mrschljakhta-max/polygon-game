@@ -1,0 +1,1938 @@
+{
+  "1": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "2": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "3": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "4": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "5": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "6": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "7": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 86,
+      "sourceW": 1951,
+      "sourceH": 806
+    },
+    "elements": [
+      {
+        "id": "el_gq76bde",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 15,
+        "yPct": 11,
+        "widthPct": 30,
+        "heightPct": 13,
+        "angleDeg": 1.2,
+        "z": 1
+      },
+      {
+        "id": "el_p3e2gai",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 26,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_e9re8jn",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_v1k9oqj",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 47,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_mlyl7q7",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_fzc0atv",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_fv2kud1",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 27,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_5himk71",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 37,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_b9z7o3v",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 47,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_rdt4rs7",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_qdaujns",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 17,
+        "yPct": 64,
+        "widthPct": 25,
+        "heightPct": 8,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_1kdh9yc",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 35,
+        "yPct": 75,
+        "widthPct": 10,
+        "heightPct": 9,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_frch82d",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 53,
+        "yPct": 55,
+        "widthPct": 24,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_12l4e73",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 54,
+        "yPct": 79,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": -2.6,
+        "z": 14
+      },
+      {
+        "id": "el_xv0sw24",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 81,
+        "yPct": 55,
+        "widthPct": 10,
+        "heightPct": 25,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_u6fapej",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 27,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_y8k3s9n",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 37,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_09u5ktg",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 46,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_h320xct",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 55,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_htb285n",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 65,
+        "widthPct": 4,
+        "heightPct": 9,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_jvgkfe6",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 71,
+        "yPct": 25,
+        "widthPct": 18,
+        "heightPct": 40,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  },
+  "8": {
+    "folder": {
+      "xPct": 50,
+      "yPct": 47.1,
+      "widthPct": 76,
+      "sourceW": 1536,
+      "sourceH": 1024
+    },
+    "elements": [
+      {
+        "id": "el_0w84391",
+        "name": "Назва сектора",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 18,
+        "widthPct": 29,
+        "heightPct": 6,
+        "angleDeg": 2.7,
+        "z": 1
+      },
+      {
+        "id": "el_epy9keu",
+        "name": "Іконка порядкового номеру 01",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 29,
+        "widthPct": 3,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 2
+      },
+      {
+        "id": "el_7khpdqm",
+        "name": "Іконка порядкового номеру 02",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 36,
+        "widthPct": 3,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 3
+      },
+      {
+        "id": "el_nopv8xt",
+        "name": "Іконка порядкового номеру 03",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 43,
+        "widthPct": 3,
+        "heightPct": 4,
+        "angleDeg": 0,
+        "z": 4
+      },
+      {
+        "id": "el_30za64k",
+        "name": "Іконка порядкового номеру 04",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 49,
+        "widthPct": 3,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 5
+      },
+      {
+        "id": "el_c4m9ose",
+        "name": "Іконка порядкового номеру 05",
+        "type": "icon",
+        "xPct": 12,
+        "yPct": 56,
+        "widthPct": 3,
+        "heightPct": 4,
+        "angleDeg": 0,
+        "z": 6
+      },
+      {
+        "id": "el_lxbsvio",
+        "name": "Перший ріень",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 29,
+        "widthPct": 25,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 7
+      },
+      {
+        "id": "el_4ucxia1",
+        "name": "Другий рівень",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 36,
+        "widthPct": 25,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 8
+      },
+      {
+        "id": "el_zvfsipi",
+        "name": "Третій рівень",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 43,
+        "widthPct": 25,
+        "heightPct": 4,
+        "angleDeg": 0,
+        "z": 9
+      },
+      {
+        "id": "el_mx71f42",
+        "name": "Четвертий рівень",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 49,
+        "widthPct": 25,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 10
+      },
+      {
+        "id": "el_gdbnxq2",
+        "name": "П'ятий рівень",
+        "type": "text",
+        "xPct": 16,
+        "yPct": 56,
+        "widthPct": 25,
+        "heightPct": 4,
+        "angleDeg": 0,
+        "z": 11
+      },
+      {
+        "id": "el_szdlnxo",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "button",
+        "xPct": 36,
+        "yPct": 70,
+        "widthPct": 10,
+        "heightPct": 6,
+        "angleDeg": -1.4,
+        "z": 12
+      },
+      {
+        "id": "el_vyheesz",
+        "name": "Нотатка - короткий опис модуля",
+        "type": "note",
+        "xPct": 67,
+        "yPct": 62,
+        "widthPct": 20,
+        "heightPct": 15,
+        "angleDeg": -1.6,
+        "z": 13
+      },
+      {
+        "id": "el_p8an17z",
+        "name": "Далі (наступні розділи модуля)",
+        "type": "progress",
+        "xPct": 16,
+        "yPct": 62,
+        "widthPct": 25,
+        "heightPct": 6,
+        "angleDeg": 0,
+        "z": 14
+      },
+      {
+        "id": "el_d82p8x1",
+        "name": "Прогресбар",
+        "type": "note",
+        "xPct": 55,
+        "yPct": 63,
+        "widthPct": 10,
+        "heightPct": 13,
+        "angleDeg": 0,
+        "z": 15
+      },
+      {
+        "id": "el_fnv94zc",
+        "name": "іконка галочки 01",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 29,
+        "widthPct": 4,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 16
+      },
+      {
+        "id": "el_asqi3sh",
+        "name": "іконка галочки 02",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 36,
+        "widthPct": 4,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 17
+      },
+      {
+        "id": "el_fqzg50r",
+        "name": "іконка галочки 03",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 43,
+        "widthPct": 4,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 18
+      },
+      {
+        "id": "el_qsziq19",
+        "name": "іконка галочки 04",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 49,
+        "widthPct": 4,
+        "heightPct": 5,
+        "angleDeg": 0,
+        "z": 19
+      },
+      {
+        "id": "el_09lj6oc",
+        "name": "іконка галочки 05",
+        "type": "icon",
+        "xPct": 43,
+        "yPct": 56,
+        "widthPct": 4,
+        "heightPct": 4,
+        "angleDeg": 0,
+        "z": 20
+      },
+      {
+        "id": "el_dfdz02l",
+        "name": "Відображення пройдених етапів",
+        "type": "stamp",
+        "xPct": 77,
+        "yPct": 44,
+        "widthPct": 19,
+        "heightPct": 27,
+        "angleDeg": -20.2,
+        "z": 21
+      }
+    ]
+  }
+}

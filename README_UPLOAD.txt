@@ -1,22 +1,31 @@
-VIDLIK / Полігон — готовий пакет графіки для GitHub
+VIDLIK — FINAL MODULE BRIEFINGS / 8 SECTORS
 
-1. Розпакуй ZIP.
-2. Скопіюй папку hotkeys/ у корінь репозиторію polygon-game із збереженням структури.
-3. Commit / Push.
+Цей ZIP підготовлений як drop-in пакет для репозиторію polygon-game.
+Розпакуй ZIP і завантаж папку `hotkeys` у КОРІНЬ репозиторію зі збереженням структури.
 
-Структура:
-hotkeys/
-└── assets/
-    ├── backgrounds/
-    │   └── sectors-board.webp
-    └── cards/
-        ├── sector-01.webp
-        ├── sector-02.webp
-        ├── sector-03.webp
-        ├── sector-04.webp
-        ├── sector-05.webp
-        ├── sector-06.webp
-        ├── sector-07.webp
-        └── sector-08.webp
+Що всередині:
+- module-briefing.html
+- module-briefing-data.js
+- module-briefing-layouts.js — усі затверджені координати 01–08
+- module-briefing-v3.css — універсальна точна розмітка для різних пропорцій папок
+- module-briefing.js — рендер усіх 8 секторів
+- 8 PNG папок секторів у assets/module-briefings/
+- stamp-passed.png
+- SVG цифри 0–9
+- LAYOUTS_USER_APPROVED.json — архів затверджених JSON
 
-Код уже налаштований на ці назви файлів. Base64 не використовується.
+ВАЖЛИВО:
+1. Координати X/Y/W/H, кути й z-index взяті з надісланих тобою JSON без зміни.
+2. У JSON для секторів 03/04/05/07 залишались sourceW/sourceH від шаблону 1951×806, хоча самі PNG мають інші пропорції. Щоб зображення НЕ спотворювались, runtime використовує натуральний aspect ratio самого PNG; координати елементів не змінюються.
+3. Останній JSON був підписаний тобою як «восьмий», хоча всередині мав поле sector: 7. У пакеті він зафіксований як СЕКТОР 08, відповідно до твого повідомлення та папки з Булочкою.
+4. Навігаційна підказка внизу залишена збільшеною та піднятою вище.
+
+Фактичні розміри PNG:
+- Sector 01: 1951×806
+- Sector 02: 1942×809
+- Sector 03: 1536×1024
+- Sector 04: 1536×1024
+- Sector 05: 1536×1024
+- Sector 06: 1951×806
+- Sector 07: 1536×1024
+- Sector 08: 1536×1024
