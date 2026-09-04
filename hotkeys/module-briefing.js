@@ -95,14 +95,20 @@ function digitIcon(n){
   return icon;
 }
 function selectionRect(i){
-  const boxes=[layout.numberSlots&&layout.numberSlots[i],layout.textSlots&&layout.textSlots[i],layout.checkSlots&&layout.checkSlots[i]].filter(Boolean);
+  const boxes=[layout.numberSlots&&layout.numberSlots[i],layout.textSlots&&layout.textSlots[i]].filter(Boolean);
   if(!boxes.length)return null;
   const left=Math.min(...boxes.map(b=>Number(b.xPct)||0));
   const top=Math.min(...boxes.map(b=>Number(b.yPct)||0));
-  const right=Math.max(...boxes.map(b=>(Number(b.xPct)||0)+(Number(b.widthPct)||0)));
   const bottom=Math.max(...boxes.map(b=>(Number(b.yPct)||0)+(Number(b.heightPct)||0)));
-  const padX=.45,padY=.35;
-  return {xPct:Math.max(0,left-padX),yPct:Math.max(0,top-padY),widthPct:Math.min(100,right-left+padX*2),heightPct:Math.min(100,bottom-top+padY*2),angleDeg:0,z:60};
+  const padX=.45,padY=.08;
+  return {
+    xPct:Math.max(0,left-padX),
+    yPct:Math.max(0,top+padY),
+    widthPct:.3,
+    heightPct:Math.max(1,bottom-top-padY*2),
+    angleDeg:0,
+    z:60
+  };
 }
 function updateSummary(){
   pageHeading.textContent=`ОБРАНИЙ УРОК ${String(selectedLevel).padStart(2,'0')}`;
