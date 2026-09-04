@@ -33,12 +33,13 @@
 .mb-board .ds-module-grid{
   position:absolute!important;z-index:3!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;padding:0!important;display:block!important;overflow:visible!important;
+  isolation:isolate!important;
 }
 .mb-board .ds-module-grid>[data-tutorial]{display:none!important}
 
 /* Asset-backed dossier buttons. The image itself defines the physical paper silhouette. */
 .mb-folder{
-  position:absolute!important;left:var(--mb-x)!important;top:var(--mb-y)!important;width:var(--mb-w)!important;height:auto!important;
+  position:absolute!important;z-index:2!important;left:var(--mb-x)!important;top:var(--mb-y)!important;width:var(--mb-w)!important;height:auto!important;
   margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
   color:transparent!important;box-shadow:none!important;clip-path:none!important;overflow:visible!important;
   cursor:pointer!important;opacity:0;isolation:isolate!important;
@@ -98,12 +99,16 @@
 .mb-folder.mb-unlocked .mb-status{animation:mbUnlock .7s ease both}
 @keyframes mbUnlock{0%{transform:rotate(-8deg);filter:brightness(.7)}35%{transform:rotate(5deg);filter:brightness(1.45)}65%{transform:rotate(-2deg)}100%{transform:rotate(0);filter:none}}
 
-/* Thread rendering intentionally matches the approved sandbox: same width, colour and cubic shape. */
-.mb-strings{position:absolute;z-index:2;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;opacity:0;animation:mbThreadsIn .65s ease 1.55s forwards}
+/* Thread layer is always behind every dossier. Geometry still matches the approved sandbox. */
+.mb-strings{position:absolute!important;z-index:0!important;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;opacity:0;animation:mbThreadsIn .65s ease 1.55s forwards}
 @keyframes mbThreadsIn{to{opacity:1}}
-.mb-string{fill:none;stroke:rgba(197,183,162,.92);stroke-width:2.2;opacity:1;vector-effect:non-scaling-stroke;stroke-linecap:round;filter:drop-shadow(0 0 1px rgba(0,0,0,.8));transition:stroke .20s ease,opacity .20s ease,stroke-width .20s ease}
-.mb-string.hot{stroke:rgba(218,207,184,.98);stroke-width:2.25;opacity:1;filter:drop-shadow(0 0 1px rgba(0,0,0,.86))}
-.mb-thread-pin{fill:#3d4547;stroke:#0b1113;stroke-width:1;vector-effect:non-scaling-stroke}
+.mb-string{fill:none;stroke:rgba(197,183,162,.92);stroke-width:2.2;opacity:.48;vector-effect:non-scaling-stroke;stroke-linecap:round;filter:drop-shadow(0 0 1px rgba(0,0,0,.8));transition:stroke .26s ease,opacity .26s ease,stroke-width .26s ease,filter .26s ease}
+.mb-string.hot{stroke:rgba(105,246,232,.98);stroke-width:2.65;opacity:1;filter:drop-shadow(0 0 2px rgba(0,0,0,.72)) drop-shadow(0 0 4px rgba(88,236,222,.62)) drop-shadow(0 0 10px rgba(61,210,198,.40));animation:mbHotThreadGlow 2.4s ease-in-out infinite}
+@keyframes mbHotThreadGlow{
+  0%,100%{stroke:rgba(94,232,220,.92);filter:drop-shadow(0 0 2px rgba(0,0,0,.72)) drop-shadow(0 0 4px rgba(88,236,222,.42)) drop-shadow(0 0 9px rgba(61,210,198,.26))}
+  50%{stroke:rgba(145,255,246,1);filter:drop-shadow(0 0 2px rgba(0,0,0,.72)) drop-shadow(0 0 6px rgba(111,255,243,.84)) drop-shadow(0 0 14px rgba(61,225,211,.54))}
+}
+.mb-thread-pin{fill:#3d4547;stroke:#0b1113;stroke-width:1;vector-effect:non-scaling-stroke;opacity:.58}
 .mb-signal-dot{fill:#a4fff6;opacity:0;filter:drop-shadow(0 0 4px rgba(86,230,217,.72));animation:mbDotLife .72s ease both;pointer-events:none}
 @keyframes mbDotLife{0%{opacity:0}16%{opacity:.96}72%{opacity:.90}100%{opacity:0}}
 
@@ -126,4 +131,4 @@
 .mb-tutorial-link.done{color:#72bdb5}
 
 @media (max-aspect-ratio:4/3){.mb-keyhint{gap:.8em}.mb-status{font-size:7px}}
-@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-strings,.mb-status,.mb-folder.mb-selected .mb-card-art{animation:none!important}.mb-folder,.mb-strings{opacity:1!important}}
+@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-strings,.mb-status,.mb-folder.mb-selected .mb-card-art,.mb-string.hot{animation:none!important}.mb-folder,.mb-strings{opacity:1!important}}
