@@ -1,0 +1,2 @@
+sectors-board.webp — 16:9 mission board background
+cards use transparent WebP alpha and are positioned from mission-board-layout.json
