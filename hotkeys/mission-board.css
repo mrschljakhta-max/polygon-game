@@ -1,4 +1,4 @@
-/* VIDLIK · image-driven mission board hub */
+/* VIDLIK · physical dossier mission board */
 :root{--mb-cyan:#58e4d8;--mb-cyan2:#9bfff6;--mb-ink:#e9f8f5}
 
 /* Only the sectors hub becomes the board. Level/play screens keep the existing shell. */
@@ -13,57 +13,69 @@
   background-color:#071116!important;
   background-image:
     var(--mb-board-bg,none),
-    radial-gradient(circle at 30% 22%,rgba(38,104,97,.10),transparent 38%),
+    radial-gradient(circle at 30% 22%,rgba(38,104,97,.08),transparent 38%),
     linear-gradient(145deg,#08120f 0%,#050c0b 52%,#020706 100%)!important;
   background-repeat:no-repeat!important;background-position:center!important;background-size:cover!important;
   box-shadow:none!important;backdrop-filter:none!important;
-  animation:mbBoardIn .72s ease both;
+  animation:mbBoardIn 1.05s cubic-bezier(.22,.7,.2,1) both;
+  --mx:50%;--my:45%;
 }
 .ds-hub.mb-board::after{
   content:"";position:absolute;inset:-10%;z-index:1;pointer-events:none;
-  background:radial-gradient(circle at var(--mx,50%) var(--my,45%),rgba(79,225,211,.055),transparent 25%);
-  opacity:.65;animation:mbAmbient 16s ease-in-out infinite alternate;
+  background:radial-gradient(circle at var(--mx) var(--my),rgba(79,225,211,.045),transparent 24%);
+  opacity:.56;transition:background-position .45s ease;
 }
-@keyframes mbBoardIn{from{opacity:0;filter:brightness(.55)}to{opacity:1;filter:brightness(1)}}
-@keyframes mbAmbient{from{transform:translate3d(-.8%,-.5%,0)}to{transform:translate3d(.8%,.6%,0)}}
+@keyframes mbBoardIn{0%{opacity:0;filter:brightness(.58)}55%{opacity:.82;filter:brightness(.82)}100%{opacity:1;filter:brightness(1)}}
 
 /* Existing dashboard header is not part of the visual scene. */
 .mb-board .ds-hub-head{display:none!important}
 
-/* The sandbox coordinates are measured against the entire 16:9 board. */
+/* Sandbox coordinates are measured against the whole 16:9 board. */
 .mb-board .ds-module-grid{
   position:absolute!important;z-index:3!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;padding:0!important;display:block!important;overflow:visible!important;
 }
 .mb-board .ds-module-grid>[data-tutorial]{display:none!important}
 
-/* Asset-backed dossier buttons. The image itself defines the paper shape and height. */
+/* Asset-backed dossier buttons. The image itself defines the physical paper silhouette. */
 .mb-folder{
   position:absolute!important;left:var(--mb-x)!important;top:var(--mb-y)!important;width:var(--mb-w)!important;height:auto!important;
   margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
   color:transparent!important;box-shadow:none!important;clip-path:none!important;overflow:visible!important;
   cursor:pointer!important;opacity:0;isolation:isolate!important;
-  --px:0px;--py:0px;--lift:0px;
-  transform:translate3d(var(--px),calc(var(--py) + var(--lift)),0) scale(var(--mb-scale,1));
+  --px:0px;--py:0px;--lift:0px;--scale:1;
+  transform:translate3d(var(--px),calc(var(--py) + var(--lift)),0) scale(var(--scale));
   transform-origin:50% 50%;
-  animation:mbCardIn .70s cubic-bezier(.18,.85,.23,1) both!important;
-  animation-delay:calc(.42s + var(--i) * .105s)!important;
-  transition:filter .2s ease,transform .22s cubic-bezier(.2,.75,.2,1),opacity .2s ease!important;
+  animation:mbCardReveal 1.05s cubic-bezier(.18,.72,.22,1) both!important;
+  animation-delay:calc(.38s + var(--intro) * .16s)!important;
+  transition:filter .28s ease,transform .30s cubic-bezier(.2,.72,.2,1),opacity .28s ease!important;
 }
-.mb-folder::before{display:none!important}
-@keyframes mbCardIn{
-  from{opacity:0;transform:translate3d(var(--px),calc(var(--py) - 12px),0) scale(.985);filter:brightness(.62)}
-  to{opacity:1;transform:translate3d(var(--px),var(--py),0) scale(1);filter:brightness(1)}
+.mb-folder::before,.mb-folder::after{display:none!important}
+@keyframes mbCardReveal{
+  0%{opacity:0;transform:translate3d(var(--px),calc(var(--py) + 8px),0) scale(.992);filter:brightness(.68) contrast(.96)}
+  58%{opacity:.84;filter:brightness(.88) contrast(.98)}
+  100%{opacity:1;transform:translate3d(var(--px),var(--py),0) scale(1);filter:brightness(1) contrast(1)}
 }
 
 .mb-folder>.ds-num,.mb-folder>strong,.mb-folder>small,.mb-folder>.ds-progress,.mb-folder>.ds-check{display:none!important}
-.mb-card-art{display:block;width:100%;height:auto;object-fit:contain;pointer-events:none;filter:drop-shadow(0 15px 17px rgba(0,0,0,.33));transition:filter .2s ease,transform .22s ease}
-.mb-folder:hover,.mb-folder:focus-visible,.mb-folder.mb-selected{--lift:-3px!important;outline:0!important;filter:brightness(1.07)!important}
-.mb-folder:hover .mb-card-art,.mb-folder:focus-visible .mb-card-art,.mb-folder.mb-selected .mb-card-art{filter:drop-shadow(0 20px 22px rgba(0,0,0,.40)) drop-shadow(0 0 12px rgba(69,223,210,.08))}
+.mb-card-art{
+  display:block;width:100%;height:auto;object-fit:contain;pointer-events:none;
+  filter:drop-shadow(0 15px 17px rgba(0,0,0,.34));
+  transition:filter .30s ease,transform .30s cubic-bezier(.2,.72,.2,1);
+}
+/* No rectangular neon frame: highlight follows the alpha silhouette of the dossier artwork. */
+.mb-folder:hover,.mb-folder:focus-visible{--lift:-2px!important;--scale:1.004;outline:0!important;filter:brightness(1.025)!important}
+.mb-folder.mb-selected{--lift:-4px!important;--scale:1.007;outline:0!important;filter:brightness(1.045)!important}
+.mb-folder:hover .mb-card-art,.mb-folder:focus-visible .mb-card-art{
+  filter:drop-shadow(0 18px 20px rgba(0,0,0,.40)) drop-shadow(0 0 3px rgba(76,220,208,.10));
+}
+.mb-folder.mb-selected .mb-card-art{
+  filter:drop-shadow(0 20px 22px rgba(0,0,0,.43)) drop-shadow(0 0 4px rgba(91,235,222,.18)) drop-shadow(0 0 12px rgba(68,205,193,.055));
+}
 
-/* Missing files do not break the menu: a technical placeholder stays usable. */
+/* Missing files do not break the menu. */
 .mb-card-fallback{
-  display:none;width:100%;aspect-ratio:1.10;border:1px dashed rgba(91,185,176,.34);border-radius:3px;
+  display:none;width:100%;aspect-ratio:1.10;border:1px dashed rgba(91,185,176,.30);border-radius:3px;
   background:linear-gradient(155deg,rgba(18,34,32,.95),rgba(5,14,13,.98));
   box-shadow:0 15px 22px rgba(0,0,0,.42);padding:13% 10%;color:#8fb8b3;text-align:left;
 }
@@ -73,50 +85,41 @@
 .mb-card-fallback span{font:700 clamp(9px,.78vw,15px)/1.2 "Segoe UI",Arial,sans-serif;text-transform:uppercase;color:#89aaa6}
 .mb-card-fallback small{display:block!important;font:700 clamp(6px,.46vw,9px)/1.2 Consolas,monospace;color:#456e69;letter-spacing:.08em}
 
-/* Selected sector gets a separate living outline; the image itself stays untouched. */
-.mb-folder.mb-selected::after{
-  content:"";position:absolute;z-index:6;inset:1%;pointer-events:none;border-radius:5px;
-  border:1px solid rgba(99,255,241,.62);box-shadow:0 0 18px rgba(83,226,213,.10),inset 0 0 18px rgba(83,226,213,.06);
-  animation:mbSelectedOutline 3.6s ease-in-out infinite;
-}
-@keyframes mbSelectedOutline{0%,100%{opacity:.28}50%{opacity:.88;box-shadow:0 0 28px rgba(83,226,213,.18),inset 0 0 22px rgba(83,226,213,.10)}}
-
-/* Status is intentionally tiny: the artwork remains the primary UI. */
-.mb-status{position:absolute;z-index:7;left:7%;bottom:8%;display:none;align-items:center;justify-content:center;min-width:1.9em;min-height:1.9em;padding:.32em .56em;border:1px solid rgba(80,145,138,.42);border-radius:5px;background:rgba(2,10,9,.76);color:#789b96;font:800 clamp(6px,.48vw,9px)/1 Consolas,monospace;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 2px 8px #0008}
+/* Status stays tiny so the artwork remains the primary UI. */
+.mb-status{position:absolute;z-index:7;left:7%;bottom:8%;display:none;align-items:center;justify-content:center;min-width:1.8em;min-height:1.8em;padding:.28em .48em;border:1px solid rgba(80,145,138,.30);border-radius:3px;background:rgba(2,10,9,.68);color:#789b96;font:800 clamp(6px,.46vw,9px)/1 Consolas,monospace;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 2px 7px #0008}
 .mb-status.done,.mb-status.partial,.mb-status.locked{display:inline-flex}
-.mb-status.done{color:#70d5c9;border-color:#2b8e84;animation:mbStamp .44s cubic-bezier(.15,1.45,.3,1) both}
-.mb-status.partial{color:#9bc0bb}
+.mb-status.done{color:#70c8bd;border-color:#2b746e;transform:rotate(-2deg)}
+.mb-status.partial{color:#95ada9}
 .mb-status.locked{color:#536d69;border-color:#334b48}
-@keyframes mbStamp{from{opacity:0;transform:rotate(-8deg) scale(1.5)}to{opacity:1;transform:rotate(-2deg) scale(1)}}
 .mb-folder.mb-unlocked .mb-status{animation:mbUnlock .7s ease both}
-@keyframes mbUnlock{0%{transform:rotate(-8deg);filter:brightness(.7)}35%{transform:rotate(7deg);filter:brightness(1.7)}60%{transform:rotate(-3deg)}100%{transform:none;filter:none}}
+@keyframes mbUnlock{0%{transform:rotate(-8deg);filter:brightness(.7)}35%{transform:rotate(5deg);filter:brightness(1.45)}65%{transform:rotate(-2deg)}100%{transform:rotate(0);filter:none}}
 
-/* String layer is generated from live card geometry, so it remains aligned after scaling. */
-.mb-strings{position:absolute;z-index:2;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.78))}
-.mb-string{fill:none;stroke:#847d6d;stroke-width:2;opacity:.70;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mbDrawString .72s ease forwards;animation-delay:var(--d);transition:stroke .18s ease,opacity .18s ease,stroke-width .18s ease}
-.mb-string.hot{stroke:#62d7cc;opacity:.92;stroke-width:2.35;filter:drop-shadow(0 0 4px rgba(83,226,213,.25))}
+/* Physical thread layer: thin warm fibre, dark shadow, very mild sag, always behind folders. */
+.mb-strings{position:absolute;z-index:2;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.mb-thread-shadow{fill:none;stroke:#020504;stroke-width:2.6;opacity:.26;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mbDrawString 1.35s cubic-bezier(.25,.72,.24,1) forwards;animation-delay:var(--d)}
+.mb-string{fill:none;stroke:#a69b84;stroke-width:1.28;opacity:.30;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mbDrawString 1.35s cubic-bezier(.25,.72,.24,1) forwards;animation-delay:var(--d);transition:stroke .26s ease,opacity .26s ease,stroke-width .26s ease}
+.mb-string.hot{stroke:#c8bea8;opacity:.72;stroke-width:1.45}
 @keyframes mbDrawString{to{stroke-dashoffset:0}}
-.mb-signal{fill:none;stroke:#b2fff8;stroke-width:3.2;opacity:0;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:.10 .90;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #53e2d5)}
-.mb-signal.pulse{opacity:1;animation:mbSignal .52s linear both}
-@keyframes mbSignal{0%{stroke-dashoffset:1;opacity:0}12%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+.mb-signal-dot{fill:#9ff7ef;opacity:0;filter:drop-shadow(0 0 3px rgba(86,230,217,.65));animation:mbDotLife .72s ease both;pointer-events:none}
+@keyframes mbDotLife{0%{opacity:0}16%{opacity:.94}72%{opacity:.88}100%{opacity:0}}
 
-/* Opening a mission: selected dossier comes forward and the rest recedes. */
-.mb-board.mb-opening .mb-folder:not(.mb-opening-card){opacity:.16!important;filter:brightness(.48) saturate(.55)!important;transition:.22s ease!important}
-.mb-board.mb-opening .mb-string,.mb-board.mb-opening .mb-signal{opacity:.10!important;transition:.20s}
-.mb-folder.mb-opening-card{z-index:12!important;--lift:-7px!important;filter:brightness(1.22)!important;transform:translate3d(var(--px),calc(var(--py) - 7px),0) scale(1.035)!important}
-.mb-folder.mb-opening-card .mb-card-art{filter:drop-shadow(0 26px 26px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(83,226,213,.22))}
+/* Opening a mission: quiet focus rather than a bright UI burst. */
+.mb-board.mb-opening .mb-folder:not(.mb-opening-card){opacity:.42!important;filter:brightness(.70) saturate(.75)!important;transition:.34s ease!important}
+.mb-board.mb-opening .mb-string,.mb-board.mb-opening .mb-thread-shadow{opacity:.09!important;transition:.28s}
+.mb-folder.mb-opening-card{z-index:12!important;--lift:-6px!important;--scale:1.018!important;filter:brightness(1.08)!important;transition:.34s ease!important}
+.mb-folder.mb-opening-card .mb-card-art{filter:drop-shadow(0 25px 27px rgba(0,0,0,.54)) drop-shadow(0 0 5px rgba(83,226,213,.15))}
 
 /* Keyboard-first hint. */
-.mb-keyhint{position:absolute;z-index:12;left:50%;bottom:1.45%;transform:translateX(-50%) translateY(5px);display:flex;align-items:center;gap:2em;padding:.48em .88em;border-radius:8px;background:rgba(1,9,8,.55);border:1px solid rgba(79,131,125,.22);color:#648f8a;font:700 clamp(6px,.48vw,9px)/1 Consolas,monospace;letter-spacing:.055em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.35s ease}
-.mb-keyhint.show{opacity:.9;transform:translateX(-50%) translateY(0)}
+.mb-keyhint{position:absolute;z-index:12;left:50%;bottom:1.45%;transform:translateX(-50%) translateY(5px);display:flex;align-items:center;gap:2em;padding:.48em .88em;border-radius:8px;background:rgba(1,9,8,.48);border:1px solid rgba(79,131,125,.18);color:#648f8a;font:700 clamp(6px,.48vw,9px)/1 Consolas,monospace;letter-spacing:.055em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.35s ease}
+.mb-keyhint.show{opacity:.78;transform:translateX(-50%) translateY(0)}
 .mb-keyhint.dismissed{display:none}
 .mb-keyhint kbd{display:inline-flex;min-width:1.65em;justify-content:center;margin-right:.18em;padding:.24em .38em;border:1px solid #426b66;border-radius:4px;background:#091715;color:#a9d8d2;box-shadow:0 2px #020706;font:inherit}
 .mb-keyhint b{color:#8fffee}
 
 /* Tutorial stays available without competing with the artwork. */
-.mb-tutorial-link{position:absolute;z-index:12;right:2.2%;top:2.2%;border:0;background:rgba(1,9,8,.28);color:#5f918b;cursor:pointer;font:800 clamp(6px,.52vw,10px)/1 Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;padding:.7em .85em;border-radius:6px;transition:.18s}
-.mb-tutorial-link:hover,.mb-tutorial-link:focus-visible{color:#9afff5;background:rgba(4,30,27,.48);outline:0;text-shadow:0 0 10px rgba(83,226,213,.22)}
+.mb-tutorial-link{position:absolute;z-index:12;right:2.2%;top:2.2%;border:0;background:rgba(1,9,8,.24);color:#5f918b;cursor:pointer;font:800 clamp(6px,.52vw,10px)/1 Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;padding:.7em .85em;border-radius:6px;transition:.18s}
+.mb-tutorial-link:hover,.mb-tutorial-link:focus-visible{color:#9afff5;background:rgba(4,30,27,.38);outline:0;text-shadow:0 0 8px rgba(83,226,213,.16)}
 .mb-tutorial-link.done{color:#72bdb5}
 
 @media (max-aspect-ratio:4/3){.mb-keyhint{gap:.8em}.mb-status{font-size:7px}}
-@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-string,.mb-status,.mb-folder.mb-selected::after{animation:none!important}.mb-folder{opacity:1!important}.mb-string{stroke-dashoffset:0!important}}
+@media (prefers-reduced-motion:reduce){.ds-hub.mb-board,.mb-folder,.mb-string,.mb-thread-shadow,.mb-status{animation:none!important}.mb-folder{opacity:1!important}.mb-string,.mb-thread-shadow{stroke-dashoffset:0!important}}
