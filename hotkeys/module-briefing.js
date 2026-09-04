@@ -23,7 +23,6 @@ screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.web
 const shell=document.querySelector('.mbf-shell'),art=document.getElementById('mbf-art'),stamp=document.getElementById('mbf-stamp');
 const f=layout.folder;
 shell.style.setProperty('--folder-x',`${f.xPct}%`);shell.style.setProperty('--folder-y',`${f.yPct}%`);shell.style.setProperty('--folder-w',`${f.widthPct}%`);
-/* IMPORTANT: use the constructor coordinate space, not the raw PNG dimensions. */
 shell.style.setProperty('--folder-aspect',`${f.sourceW||f.actualW}/${f.sourceH||f.actualH}`);
 art.setAttribute('aria-label',`Сектор ${String(sector).padStart(2,'0')} — ${cfg.title}`);
 
