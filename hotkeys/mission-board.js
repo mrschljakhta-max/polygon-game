@@ -5,6 +5,7 @@ const CFG=window.VIDLIK_MISSION_BOARD;
 if(!APP||!CFG)return;
 
 const SHORT={1:'Основи роботи з ПК',2:'Робота з документами',3:'Електронні таблиці',4:'Презентації',5:'Цифрова комунікація',6:'Інтернет і сервіси',7:'Кібербезпека',8:'Комплексні завдання'};
+const INTRO_ORDER={1:0,5:1,2:2,6:3,3:4,7:5,4:6,8:7};
 const LOCK_KEY='vidlik-mission-board-locks-v2';
 let selected=1,bypassClick=false,pending=false,hintTimer=null,resizeRAF=0;
 
@@ -32,6 +33,7 @@ function installStatic(hub,grid){
 function decorateButton(btn,i){
   const n=+btn.dataset.sector,cfg=cardCfg(n);if(!n||!cfg)return;
   btn.style.setProperty('--mb-x',`${cfg.x}%`);btn.style.setProperty('--mb-y',`${cfg.y}%`);btn.style.setProperty('--mb-w',`${cfg.w}%`);
+  btn.style.setProperty('--intro',String(INTRO_ORDER[n]??i));
   if(btn.classList.contains('mb-folder'))return;
   btn.classList.add('mb-folder');btn.style.setProperty('--i',String(i));
   btn.insertAdjacentHTML('afterbegin',`<img class="mb-card-art" alt="${SHORT[n]||`Сектор ${n}`}" draggable="false"><span class="mb-card-fallback"><b>${String(n).padStart(2,'0')}</b><span>${SHORT[n]||`Сектор ${n}`}</span><small>IMAGE MISSING</small></span>`);
@@ -71,36 +73,51 @@ function syncTutorial(hub){
   const done=source.classList.contains('done')||/пройден/i.test(source.textContent);link.classList.toggle('done',done);setText(link,done?'✓ 00 · ІНСТРУКТАЖ':'00 · ІНСТРУКТАЖ');
 }
 
-function anchorPoint(cardId,anchorName,hub){
-  const card=qsSector(cardId,hub),a=CFG.anchors?.[anchorName]||{x:.5,y:.5};if(!card)return null;
-  const r=card.getBoundingClientRect(),hr=hub.getBoundingClientRect();return{x:r.left-hr.left+r.width*a.x,y:r.top-hr.top+r.height*a.y};
+/* Every thread is tied to the visible push-pin near the top centre of each dossier. */
+function pinPoint(cardId,hub){
+  const card=qsSector(cardId,hub);if(!card)return null;
+  const r=card.getBoundingClientRect(),hr=hub.getBoundingClientRect();
+  return{x:r.left-hr.left+r.width*.50,y:r.top-hr.top+r.height*.055};
 }
-function makeCurve(p1,p2,index){
-  const dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.max(1,Math.hypot(dx,dy)),nx=-dy/dist,ny=dx/dist,sign=index%2===0?1:-1,sag=Math.min(46,Math.max(14,dist*.11))*sign;
-  const c1={x:p1.x+dx*.34+nx*sag,y:p1.y+dy*.34+ny*sag},c2={x:p1.x+dx*.68+nx*sag,y:p1.y+dy*.68+ny*sag};
-  return`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)}, ${c2.x.toFixed(1)} ${c2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+function makeThreadPath(p1,p2,index){
+  const dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.max(1,Math.hypot(dx,dy));
+  const tinyVariation=((index%3)-1)*1.25;
+  const sag=Math.min(18,Math.max(5,dist*.028))+tinyVariation;
+  const mx=(p1.x+p2.x)/2,my=(p1.y+p2.y)/2+sag;
+  return`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
 }
 function renderThreads(){
   const hub=APP.querySelector('.mb-board');if(!hub)return;const svg=hub.querySelector('.mb-strings');if(!svg)return;
   const hr=hub.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${Math.max(1,hr.width)} ${Math.max(1,hr.height)}`);svg.innerHTML='';
   (CFG.threads||[]).forEach((t,i)=>{
-    const p1=anchorPoint(t.from[0],t.from[1],hub),p2=anchorPoint(t.to[0],t.to[1],hub);if(!p1||!p2)return;
-    const d=makeCurve(p1,p2,i),a=t.from[0],b=t.to[0];
-    const string=document.createElementNS('http://www.w3.org/2000/svg','path');string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('pathLength','1');string.setAttribute('d',d);string.style.setProperty('--d',`${(1.18+i*.08).toFixed(2)}s`);
-    const signal=document.createElementNS('http://www.w3.org/2000/svg','path');signal.setAttribute('class','mb-signal');signal.setAttribute('data-a',a);signal.setAttribute('data-b',b);signal.setAttribute('pathLength','1');signal.setAttribute('d',d);
-    svg.append(string,signal);
+    const p1=pinPoint(t.from[0],hub),p2=pinPoint(t.to[0],hub);if(!p1||!p2)return;
+    const d=makeThreadPath(p1,p2,i),a=t.from[0],b=t.to[0],delay=(1.82+i*.075).toFixed(2)+'s';
+    const shadow=document.createElementNS('http://www.w3.org/2000/svg','path');
+    shadow.setAttribute('class','mb-thread-shadow');shadow.setAttribute('pathLength','1');shadow.setAttribute('d',d);shadow.style.setProperty('--d',delay);
+    const string=document.createElementNS('http://www.w3.org/2000/svg','path');
+    string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('data-path',d);string.setAttribute('pathLength','1');string.setAttribute('d',d);string.style.setProperty('--d',delay);
+    svg.append(shadow,string);
   });setConnected(selected);
 }
 function scheduleThreadRender(){cancelAnimationFrame(resizeRAF);resizeRAF=requestAnimationFrame(()=>requestAnimationFrame(renderThreads))}
 
-function scheduleHint(hub){clearTimeout(hintTimer);const hint=hub.querySelector('.mb-keyhint');if(!hint)return;hint.classList.remove('show','dismissed');hintTimer=setTimeout(()=>{if(document.body.classList.contains('mb-hub-active'))hint.classList.add('show')},4800)}
+function scheduleHint(hub){clearTimeout(hintTimer);const hint=hub.querySelector('.mb-keyhint');if(!hint)return;hint.classList.remove('show','dismissed');hintTimer=setTimeout(()=>{if(document.body.classList.contains('mb-hub-active'))hint.classList.add('show')},5200)}
 function dismissHint(){clearTimeout(hintTimer);const hint=APP.querySelector('.mb-keyhint');if(hint){hint.classList.remove('show');hint.classList.add('dismissed')}}
 function setConnected(n){const hub=APP.querySelector('.mb-board');if(!hub)return;hub.querySelectorAll('.mb-string').forEach(p=>p.classList.toggle('hot',+p.dataset.a===n||+p.dataset.b===n))}
+
+/* Digital layer is reduced to one tiny moving point on a physical string. */
 function pulseConnection(a,b){
-  const hub=APP.querySelector('.mb-board');if(!hub)return;
-  let arr=[...hub.querySelectorAll('.mb-signal')].filter(p=>(+p.dataset.a===a&&+p.dataset.b===b)||(+p.dataset.a===b&&+p.dataset.b===a));
-  if(!arr.length)arr=[...hub.querySelectorAll('.mb-signal')].filter(p=>+p.dataset.a===b||+p.dataset.b===b).slice(0,2);
-  arr.forEach(p=>{p.classList.remove('pulse');void p.getBoundingClientRect();p.classList.add('pulse');setTimeout(()=>p.classList.remove('pulse'),560)});
+  const hub=APP.querySelector('.mb-board');if(!hub)return;const svg=hub.querySelector('.mb-strings');if(!svg)return;
+  let paths=[...hub.querySelectorAll('.mb-string')].filter(p=>(+p.dataset.a===a&&+p.dataset.b===b)||(+p.dataset.a===b&&+p.dataset.b===a));
+  if(!paths.length)paths=[...hub.querySelectorAll('.mb-string')].filter(p=>+p.dataset.a===b||+p.dataset.b===b).slice(0,1);
+  paths.forEach((p,idx)=>{
+    const d=p.getAttribute('d');if(!d)return;
+    const reverse=(+p.dataset.b===a&&+p.dataset.a===b);
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('class','mb-signal-dot');dot.setAttribute('r',idx===0?'2.8':'2.3');
+    const motion=document.createElementNS('http://www.w3.org/2000/svg','animateMotion');motion.setAttribute('dur','.68s');motion.setAttribute('repeatCount','1');motion.setAttribute('fill','freeze');motion.setAttribute('path',d);
+    if(reverse){motion.setAttribute('keyPoints','1;0');motion.setAttribute('keyTimes','0;1');motion.setAttribute('calcMode','linear')}
+    dot.appendChild(motion);svg.appendChild(dot);setTimeout(()=>dot.remove(),760);
+  });
 }
 function selectSector(n,signal=true){
   const hub=APP.querySelector('.mb-board');if(!hub)return;const btn=qsSector(n,hub);if(!btn||btn.disabled||btn.getAttribute('aria-disabled')==='true')return;
@@ -108,18 +125,15 @@ function selectSector(n,signal=true){
 }
 function nextByArrow(key){const map=CFG.navigation?.[key];return +(map?.[selected]||selected)}
 
+/* Keep the board physically stable; pointer movement only shifts a faint ambient reflection. */
 function setupParallax(hub){
   if(hub.dataset.parallaxBound)return;hub.dataset.parallaxBound='1';
-  hub.addEventListener('pointermove',e=>{
-    if(e.pointerType==='touch')return;const r=hub.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;
-    hub.style.setProperty('--mx',`${50+nx*7}%`);hub.style.setProperty('--my',`${45+ny*7}%`);
-    hub.querySelectorAll('.mb-folder').forEach((b,i)=>{const d=.42+(i%4)*.045;b.style.setProperty('--px',`${(nx*4*d).toFixed(2)}px`);b.style.setProperty('--py',`${(ny*3*d).toFixed(2)}px`)});scheduleThreadRender();
-  });
-  hub.addEventListener('pointerleave',()=>{hub.querySelectorAll('.mb-folder').forEach(b=>{b.style.setProperty('--px','0px');b.style.setProperty('--py','0px')});scheduleThreadRender()});
+  hub.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hub.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;hub.style.setProperty('--mx',`${50+nx*4}%`);hub.style.setProperty('--my',`${45+ny*4}%`)});
+  hub.addEventListener('pointerleave',()=>{hub.style.setProperty('--mx','50%');hub.style.setProperty('--my','45%')});
 }
 function activate(target){
   const hub=APP.querySelector('.mb-board');if(!hub||!target||target.disabled)return;dismissHint();hub.classList.add('mb-opening');target.classList.add('mb-opening-card');
-  setTimeout(()=>{const actual=target.matches('.mb-tutorial-link')?hub.querySelector('.ds-module-grid>[data-tutorial]'):target;if(!actual)return;bypassClick=true;actual.click();bypassClick=false},245);
+  setTimeout(()=>{const actual=target.matches('.mb-tutorial-link')?hub.querySelector('.ds-module-grid>[data-tutorial]'):target;if(!actual)return;bypassClick=true;actual.click();bypassClick=false},340);
 }
 
 function enhanceHub(){
