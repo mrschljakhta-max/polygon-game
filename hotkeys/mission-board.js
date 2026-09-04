@@ -12,33 +12,41 @@ function qsSector(n,hub=document){return hub.querySelector(`.mb-folder[data-sect
 function setText(el,text){if(el&&el.textContent!==text)el.textContent=text}
 function progressOf(btn){const bar=btn?.querySelector('.ds-progress i');if(!bar)return 0;const raw=bar.style.getPropertyValue('--p')||bar.style.width||'0';const n=parseFloat(raw);return Number.isFinite(n)?n:0}
 function cardCfg(n){return CFG.cards?.[n]||CFG.cards?.[String(n)]}
+function pngFallback(src){return /\.webp(?:\?.*)?$/i.test(src)?src.replace(/\.webp(?=\?|$)/i,'.png'):null}
+
+function loadBoardBackground(hub){
+  if(hub.dataset.bgBound)return;hub.dataset.bgBound='1';
+  const candidates=[CFG.background,pngFallback(CFG.background)].filter(Boolean);let i=0;
+  const probe=new Image();
+  probe.onload=()=>hub.style.setProperty('--mb-board-bg',`url("${candidates[i]}")`);
+  probe.onerror=()=>{i+=1;if(i<candidates.length)probe.src=candidates[i]};
+  probe.src=candidates[i];
+}
 
 function installStatic(hub,grid){
-  hub.style.setProperty('--mb-board-bg',`url("${CFG.background}")`);
+  loadBoardBackground(hub);
   if(!grid.querySelector('.mb-strings'))grid.insertAdjacentHTML('afterbegin','<svg class="mb-strings" aria-hidden="true"></svg>');
   if(!hub.querySelector('.mb-keyhint'))hub.insertAdjacentHTML('beforeend','<div class="mb-keyhint"><span><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> ОБРАТИ СЕКТОР</span><span><kbd>ENTER</kbd> <b>ВІДКРИТИ</b></span></div>');
 }
 
 function decorateButton(btn,i){
-  const n=+btn.dataset.sector,cfg=cardCfg(n);
-  if(!n||!cfg)return;
-  if(!btn.classList.contains('mb-folder')){
-    btn.classList.add('mb-folder');
-    btn.style.setProperty('--i',String(i));
-    btn.insertAdjacentHTML('afterbegin',`<img class="mb-card-art" alt="${SHORT[n]||`Сектор ${n}`}" draggable="false"><span class="mb-card-fallback"><b>${String(n).padStart(2,'0')}</b><span>${SHORT[n]||`Сектор ${n}`}</span><small>IMAGE MISSING</small></span>`);
-    btn.insertAdjacentHTML('beforeend','<span class="mb-status" aria-hidden="true"></span>');
-    const img=btn.querySelector('.mb-card-art');
-    img.addEventListener('load',()=>{btn.classList.remove('mb-missing');scheduleThreadRender()});
-    img.addEventListener('error',()=>{btn.classList.add('mb-missing');scheduleThreadRender()});
-    btn.addEventListener('pointerenter',()=>setConnected(n));
-    btn.addEventListener('pointerleave',()=>setConnected(selected));
-    btn.addEventListener('focus',()=>{if(document.body.classList.contains('mb-hub-active'))selectSector(n,false)});
-  }
-  btn.style.setProperty('--mb-x',`${cfg.x}%`);
-  btn.style.setProperty('--mb-y',`${cfg.y}%`);
-  btn.style.setProperty('--mb-w',`${cfg.w}%`);
+  const n=+btn.dataset.sector,cfg=cardCfg(n);if(!n||!cfg)return;
+  btn.style.setProperty('--mb-x',`${cfg.x}%`);btn.style.setProperty('--mb-y',`${cfg.y}%`);btn.style.setProperty('--mb-w',`${cfg.w}%`);
+  if(btn.classList.contains('mb-folder'))return;
+  btn.classList.add('mb-folder');btn.style.setProperty('--i',String(i));
+  btn.insertAdjacentHTML('afterbegin',`<img class="mb-card-art" alt="${SHORT[n]||`Сектор ${n}`}" draggable="false"><span class="mb-card-fallback"><b>${String(n).padStart(2,'0')}</b><span>${SHORT[n]||`Сектор ${n}`}</span><small>IMAGE MISSING</small></span>`);
+  btn.insertAdjacentHTML('beforeend','<span class="mb-status" aria-hidden="true"></span>');
   const img=btn.querySelector('.mb-card-art');
-  if(img&&img.getAttribute('src')!==cfg.src)img.src=cfg.src;
+  img.addEventListener('load',()=>{btn.classList.remove('mb-missing');scheduleThreadRender()});
+  img.addEventListener('error',()=>{
+    const alt=pngFallback(cfg.src);
+    if(alt&&img.dataset.pngTried!=='1'){img.dataset.pngTried='1';img.src=alt;return}
+    btn.classList.add('mb-missing');scheduleThreadRender();
+  });
+  img.src=cfg.src;
+  btn.addEventListener('pointerenter',()=>setConnected(n));
+  btn.addEventListener('pointerleave',()=>setConnected(selected));
+  btn.addEventListener('focus',()=>{if(document.body.classList.contains('mb-hub-active'))selectSector(n,false)});
 }
 
 function syncStatus(hub){
@@ -51,144 +59,96 @@ function syncStatus(hub){
     if(oldLocks.includes(n)&&!locked&&!btn.classList.contains('mb-unlocked')){btn.classList.add('mb-unlocked');setTimeout(()=>btn.classList.remove('mb-unlocked'),900)}
     if(!st)return;
     let cls='mb-status',txt='';
-    if(locked){cls+=' locked';txt='⌑'}
-    else if(p>=99.5){cls+=' done';txt='✓'}
-    else if(p>0){cls+=' partial';txt=`${Math.round(p)}%`}
-    if(st.className!==cls)st.className=cls;
-    setText(st,txt);
+    if(locked){cls+=' locked';txt='⌑'}else if(p>=99.5){cls+=' done';txt='✓'}else if(p>0){cls+=' partial';txt=`${Math.round(p)}%`}
+    if(st.className!==cls)st.className=cls;setText(st,txt);
   });
   try{localStorage.setItem(LOCK_KEY,JSON.stringify(newLocks))}catch(e){}
 }
 
 function syncTutorial(hub){
-  const source=hub.querySelector('.ds-module-grid>[data-tutorial]');
-  let link=hub.querySelector('.mb-tutorial-link');
-  if(!source)return;
+  const source=hub.querySelector('.ds-module-grid>[data-tutorial]');let link=hub.querySelector('.mb-tutorial-link');if(!source)return;
   if(!link){link=document.createElement('button');link.type='button';link.className='mb-tutorial-link';link.setAttribute('data-tutorial-link','1');hub.appendChild(link)}
-  const done=source.classList.contains('done')||/пройден/i.test(source.textContent);
-  link.classList.toggle('done',done);
-  setText(link,done?'✓ 00 · ІНСТРУКТАЖ':'00 · ІНСТРУКТАЖ');
+  const done=source.classList.contains('done')||/пройден/i.test(source.textContent);link.classList.toggle('done',done);setText(link,done?'✓ 00 · ІНСТРУКТАЖ':'00 · ІНСТРУКТАЖ');
 }
 
 function anchorPoint(cardId,anchorName,hub){
-  const card=qsSector(cardId,hub),a=CFG.anchors?.[anchorName]||{x:.5,y:.5};
-  if(!card)return null;
-  const r=card.getBoundingClientRect(),hr=hub.getBoundingClientRect();
-  return{x:r.left-hr.left+r.width*a.x,y:r.top-hr.top+r.height*a.y};
+  const card=qsSector(cardId,hub),a=CFG.anchors?.[anchorName]||{x:.5,y:.5};if(!card)return null;
+  const r=card.getBoundingClientRect(),hr=hub.getBoundingClientRect();return{x:r.left-hr.left+r.width*a.x,y:r.top-hr.top+r.height*a.y};
 }
-
 function makeCurve(p1,p2,index){
-  const dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.max(1,Math.hypot(dx,dy));
-  const nx=-dy/dist,ny=dx/dist;
-  const sign=index%2===0?1:-1;
-  const sag=Math.min(46,Math.max(14,dist*.11))*sign;
-  const c1={x:p1.x+dx*.34+nx*sag,y:p1.y+dy*.34+ny*sag};
-  const c2={x:p1.x+dx*.68+nx*sag,y:p1.y+dy*.68+ny*sag};
+  const dx=p2.x-p1.x,dy=p2.y-p1.y,dist=Math.max(1,Math.hypot(dx,dy)),nx=-dy/dist,ny=dx/dist,sign=index%2===0?1:-1,sag=Math.min(46,Math.max(14,dist*.11))*sign;
+  const c1={x:p1.x+dx*.34+nx*sag,y:p1.y+dy*.34+ny*sag},c2={x:p1.x+dx*.68+nx*sag,y:p1.y+dy*.68+ny*sag};
   return`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)}, ${c2.x.toFixed(1)} ${c2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
 }
-
 function renderThreads(){
-  const hub=APP.querySelector('.mb-board');if(!hub)return;
-  const svg=hub.querySelector('.mb-strings');if(!svg)return;
-  const hr=hub.getBoundingClientRect();
-  svg.setAttribute('viewBox',`0 0 ${Math.max(1,hr.width)} ${Math.max(1,hr.height)}`);
-  svg.innerHTML='';
+  const hub=APP.querySelector('.mb-board');if(!hub)return;const svg=hub.querySelector('.mb-strings');if(!svg)return;
+  const hr=hub.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${Math.max(1,hr.width)} ${Math.max(1,hr.height)}`);svg.innerHTML='';
   (CFG.threads||[]).forEach((t,i)=>{
     const p1=anchorPoint(t.from[0],t.from[1],hub),p2=anchorPoint(t.to[0],t.to[1],hub);if(!p1||!p2)return;
     const d=makeCurve(p1,p2,i),a=t.from[0],b=t.to[0];
-    const string=document.createElementNS('http://www.w3.org/2000/svg','path');
-    string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('pathLength','1');string.setAttribute('d',d);string.style.setProperty('--d',`${(1.18+i*.08).toFixed(2)}s`);
-    const signal=document.createElementNS('http://www.w3.org/2000/svg','path');
-    signal.setAttribute('class','mb-signal');signal.setAttribute('data-a',a);signal.setAttribute('data-b',b);signal.setAttribute('pathLength','1');signal.setAttribute('d',d);
+    const string=document.createElementNS('http://www.w3.org/2000/svg','path');string.setAttribute('class','mb-string');string.setAttribute('data-a',a);string.setAttribute('data-b',b);string.setAttribute('pathLength','1');string.setAttribute('d',d);string.style.setProperty('--d',`${(1.18+i*.08).toFixed(2)}s`);
+    const signal=document.createElementNS('http://www.w3.org/2000/svg','path');signal.setAttribute('class','mb-signal');signal.setAttribute('data-a',a);signal.setAttribute('data-b',b);signal.setAttribute('pathLength','1');signal.setAttribute('d',d);
     svg.append(string,signal);
-  });
-  setConnected(selected);
+  });setConnected(selected);
 }
 function scheduleThreadRender(){cancelAnimationFrame(resizeRAF);resizeRAF=requestAnimationFrame(()=>requestAnimationFrame(renderThreads))}
 
 function scheduleHint(hub){clearTimeout(hintTimer);const hint=hub.querySelector('.mb-keyhint');if(!hint)return;hint.classList.remove('show','dismissed');hintTimer=setTimeout(()=>{if(document.body.classList.contains('mb-hub-active'))hint.classList.add('show')},4800)}
 function dismissHint(){clearTimeout(hintTimer);const hint=APP.querySelector('.mb-keyhint');if(hint){hint.classList.remove('show');hint.classList.add('dismissed')}}
-
-function setConnected(n){
-  const hub=APP.querySelector('.mb-board');if(!hub)return;
-  hub.querySelectorAll('.mb-string').forEach(p=>p.classList.toggle('hot',+p.dataset.a===n||+p.dataset.b===n));
-}
+function setConnected(n){const hub=APP.querySelector('.mb-board');if(!hub)return;hub.querySelectorAll('.mb-string').forEach(p=>p.classList.toggle('hot',+p.dataset.a===n||+p.dataset.b===n))}
 function pulseConnection(a,b){
   const hub=APP.querySelector('.mb-board');if(!hub)return;
   let arr=[...hub.querySelectorAll('.mb-signal')].filter(p=>(+p.dataset.a===a&&+p.dataset.b===b)||(+p.dataset.a===b&&+p.dataset.b===a));
   if(!arr.length)arr=[...hub.querySelectorAll('.mb-signal')].filter(p=>+p.dataset.a===b||+p.dataset.b===b).slice(0,2);
   arr.forEach(p=>{p.classList.remove('pulse');void p.getBoundingClientRect();p.classList.add('pulse');setTimeout(()=>p.classList.remove('pulse'),560)});
 }
-
 function selectSector(n,signal=true){
-  const hub=APP.querySelector('.mb-board');if(!hub)return;
-  const btn=qsSector(n,hub);if(!btn||btn.disabled||btn.getAttribute('aria-disabled')==='true')return;
-  const prev=selected;selected=n;
-  hub.querySelectorAll('.mb-folder').forEach(b=>b.classList.toggle('mb-selected',+b.dataset.sector===n));
-  setConnected(n);syncStatus(hub);if(signal&&prev!==n)pulseConnection(prev,n);
+  const hub=APP.querySelector('.mb-board');if(!hub)return;const btn=qsSector(n,hub);if(!btn||btn.disabled||btn.getAttribute('aria-disabled')==='true')return;
+  const prev=selected;selected=n;hub.querySelectorAll('.mb-folder').forEach(b=>b.classList.toggle('mb-selected',+b.dataset.sector===n));setConnected(n);syncStatus(hub);if(signal&&prev!==n)pulseConnection(prev,n);
 }
-
-function nextByArrow(key){
-  const map=CFG.navigation?.[key];return +(map?.[selected]||selected);
-}
+function nextByArrow(key){const map=CFG.navigation?.[key];return +(map?.[selected]||selected)}
 
 function setupParallax(hub){
   if(hub.dataset.parallaxBound)return;hub.dataset.parallaxBound='1';
   hub.addEventListener('pointermove',e=>{
-    if(e.pointerType==='touch')return;
-    const r=hub.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;
+    if(e.pointerType==='touch')return;const r=hub.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;
     hub.style.setProperty('--mx',`${50+nx*7}%`);hub.style.setProperty('--my',`${45+ny*7}%`);
-    hub.querySelectorAll('.mb-folder').forEach((b,i)=>{const d=.42+(i%4)*.045;b.style.setProperty('--px',`${(nx*4*d).toFixed(2)}px`);b.style.setProperty('--py',`${(ny*3*d).toFixed(2)}px`)});
-    scheduleThreadRender();
+    hub.querySelectorAll('.mb-folder').forEach((b,i)=>{const d=.42+(i%4)*.045;b.style.setProperty('--px',`${(nx*4*d).toFixed(2)}px`);b.style.setProperty('--py',`${(ny*3*d).toFixed(2)}px`)});scheduleThreadRender();
   });
   hub.addEventListener('pointerleave',()=>{hub.querySelectorAll('.mb-folder').forEach(b=>{b.style.setProperty('--px','0px');b.style.setProperty('--py','0px')});scheduleThreadRender()});
 }
-
 function activate(target){
-  const hub=APP.querySelector('.mb-board');if(!hub||!target||target.disabled)return;
-  dismissHint();hub.classList.add('mb-opening');target.classList.add('mb-opening-card');
-  setTimeout(()=>{
-    const actual=target.matches('.mb-tutorial-link')?hub.querySelector('.ds-module-grid>[data-tutorial]'):target;
-    if(!actual)return;
-    bypassClick=true;actual.click();bypassClick=false;
-  },245);
+  const hub=APP.querySelector('.mb-board');if(!hub||!target||target.disabled)return;dismissHint();hub.classList.add('mb-opening');target.classList.add('mb-opening-card');
+  setTimeout(()=>{const actual=target.matches('.mb-tutorial-link')?hub.querySelector('.ds-module-grid>[data-tutorial]'):target;if(!actual)return;bypassClick=true;actual.click();bypassClick=false},245);
 }
 
 function enhanceHub(){
-  const hub=APP.querySelector('.ds-hub');document.body.classList.toggle('mb-hub-active',!!hub);
-  if(!hub){clearTimeout(hintTimer);return}
+  const hub=APP.querySelector('.ds-hub');document.body.classList.toggle('mb-hub-active',!!hub);if(!hub){clearTimeout(hintTimer);return}
   const grid=hub.querySelector('.ds-module-grid');if(!grid)return;
   if(!hub.classList.contains('mb-board')){
     hub.classList.add('mb-board');grid.classList.add('mb-grid');installStatic(hub,grid);
     [...grid.querySelectorAll('.ds-module[data-sector]')].sort((a,b)=>+a.dataset.sector-+b.dataset.sector).forEach((b,i)=>decorateButton(b,i));
     selected=1;selectSector(selected,false);setupParallax(hub);scheduleHint(hub);scheduleThreadRender();
-  }else{
-    [...grid.querySelectorAll('.ds-module[data-sector]')].forEach((b,i)=>decorateButton(b,i));
-  }
+  }else [...grid.querySelectorAll('.ds-module[data-sector]')].forEach((b,i)=>decorateButton(b,i));
   syncTutorial(hub);syncStatus(hub);scheduleThreadRender();
 }
 
 document.addEventListener('click',e=>{
-  if(bypassClick||!document.body.classList.contains('mb-hub-active'))return;
-  const target=e.target.closest('.mb-board [data-sector],.mb-board .mb-tutorial-link');if(!target)return;
-  e.preventDefault();e.stopImmediatePropagation();
-  if(target.dataset.sector)selectSector(+target.dataset.sector,false);
-  activate(target);
+  if(bypassClick||!document.body.classList.contains('mb-hub-active'))return;const target=e.target.closest('.mb-board [data-sector],.mb-board .mb-tutorial-link');if(!target)return;
+  e.preventDefault();e.stopImmediatePropagation();if(target.dataset.sector)selectSector(+target.dataset.sector,false);activate(target);
 },true);
-
 document.addEventListener('keydown',e=>{
   if(!document.body.classList.contains('mb-hub-active'))return;
-  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
-    e.preventDefault();dismissHint();const n=nextByArrow(e.key);selectSector(n,true);qsSector(n,APP)?.focus({preventScroll:true});return;
-  }
-  if(e.key==='Enter'){
-    const btn=qsSector(selected,APP);if(!btn)return;e.preventDefault();dismissHint();activate(btn);
-  }
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();dismissHint();const n=nextByArrow(e.key);selectSector(n,true);qsSector(n,APP)?.focus({preventScroll:true});return}
+  if(e.key==='Enter'){const btn=qsSector(selected,APP);if(!btn)return;e.preventDefault();dismissHint();activate(btn)}
 },true);
-
 window.addEventListener('resize',scheduleThreadRender,{passive:true});
+
 function scan(){pending=false;enhanceHub()}
-const observer=new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(scan)});
+const observer=new MutationObserver(mutations=>{
+  if(mutations.length&&mutations.every(m=>m.target instanceof Element&&m.target.closest('.mb-strings')))return;
+  if(pending)return;pending=true;queueMicrotask(scan);
+});
 observer.observe(APP,{subtree:true,childList:true});
 enhanceHub();
 })();
