@@ -11,6 +11,7 @@ screen.classList.add('mbf-v3',`mbf-sector-${sector}`);
 
 const levels=Array.isArray(cfg.levels)?cfg.levels.slice(0,10):[];
 while(levels.length<10)levels.push(`Рівень ${String(levels.length+1).padStart(2,'0')}`);
+const pageSize=Math.min(9,Math.max(1,parseInt(layout.pageSize||5,10)||5));
 function readCompleted(){
   if(sector===1){try{const p=JSON.parse(localStorage.getItem('vidlik-hotkeys-profile-v2')||'{}')||{};return Array.isArray(p.completed)?p.completed.map(Number).filter(n=>n>=1&&n<=10):[]}catch(e){return[]}}
   try{const p=JSON.parse(localStorage.getItem('vidlik-hotkeys-desktop-sectors-v1')||'{}')||{};return Array.isArray(p[sector])?p[sector].map(Number).filter(n=>n>=1&&n<=10):[]}catch(e){return[]}
@@ -20,7 +21,7 @@ const firstOpenIndex=levels.findIndex((_,i)=>!completedSet.has(i+1));
 const nextLevel=firstOpenIndex>=0?firstOpenIndex+1:10;
 const maxAccessibleLevel=nextLevel;
 let selectedLevel=maxAccessibleLevel;
-let page=selectedLevel>5?1:0,leaving=false,pageTimer=0;
+let page=selectedLevel>pageSize?1:0,leaving=false,pageTimer=0;
 
 screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.webp")';
 const shell=document.querySelector('.mbf-shell'),art=document.getElementById('mbf-art'),stamp=document.getElementById('mbf-stamp');
@@ -109,8 +110,10 @@ function updateSummary(){
   summaryEl.textContent=custom||cfg.summary;
 }
 function renderPage(){
-  const start=page*5;list.innerHTML='';
-  levels.slice(start,start+5).forEach((title,i)=>{
+  const start=page===0?0:pageSize;
+  const count=page===0?pageSize:10-pageSize;
+  list.innerHTML='';
+  levels.slice(start,start+count).forEach((title,i)=>{
     const n=start+i+1,state=levelState(n),li=document.createElement('li');
     li.className=`mbf-level is-${state}${n===selectedLevel?' is-selected':''}`;
     li.dataset.level=String(n);
@@ -128,12 +131,14 @@ function renderPage(){
   });
   pageLabel.textContent=`${page+1} / 2`;prevBtn.disabled=page===0;nextBtn.disabled=page===1;
   if(pageToggle){
+    const firstEnd=String(pageSize).padStart(2,'0');
+    const secondStart=String(pageSize+1).padStart(2,'0');
     if(page===0){
-      pageToggle.innerHTML='<span class="mbf-page-toggle-label">ДАЛІ →</span><span class="mbf-page-toggle-range">06–10</span>';
-      pageToggle.setAttribute('aria-label','Далі, рівні 06–10');
+      pageToggle.innerHTML=`<span class="mbf-page-toggle-label">ДАЛІ →</span><span class="mbf-page-toggle-range">${secondStart}–10</span>`;
+      pageToggle.setAttribute('aria-label',`Далі, рівні ${secondStart}–10`);
     }else{
-      pageToggle.innerHTML='<span class="mbf-page-toggle-label">← НАЗАД</span><span class="mbf-page-toggle-range">01–05</span>';
-      pageToggle.setAttribute('aria-label','Назад, рівні 01–05');
+      pageToggle.innerHTML=`<span class="mbf-page-toggle-label">← НАЗАД</span><span class="mbf-page-toggle-range">01–${firstEnd}</span>`;
+      pageToggle.setAttribute('aria-label',`Назад, рівні 01–${firstEnd}`);
     }
   }
   updateSummary();
@@ -148,7 +153,7 @@ function selectLevel(next){
   next=Math.max(1,Math.min(maxAccessibleLevel,next));
   if(next===selectedLevel)return;
   selectedLevel=next;
-  const targetPage=selectedLevel>5?1:0;
+  const targetPage=selectedLevel>pageSize?1:0;
   if(targetPage!==page){changePage(targetPage);return}
   renderPage();
 }
