@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020808">
+<title>VIDLIK — Брифінг модуля</title>
+<link rel="stylesheet" href="module-briefing.css?v=1">
+</head>
+<body>
+<main id="mbf-screen" class="mbf-screen">
+  <button id="mbf-back" class="mbf-back" type="button">← СЕКТОРИ · ESC</button>
+  <section class="mbf-shell" aria-live="polite">
+    <img id="mbf-art" class="mbf-art" alt="">
+    <div class="mbf-title"><span id="mbf-kicker" class="mbf-kicker"></span><strong id="mbf-title"></strong></div>
+    <ol id="mbf-topics" class="mbf-topics"></ol>
+    <div class="mbf-summary"><b>ЗАВДАННЯ МОДУЛЯ</b><p id="mbf-summary"></p></div>
+    <div class="mbf-stat"><span>ПРОГРЕС</span><strong id="mbf-progress">0%</strong><small id="mbf-levels">10 РІВНІВ</small></div>
+  </section>
+  <div class="mbf-actions"><span><kbd>ESC</kbd> НАЗАД</span><span><kbd>ENTER</kbd> <b id="mbf-action-label">РОЗПОЧАТИ</b></span></div>
+</main>
+<script src="module-briefing-data.js?v=1"></script>
+<script src="module-briefing.js?v=1"></script>
+</body>
+</html>
