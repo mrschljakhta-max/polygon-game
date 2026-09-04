@@ -34,21 +34,36 @@
   gap:1.05em!important;
 }
 
-/* Selected lesson: one restrained burgundy frame around the whole row. */
+/* Selected lesson: physical burgundy margin mark instead of a web-style row frame. */
 .mbf-screen.mbf-v3 .mbf-level-selection{
   position:absolute;
   box-sizing:border-box;
   pointer-events:none;
-  border:2px solid #7a2030;
-  border-radius:2px;
-  background:rgba(122,32,48,.035);
-  box-shadow:0 0 0 1px rgba(63,12,24,.2),inset 0 0 0 1px rgba(255,235,220,.08);
+  width:clamp(3px,.28vw,5px)!important;
+  border:0!important;
+  border-radius:1px 2px 2px 1px!important;
+  background:#7a2030!important;
+  box-shadow:0 1px 1px rgba(54,12,20,.34)!important;
   transform-origin:center center;
-  animation:mbfSelectedLessonIn .16s ease-out both;
+  opacity:.96;
+  animation:mbfSelectedLessonIn .18s ease-out both;
 }
 @keyframes mbfSelectedLessonIn{
-  from{opacity:.35}
-  to{opacity:1}
+  from{opacity:.2;transform:translateX(-3px) scaleY(.7)}
+  to{opacity:.96;transform:translateX(0) scaleY(1)}
+}
+
+/* The selected paper row gets a tiny physical offset and stronger typography. */
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-icon,
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-text,
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-check{
+  transform:translateX(clamp(3px,.25vw,5px)) rotate(var(--mbf-rotate,0deg))!important;
+  transition:transform .16s ease,color .16s ease,opacity .16s ease;
+}
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-text{
+  color:#3b2023!important;
+  font-weight:950!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.18)!important;
 }
 
 /* Level numbers: no green tile, no leading zero, larger and clearer. */
@@ -78,6 +93,10 @@
 .mbf-screen.mbf-v3 .mbf-level.is-current .mbf-level-icon .mbf-simple-number,
 .mbf-screen.mbf-v3 .mbf-level.is-current .mbf-level-icon .mbf-number-fallback{
   color:#173f39!important;
+}
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-icon .mbf-simple-number,
+.mbf-screen.mbf-v3 .mbf-level.is-selected .mbf-level-icon .mbf-number-fallback{
+  color:#7a2030!important;
 }
 
 /* Completion mark: custom bold icon, burgundy instead of the tiny default glyph. */
