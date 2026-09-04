@@ -1,0 +1,1 @@
+Binary board background and sector card assets live in this folder structure. Do not embed large images as Base64 in HTML.
