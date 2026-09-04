@@ -14,14 +14,18 @@ const pct=Math.max(0,Math.min(100,Math.round(completed/10*100)));
 
 screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.webp")';
 const art=document.getElementById('mbf-art');
-art.src=cfg.image;
-art.alt=`Сектор ${String(sector).padStart(2,'0')} — ${cfg.title}`;
-art.onload=()=>screen.classList.add('mbf-art-ready');
-art.onerror=()=>{
-  screen.classList.add('mbf-art-missing');
-  art.removeAttribute('src');
-  art.alt='';
+const sprite='/hotkeys/assets/module-briefings/module-briefings.webp';
+const framePct=(sector-1)/7*100;
+art.setAttribute('aria-label',`Сектор ${String(sector).padStart(2,'0')} — ${cfg.title}`);
+const probe=new Image();
+probe.onload=()=>{
+  art.style.backgroundImage=`url("${sprite}")`;
+  art.style.backgroundPosition=`center ${framePct}%`;
+  screen.classList.add('mbf-art-ready');
 };
+probe.onerror=()=>screen.classList.add('mbf-art-missing');
+probe.src=sprite;
+
 document.getElementById('mbf-kicker').textContent=`VIDLIK · СЕКТОР ${String(sector).padStart(2,'0')}`;
 document.getElementById('mbf-title').textContent=cfg.title;
 document.getElementById('mbf-summary').textContent=cfg.summary;
