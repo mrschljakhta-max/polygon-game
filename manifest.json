@@ -1,47 +1,74 @@
 [
   {
-    "path": "hotkeys/assets/backgrounds/sectors-board.webp",
-    "size": 195082,
-    "sha256": "2d393d127f6439b0f8dea1bad7ace2a5abc055c7c3ef8f536988924347be4f5a"
+    "sector": 1,
+    "file": "hotkeys/assets/module-briefings/module-01.webp",
+    "source": "01_osnovy_roboty_z_PC.png",
+    "size_px": [
+      1420,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-01.webp",
-    "size": 563992,
-    "sha256": "941b86e2812203dfa05f3c8b471d4b2ff33e2fa7d82f77a57274bfed678bac23"
+    "sector": 2,
+    "file": "hotkeys/assets/module-briefings/module-02.webp",
+    "source": "02_robota_z_dokumentamy.png",
+    "size_px": [
+      1338,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-02.webp",
-    "size": 492804,
-    "sha256": "8489cf88b0e6744b21ff3434ce03ad6182acb0287577c7a74e1a864424dfdad0"
+    "sector": 3,
+    "file": "hotkeys/assets/module-briefings/module-03.webp",
+    "source": "03_elektronni_tablytsi.png",
+    "size_px": [
+      1368,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-03.webp",
-    "size": 508152,
-    "sha256": "9ad3dcb3e6ca8a8cb964bd8f6a5a3aff3d40549f18b642c635d853784f4d6d9b"
+    "sector": 4,
+    "file": "hotkeys/assets/module-briefings/module-04.webp",
+    "source": "04_prezentatsii.png",
+    "size_px": [
+      1358,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-04.webp",
-    "size": 589638,
-    "sha256": "4e41e81f3586f57dc11431c11e4cb304384ac1f1738bac4ee00bfb0b8d5dcfa6"
+    "sector": 5,
+    "file": "hotkeys/assets/module-briefings/module-05.webp",
+    "source": "05_tsyfrova_komunikatsiia.png",
+    "size_px": [
+      1364,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-05.webp",
-    "size": 552202,
-    "sha256": "9aa9408f8977180f18ec6d3a3a45b7e41a1d65173d51c63629bbd551d32bc636"
+    "sector": 6,
+    "file": "hotkeys/assets/module-briefings/module-06.webp",
+    "source": "06_internet_i_servisy.png",
+    "size_px": [
+      1354,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-06.webp",
-    "size": 518976,
-    "sha256": "2f4437527902e8d387e3d6855568dd2500a7b436b4f1316c8980d42dc0eb1294"
+    "sector": 7,
+    "file": "hotkeys/assets/module-briefings/module-07.webp",
+    "source": "07_kiberbezpeka.png",
+    "size_px": [
+      1364,
+      512
+    ]
   },
   {
-    "path": "hotkeys/assets/cards/sector-07.webp",
-    "size": 520190,
-    "sha256": "8f19d2a21bdc87ed0f367f736a4cb9311c400de0419a992e891971dc2ecfc37a"
-  },
-  {
-    "path": "hotkeys/assets/cards/sector-08.webp",
-    "size": 597250,
-    "sha256": "afc8dc4d97dbfa35e525fdf0aa8af3e8cc7bb082515adccbd29343c3459db30a"
+    "sector": 8,
+    "file": "hotkeys/assets/module-briefings/module-08.webp",
+    "source": "08_kompleksni_zavdannia.png",
+    "size_px": [
+      1354,
+      512
+    ]
   }
 ]
