@@ -1,0 +1,18 @@
+.mbf-screen.mbf-v2 .mbf-actions{
+  bottom:5.2%;
+  gap:1.25em;
+  padding:.78em 1.1em;
+  font-size:clamp(9px,.72vw,14px);
+  background:rgba(1,10,9,.72);
+  border-color:rgba(97,210,199,.28);
+  box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 14px rgba(54,180,169,.08);
+}
+.mbf-screen.mbf-v2 .mbf-actions kbd{
+  min-width:2.25em;
+  padding:.36em .5em;
+  border-color:#5b8f89;
+  color:#c8fff9;
+}
+.mbf-screen.mbf-v2 .mbf-actions b{
+  color:#b6fff7;
+}
