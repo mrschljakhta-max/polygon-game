@@ -1,0 +1,1 @@
+Sector mission-card images are stored as individual WebP files (sector-01.webp ... sector-08.webp) so each visual can be replaced independently.
