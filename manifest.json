@@ -1,0 +1,47 @@
+[
+  {
+    "path": "hotkeys/assets/backgrounds/sectors-board.webp",
+    "size": 195082,
+    "sha256": "2d393d127f6439b0f8dea1bad7ace2a5abc055c7c3ef8f536988924347be4f5a"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-01.webp",
+    "size": 563992,
+    "sha256": "941b86e2812203dfa05f3c8b471d4b2ff33e2fa7d82f77a57274bfed678bac23"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-02.webp",
+    "size": 492804,
+    "sha256": "8489cf88b0e6744b21ff3434ce03ad6182acb0287577c7a74e1a864424dfdad0"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-03.webp",
+    "size": 508152,
+    "sha256": "9ad3dcb3e6ca8a8cb964bd8f6a5a3aff3d40549f18b642c635d853784f4d6d9b"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-04.webp",
+    "size": 589638,
+    "sha256": "4e41e81f3586f57dc11431c11e4cb304384ac1f1738bac4ee00bfb0b8d5dcfa6"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-05.webp",
+    "size": 552202,
+    "sha256": "9aa9408f8977180f18ec6d3a3a45b7e41a1d65173d51c63629bbd551d32bc636"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-06.webp",
+    "size": 518976,
+    "sha256": "2f4437527902e8d387e3d6855568dd2500a7b436b4f1316c8980d42dc0eb1294"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-07.webp",
+    "size": 520190,
+    "sha256": "8f19d2a21bdc87ed0f367f736a4cb9311c400de0419a992e891971dc2ecfc37a"
+  },
+  {
+    "path": "hotkeys/assets/cards/sector-08.webp",
+    "size": 597250,
+    "sha256": "afc8dc4d97dbfa35e525fdf0aa8af3e8cc7bb082515adccbd29343c3459db30a"
+  }
+]
