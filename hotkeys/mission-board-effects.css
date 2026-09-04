@@ -52,10 +52,10 @@
   filter:drop-shadow(0 0 4px rgba(125,255,245,.95)) drop-shadow(0 0 10px rgba(73,226,213,.72))!important;
 }
 
-/* 3) Cinematic focus layer on Enter/click. It sits above the board but below the opening dossier. */
+/* 3) Cinematic focus layer on Enter/click. It darkens the board itself; dossier dimming is handled separately. */
 .mb-cinematic-shade{
   position:absolute;
-  z-index:6;
+  z-index:2;
   inset:0;
   pointer-events:none;
   opacity:0;
