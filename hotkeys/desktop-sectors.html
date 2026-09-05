@@ -6,11 +6,30 @@
 <meta name="theme-color" content="#020808">
 <title>VIDLIK — Клавіатурний полігон · Сектори 01–08</title>
 <link rel="stylesheet" href="desktop-sectors.css?v=6">
-<link rel="stylesheet" href="desktop-sector-shell.css?v=6">
+<link rel="stylesheet" href="desktop-sector-shell.css?v=7">
 <link rel="stylesheet" href="background-hard-fix.css?v=3">
 <link rel="stylesheet" href="mission-board.css?v=7">
 <link rel="stylesheet" href="mission-board-effects.css?v=2">
-<link rel="stylesheet" href="application-maximize-desktop.css?v=1">
+<link rel="stylesheet" href="application-maximize-desktop.css?v=2">
+<style id="vidlik-app-maximize-hard-fix">
+/* Hard override: productivity apps always fill the simulated monitor work area. */
+.ds-scene > .ds-doc,
+.ds-scene > .ds-sheet,
+.ds-scene > .ds-slideapp{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+}
+.ds-scene > .ds-sheet .ds-formula{height:12%!important}
+.ds-scene > .ds-sheet .ds-grid{height:88%!important}
+.ds-scene > .ds-slideapp{grid-template-columns:20% 80%!important}
+</style>
 </head>
 <body>
 <main class="ds-shell"><section class="ds-stage">
