@@ -22,5 +22,7 @@ assert.match(source,/keyboard\.capture\(shell\)/);
 assert.match(source,/keyboard\.release\(true\)/);
 assert.match(source,/keyboard\.matches\(e,t\)/);
 assert.match(source,/document\.addEventListener\('fullscreenchange'/);
+assert.match(source,/location\.replace\(`module-briefing\.html\?sector=\$\{sector\}`\)/);
+assert.doesNotMatch(source,/async function leaveLevel\(\).*phase='levels'/);
 
 console.log('Hotkeys core checks passed.');
