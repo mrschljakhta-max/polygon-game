@@ -54,6 +54,8 @@ function loadArt(path){
   return new Promise(resolve=>{
     if(!path){resolve(false);return}
     const img=new Image();
+    img.decoding='async';
+    img.fetchPriority='high';
     img.onload=()=>{
       if(img.naturalWidth>0&&img.naturalHeight>0){
         shell.style.setProperty('--folder-aspect',`${img.naturalWidth}/${img.naturalHeight}`);
@@ -68,7 +70,9 @@ function loadArt(path){
   });
 }
 (async()=>{
-  const ok=await loadArt(cfg.image);
+  const optimized=cfg.image.replace(/\.png(?:\?.*)?$/,'.webp?v=20260905-1');
+  let ok=await loadArt(optimized);
+  if(!ok&&optimized!==cfg.image)ok=await loadArt(cfg.image);
   screen.classList.add(ok?'mbf-art-ready':'mbf-art-missing');
 })();
 if(stamp&&cfg.stamp&&completed===10){
@@ -165,6 +169,7 @@ function selectLevel(next){
 }
 renderPage();
 function goBack(){if(leaving)return;leaving=true;screen.classList.add('mbf-leaving');setTimeout(()=>location.href='desktop-sectors.html?v=14',360)}
+window.addEventListener('pageshow',()=>{leaving=false;screen.classList.remove('mbf-leaving')});
 function goForward(){
   if(leaving)return;
   leaving=true;
@@ -172,7 +177,7 @@ function goForward(){
   try{sessionStorage.setItem('vidlik-hotkeys-selected-lesson-v1',JSON.stringify({sector,level:selectedLevel}))}catch(e){}
   const rawTarget=cfg.target||(sector===1?'sector1.html?v=1':`desktop-sectors.html?directSector=${sector}&v=14`);
   let target=rawTarget;
-  try{const u=new URL(rawTarget,location.href);u.searchParams.set('level',String(selectedLevel));target=u.href}catch(e){}
+  try{const u=new URL(rawTarget,location.href);u.searchParams.set('level',String(selectedLevel));u.searchParams.set('from','briefing');target=u.href}catch(e){}
   setTimeout(()=>location.href=target,360);
 }
 document.getElementById('mbf-back').addEventListener('click',e=>{e.stopPropagation();goBack()});
