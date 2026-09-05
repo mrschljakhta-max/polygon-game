@@ -171,6 +171,32 @@
   margin-top:.16em!important;
 }
 
+/* Sector 04: match sector 01 readability for the note and small progress labels. */
+.mbf-screen.mbf-v3.mbf-sector-4 .mbf-summary{
+  padding:.82% 1%!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-4 .mbf-summary b{
+  font-size:clamp(9px,.72vw,14px)!important;
+  line-height:1.05!important;
+  margin-bottom:.42em!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-4 .mbf-summary p{
+  font-size:clamp(11px,.86vw,17px)!important;
+  line-height:1.22!important;
+  font-weight:800!important;
+  -webkit-line-clamp:4!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-4 .mbf-stat>span{
+  font-size:clamp(9px,.68vw,13px)!important;
+  line-height:1.05!important;
+  letter-spacing:.08em!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-4 .mbf-stat>small{
+  font-size:clamp(9px,.66vw,13px)!important;
+  line-height:1.05!important;
+  margin-top:.16em!important;
+}
+
 /* Sector 03: keep the redesigned text comfortably readable inside the larger paper areas. */
 .mbf-screen.mbf-v3.mbf-sector-3 .mbf-page-toggle{
   font-size:clamp(11px,.9vw,17px)!important;
