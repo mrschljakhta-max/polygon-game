@@ -63,13 +63,6 @@
       win.__vidlikPauseLeavePatched=true;
     }
 
-    /*
-      game.html already has a window-level Escape listener. It is registered before
-      this enhancement and can briefly switch phase to the old level grid. This
-      second window listener runs on the same Escape event and restores the active
-      lesson as a paused lesson immediately. gameplayActive keeps the pre-event
-      state because MutationObserver callbacks run only after event dispatch.
-    */
     if(!win.__vidlikEscPauseV5){
       win.__vidlikEscPauseV5=true;
       win.addEventListener('keydown',e=>{
@@ -96,8 +89,6 @@
       },true);
     }
 
-    /* Browser-controlled Escape can be consumed while leaving fullscreen. In that
-       case keydown may never reach the page, so fullscreenchange is the fallback. */
     if(!doc.documentElement.dataset.pauseFullscreenBound){
       doc.documentElement.dataset.pauseFullscreenBound='1';
       doc.addEventListener('fullscreenchange',()=>{
@@ -195,14 +186,22 @@
     clearPending(win,true);tone('resume');gameplayActive=true;
     try{typeof win.startLevel==='function'?win.startLevel(levelIndex(doc)):win.eval('startLevel('+levelIndex(doc)+')')}catch(e){console.error(e)}
   }
+  function currentSectorNumber(){
+    try{
+      const params=new URLSearchParams(location.search);
+      const querySector=parseInt(params.get('sector')||'',10);
+      if(Number.isFinite(querySector)&&querySector>=1&&querySector<=8)return querySector;
+    }catch(e){}
+    const match=location.pathname.match(/sector[-_]?0?([1-8])(?:\.html)?/i);
+    return match?Number(match[1]):1;
+  }
   async function sector(win){
     clearPending(win,true);
     gameplayActive=false;
     try{win.navigator.keyboard?.unlock?.()}catch(e){}
     try{if(win.document.fullscreenElement)await win.document.exitFullscreen()}catch(e){}
-    const params=new URLSearchParams(location.search);
-    if(params.get('from')==='briefing'&&history.length>1){history.back();return}
-    location.replace('module-briefing.html?sector=1');
+    const sectorNo=currentSectorNumber();
+    location.replace(`module-briefing.html?sector=${sectorNo}`);
   }
 
   function markup(doc){
