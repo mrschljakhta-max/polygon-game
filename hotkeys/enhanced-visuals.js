@@ -8,7 +8,7 @@
       const link=doc.createElement('link');
       link.id='vidlik-enhanced-ui';
       link.rel='stylesheet';
-      link.href='./enhanced-ui.css';
+      link.href='./enhanced-ui.css?v=20260905-3';
       doc.head.appendChild(link);
       const behavior=doc.createElement('script');
       behavior.id='vidlik-enhanced-visual-feedback';
