@@ -1,41 +1,51 @@
-/* VIDLIK: maximize productivity apps inside the simulated monitor work area.
-   The OS bar remains visible; only the application workspace below it is expanded. */
-.ds-scene > .ds-doc,
-.ds-scene > .ds-sheet,
-.ds-scene > .ds-slideapp {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+/* VIDLIK: productivity applications fill the simulated monitor work area.
+   Applies to every document, spreadsheet and presentation scene rendered by desktop-sectors.js. */
+
+.ds-screen .ds-scene > .ds-doc,
+.ds-screen .ds-scene > .ds-sheet,
+.ds-screen .ds-scene > .ds-slideapp {
+  width:100% !important;
+  height:100% !important;
+  min-width:100% !important;
+  min-height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
 }
 
-.ds-scene > .ds-doc > .ds-docbar,
-.ds-scene > .ds-sheet > .ds-formula,
-.ds-scene > .ds-slideapp {
-  border-radius: 0 !important;
+/* The scene itself must not keep the old centered/floating application geometry. */
+.ds-screen .ds-scene {
+  align-items:stretch;
+  justify-items:stretch;
 }
 
-/* Keep the full-screen app pinned to the monitor work area instead of centered as a floating window. */
-.ds-scene:has(> .ds-doc),
-.ds-scene:has(> .ds-sheet),
-.ds-scene:has(> .ds-slideapp) {
-  place-items: stretch !important;
-  align-items: stretch !important;
-  justify-items: stretch !important;
+/* Non-productivity scenes retain their own dimensions. */
+.ds-screen .ds-scene > .ds-chat,
+.ds-screen .ds-scene > .ds-web,
+.ds-screen .ds-scene > .ds-cyber {
+  align-self:center;
+  justify-self:center;
 }
 
-/* Spreadsheet gets extra usable grid area once maximized. */
-.ds-scene > .ds-sheet .ds-formula {
-  height: 12% !important;
+/* Spreadsheet: use all available height for formula bar + grid in every sheet task. */
+.ds-screen .ds-scene > .ds-sheet > .ds-formula {
+  height:12% !important;
+  min-height:12% !important;
 }
-.ds-scene > .ds-sheet .ds-grid {
-  height: 88% !important;
+.ds-screen .ds-scene > .ds-sheet > .ds-grid {
+  height:88% !important;
+  min-height:88% !important;
 }
 
-/* Presentation editor also uses the whole simulated display work area. */
-.ds-scene > .ds-slideapp {
-  grid-template-columns: 20% 80% !important;
+/* Document and presentation chrome should also meet the monitor edges cleanly. */
+.ds-screen .ds-scene > .ds-doc > .ds-docbar,
+.ds-screen .ds-scene > .ds-slideapp {
+  border-radius:0 !important;
+}
+.ds-screen .ds-scene > .ds-slideapp {
+  grid-template-columns:20% 80% !important;
 }
