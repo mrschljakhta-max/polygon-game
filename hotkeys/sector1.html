@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="boot">СЕКТОР 01 · ЗАВАНТАЖЕННЯ</div>
-<iframe id="gameFrame" src="game.html?v=sector1-direct-3" title="Сектор 01 — базові комбінації" allow="fullscreen; keyboard-map"></iframe>
+<iframe id="gameFrame" tabindex="0" src="game.html?v=sector1-direct-4" title="Сектор 01 — базові комбінації" allow="fullscreen; keyboard-map"></iframe>
 <script src="runtime-compat.js"></script>
 <script src="enhanced-visuals.js"></script>
 <script src="task-guidance.js"></script>
@@ -25,8 +25,16 @@
   let attempts=0;
   let pollTimer=0;
 
+  function focusGame(){
+    try{frame.focus({preventScroll:true})}catch(e){try{frame.focus()}catch(_){} }
+    try{frame.contentWindow&&frame.contentWindow.focus()}catch(e){}
+  }
+
   function reveal(){
     document.body.classList.add('ready');
+    requestAnimationFrame(focusGame);
+    setTimeout(focusGame,80);
+    setTimeout(focusGame,260);
   }
 
   function bindBackNavigation(d){
@@ -50,7 +58,6 @@
 
     bindBackNavigation(d);
 
-    // First open the sector level grid if the game is still on its own main menu.
     let levelButton=requestedLevel?d.querySelector(`[data-level="${requestedLevel-1}"]`):null;
     if(!levelButton){
       const sectorButton=d.getElementById('sector');
@@ -64,7 +71,8 @@
       if(levelButton&&!levelButton.disabled&&levelButton.getAttribute('aria-disabled')!=='true'){
         launched=true;
         levelButton.click();
-        setTimeout(reveal,120);
+        setTimeout(()=>{reveal();focusGame()},120);
+        setTimeout(focusGame,420);
         return true;
       }
       return false;
@@ -82,11 +90,44 @@
       attempts++;
       if(openRequestedLesson()||attempts>=50){
         clearInterval(pollTimer);
-        // Never leave the player trapped behind the boot screen.
         if(!document.body.classList.contains('ready'))reveal();
       }
     },100);
   }
+
+  function bridgeKeyboardEvent(e,type){
+    if(!launched||document.activeElement===frame)return;
+    let d,w;
+    try{d=frame.contentDocument;w=frame.contentWindow}catch(err){return}
+    if(!d||!w)return;
+    const inLesson=!!(d.querySelector('.taskbox')&&d.querySelector('.reader'));
+    const paused=!!d.querySelector('.pause');
+    if(!inLesson&&!paused)return;
+    try{
+      const forwarded=new w.KeyboardEvent(type,{
+        key:e.key,
+        code:e.code,
+        location:e.location,
+        ctrlKey:e.ctrlKey,
+        shiftKey:e.shiftKey,
+        altKey:e.altKey,
+        metaKey:e.metaKey,
+        repeat:e.repeat,
+        bubbles:true,
+        cancelable:true,
+        composed:true
+      });
+      d.documentElement.dispatchEvent(forwarded);
+      e.preventDefault();
+      e.stopPropagation();
+      focusGame();
+    }catch(err){}
+  }
+
+  window.addEventListener('keydown',e=>bridgeKeyboardEvent(e,'keydown'),true);
+  window.addEventListener('keyup',e=>bridgeKeyboardEvent(e,'keyup'),true);
+  window.addEventListener('focus',()=>{if(launched)setTimeout(focusGame,0)});
+  frame.addEventListener('pointerdown',()=>setTimeout(focusGame,0),true);
 
   frame.addEventListener('load',()=>{
     setTimeout(()=>{
@@ -94,14 +135,12 @@
     },120);
   });
 
-  // Fallback for cached/very fast iframe loads where the load event fired before this script bound.
   if(frame.contentDocument&&frame.contentDocument.readyState!=='loading'){
     setTimeout(()=>{
       if(!openRequestedLesson())startPolling();
     },120);
   }
 
-  // Absolute safety net: show the embedded game even if direct launching fails for any reason.
   setTimeout(()=>{
     if(!document.body.classList.contains('ready'))reveal();
   },5500);
