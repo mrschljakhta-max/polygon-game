@@ -9,28 +9,102 @@
 </head>
 <body>
 <div class="boot">СЕКТОР 01 · ЗАВАНТАЖЕННЯ</div>
-<iframe id="gameFrame" src="game.html?v=sector1-direct-2" title="Сектор 01 — базові комбінації" allow="fullscreen; keyboard-map"></iframe>
+<iframe id="gameFrame" src="game.html?v=sector1-direct-3" title="Сектор 01 — базові комбінації" allow="fullscreen; keyboard-map"></iframe>
 <script src="runtime-compat.js"></script>
 <script src="enhanced-visuals.js"></script>
 <script src="task-guidance.js"></script>
 <script src="pause-enhancement.js?v=3"></script>
 <script>
 (()=>{
- const frame=document.getElementById('gameFrame');
- function openLevels(){
-   try{
-     const d=frame.contentDocument;
-     if(!d)return;
-     const sector=d.getElementById('sector');
-     if(sector) sector.click();
-     d.addEventListener('click',e=>{
-       const back=e.target.closest&&e.target.closest('#back');
-       if(back){e.preventDefault();e.stopImmediatePropagation();location.href='desktop-sectors.html?v=12'}
-     },true);
-     setTimeout(()=>document.body.classList.add('ready'),90);
-   }catch(e){document.body.classList.add('ready')}
- }
- frame.addEventListener('load',()=>setTimeout(openLevels,180));
+  const frame=document.getElementById('gameFrame');
+  const params=new URLSearchParams(location.search);
+  const rawLevel=parseInt(params.get('level')||'0',10);
+  const requestedLevel=Number.isFinite(rawLevel)&&rawLevel>=1&&rawLevel<=10?rawLevel:0;
+  let launched=false;
+  let backBound=false;
+  let attempts=0;
+  let pollTimer=0;
+
+  function reveal(){
+    document.body.classList.add('ready');
+  }
+
+  function bindBackNavigation(d){
+    if(backBound||!d)return;
+    backBound=true;
+    d.addEventListener('click',e=>{
+      const back=e.target.closest&&e.target.closest('#back');
+      if(back){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        location.href='desktop-sectors.html?v=14';
+      }
+    },true);
+  }
+
+  function openRequestedLesson(){
+    if(launched)return true;
+    let d;
+    try{d=frame.contentDocument}catch(e){reveal();return true}
+    if(!d||d.readyState==='loading')return false;
+
+    bindBackNavigation(d);
+
+    // First open the sector level grid if the game is still on its own main menu.
+    let levelButton=requestedLevel?d.querySelector(`[data-level="${requestedLevel-1}"]`):null;
+    if(!levelButton){
+      const sectorButton=d.getElementById('sector');
+      if(sectorButton){
+        sectorButton.click();
+        levelButton=requestedLevel?d.querySelector(`[data-level="${requestedLevel-1}"]`):null;
+      }
+    }
+
+    if(requestedLevel){
+      if(levelButton&&!levelButton.disabled&&levelButton.getAttribute('aria-disabled')!=='true'){
+        launched=true;
+        levelButton.click();
+        setTimeout(reveal,120);
+        return true;
+      }
+      return false;
+    }
+
+    launched=true;
+    reveal();
+    return true;
+  }
+
+  function startPolling(){
+    clearInterval(pollTimer);
+    attempts=0;
+    pollTimer=setInterval(()=>{
+      attempts++;
+      if(openRequestedLesson()||attempts>=50){
+        clearInterval(pollTimer);
+        // Never leave the player trapped behind the boot screen.
+        if(!document.body.classList.contains('ready'))reveal();
+      }
+    },100);
+  }
+
+  frame.addEventListener('load',()=>{
+    setTimeout(()=>{
+      if(!openRequestedLesson())startPolling();
+    },120);
+  });
+
+  // Fallback for cached/very fast iframe loads where the load event fired before this script bound.
+  if(frame.contentDocument&&frame.contentDocument.readyState!=='loading'){
+    setTimeout(()=>{
+      if(!openRequestedLesson())startPolling();
+    },120);
+  }
+
+  // Absolute safety net: show the embedded game even if direct launching fails for any reason.
+  setTimeout(()=>{
+    if(!document.body.classList.contains('ready'))reveal();
+  },5500);
 })();
 </script>
 </body>
