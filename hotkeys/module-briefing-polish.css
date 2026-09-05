@@ -239,7 +239,21 @@
   margin-top:.16em!important;
 }
 
-/* Sector 07 sandbox has no standalone progress-stat note. */
+/* Sector 07: match sector 01 note readability; the sandbox has no standalone progress-stat note. */
+.mbf-screen.mbf-v3.mbf-sector-7 .mbf-summary{
+  padding:.82% 1%!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-7 .mbf-summary b{
+  font-size:clamp(9px,.72vw,14px)!important;
+  line-height:1.05!important;
+  margin-bottom:.42em!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-7 .mbf-summary p{
+  font-size:clamp(11px,.86vw,17px)!important;
+  line-height:1.22!important;
+  font-weight:800!important;
+  -webkit-line-clamp:4!important;
+}
 .mbf-screen.mbf-v3.mbf-sector-7 .mbf-stat{
   display:none!important;
 }
