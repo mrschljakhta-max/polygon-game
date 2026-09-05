@@ -154,6 +154,13 @@ document.addEventListener('click',e=>{
 },true);
 document.addEventListener('keydown',e=>{
   if(!document.body.classList.contains('mb-hub-active'))return;
+  if(e.key==='Escape'){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    dismissHint();
+    location.href='index.html';
+    return;
+  }
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();dismissHint();const n=nextByArrow(e.key);selectSector(n,true);qsSector(n,APP)?.focus({preventScroll:true});return}
   if(e.key==='Enter'){const btn=qsSector(selected,APP);if(!btn)return;e.preventDefault();dismissHint();activate(btn)}
 },true);
