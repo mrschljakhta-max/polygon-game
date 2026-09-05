@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020808">
+<title>VIDLIK — Підготовка секторів</title>
+<style>
+:root{--bg:#010606;--cyan:#48e7db;--cyanSoft:#79b8b3;--text:#effffc;--glow:rgba(72,231,219,.18)}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif}
+body{background:radial-gradient(circle at 50% 42%,rgba(22,77,72,.13),transparent 36%),linear-gradient(180deg,#020808 0%,#010606 100%)}
+.screen{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(rgba(72,231,219,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(72,231,219,.025) 1px,transparent 1px);background-size:36px 36px}
+.screen::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0 58%,rgba(0,0,0,.28) 100%)}
+.loader{position:relative;width:min(680px,82vw);padding:20px 0}
+.eyebrow{margin-bottom:22px;color:var(--cyan);font:700 12px/1.2 "Cascadia Mono",Consolas,monospace;letter-spacing:.18em;text-transform:uppercase}
+.title{margin:0;color:var(--text);font-size:clamp(24px,3vw,42px);line-height:1.05;font-weight:760;letter-spacing:.01em}
+.subtitle{margin:12px 0 30px;color:#8aa6a2;font:600 12px/1.4 "Cascadia Mono",Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.track{position:relative;width:100%;height:6px;overflow:hidden;background:rgba(52,104,99,.18);box-shadow:inset 0 0 0 1px rgba(72,231,219,.05)}
+.fill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#16877d,var(--cyan),#b6fff8);box-shadow:0 0 18px var(--glow);transition:width .14s linear}
+.meta{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-top:12px;font:700 11px/1.4 "Cascadia Mono",Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.status{min-height:1.4em;color:var(--cyanSoft)}
+.percent{min-width:56px;text-align:right;color:var(--cyan)}
+.detail{margin-top:8px;color:#426864;font:600 10px/1.4 "Cascadia Mono",Consolas,monospace;letter-spacing:.07em;text-transform:uppercase}
+.ticks{margin-top:30px;display:flex;gap:8px;align-items:center;color:#426864;font:700 10px/1 "Cascadia Mono",Consolas,monospace;letter-spacing:.08em;user-select:none}
+.ticks span{opacity:.4;transition:opacity .18s ease,color .18s ease,text-shadow .18s ease}.ticks span.active{opacity:1;color:var(--cyan);text-shadow:0 0 10px rgba(72,231,219,.25)}
+.ready{margin-top:18px;color:#b5fff8;font:800 11px/1.2 "Cascadia Mono",Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;opacity:0;transform:translateY(4px);transition:.24s ease}.ready.show{opacity:1;transform:none}
+.fade{position:fixed;inset:0;background:#010606;opacity:0;pointer-events:none;transition:opacity .32s ease}.fade.on{opacity:1}
+@media(max-width:640px){.loader{width:86vw}.meta{font-size:10px}.ticks{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="screen" aria-live="polite">
+  <section class="loader">
+    <div class="eyebrow">VIDLIK // КЛАВІАТУРНИЙ ПОЛІГОН</div>
+    <h1 class="title">ПІДГОТОВКА НАВЧАЛЬНОГО СЕРЕДОВИЩА</h1>
+    <div class="subtitle">Завантаження секторів і навчальних папок</div>
+    <div class="track" aria-label="Прогрес завантаження"><div id="fill" class="fill"></div></div>
+    <div class="meta"><div id="status" class="status">ІНІЦІАЛІЗАЦІЯ</div><div id="percent" class="percent">0%</div></div>
+    <div id="detail" class="detail">ПІДГОТОВКА РЕСУРСІВ</div>
+    <div class="ticks" aria-hidden="true"><span id="t1">01</span><span>—</span><span id="t2">02</span><span>—</span><span id="t3">03</span><span>—</span><span id="t4">04</span></div>
+    <div id="ready" class="ready">СЕКТОРИ ГОТОВІ</div>
+  </section>
+</main>
+<div id="fade" class="fade"></div>
+<script>
+(()=>{
+  const TARGET='desktop-sectors.html?v=preload1';
+  const minDisplayMs=900;
+  const hardTimeoutMs=15000;
+  const started=performance.now();
+
+  const imageAssets=[
+    'assets/backgrounds/sectors-board.webp',
+    'workstation-clean.png?v=5',
+    'assets/cards/sector-01.webp','assets/cards/sector-02.webp','assets/cards/sector-03.webp','assets/cards/sector-04.webp',
+    'assets/cards/sector-05.webp','assets/cards/sector-06.webp','assets/cards/sector-07.webp','assets/cards/sector-08.webp',
+    'assets/module-briefings/sector-01-folder.webp?v=20260905-1','assets/module-briefings/sector-02-folder.webp?v=20260905-1',
+    'assets/module-briefings/sector-03-folder.webp?v=20260905-1','assets/module-briefings/sector-04-folder.webp?v=20260905-1',
+    'assets/module-briefings/sector-05-folder.webp?v=20260905-1','assets/module-briefings/sector-06-folder.webp?v=20260905-1',
+    'assets/module-briefings/sector-07-folder.webp?v=20260905-1','assets/module-briefings/sector-08-folder.webp?v=20260905-1',
+    'assets/module-briefings/stamp-passed.png?v=20260904-3',
+    'assets/module-briefings/numbers/number-0-small.svg','assets/module-briefings/numbers/number-1-small.svg',
+    'assets/module-briefings/numbers/number-2-small.svg','assets/module-briefings/numbers/number-3-small.svg',
+    'assets/module-briefings/numbers/number-4-small.svg','assets/module-briefings/numbers/number-5-small.svg',
+    'assets/module-briefings/numbers/number-6-small.svg','assets/module-briefings/numbers/number-7-small.svg',
+    'assets/module-briefings/numbers/number-8-small.svg','assets/module-briefings/numbers/number-9-small.svg'
+  ];
+
+  const warmAssets=[
+    'game.html?v=sector1-backdrop-1',
+    'desktop-sectors.css?v=6','desktop-sector-shell.css?v=6','background-hard-fix.css?v=3','mission-board.css?v=7','mission-board-effects.css?v=2',
+    'mission-board-layout.js?v=2','mission-board.js?v=5','module-briefing-data.js?v=10','module-briefing-layouts.js?v=10','module-briefing.css?v=4','module-briefing-v3.css?v=4','module-briefing-polish.css?v=12','module-briefing.js?v=14'
+  ];
+
+  const total=imageAssets.length+warmAssets.length;
+  let done=0,failed=0,shown=0,finished=false;
+  const fill=document.getElementById('fill'),percent=document.getElementById('percent'),status=document.getElementById('status'),detail=document.getElementById('detail'),ready=document.getElementById('ready'),fade=document.getElementById('fade');
+  const ticks=[document.getElementById('t1'),document.getElementById('t2'),document.getElementById('t3'),document.getElementById('t4')];
+
+  function stageFor(p){
+    if(p<18)return['ІНІЦІАЛІЗАЦІЯ',0];
+    if(p<47)return['ЗАВАНТАЖЕННЯ КАРТОК СЕКТОРІВ',1];
+    if(p<82)return['ЗАВАНТАЖЕННЯ ПАПОК СЕКТОРІВ',2];
+    if(p<100)return['ПІДГОТОВКА ІНТЕРФЕЙСУ',3];
+    return['ГОТОВО',3];
+  }
+  function paint(value){
+    shown=Math.max(shown,Math.min(100,value));
+    fill.style.width=shown+'%';
+    percent.textContent=Math.round(shown)+'%';
+    const [label,tick]=stageFor(shown);status.textContent=label;
+    ticks.forEach((el,i)=>el.classList.toggle('active',i<=tick));
+    detail.textContent=`${Math.min(done,total)} / ${total} РЕСУРСІВ${failed?` · ${failed} ПРОПУЩЕНО`:''}`;
+  }
+  function mark(ok=true){done++;if(!ok)failed++;paint((done/total)*100)}
+
+  function preloadImage(src){
+    return new Promise(resolve=>{
+      const img=new Image();
+      let settled=false;
+      const end=async ok=>{
+        if(settled)return;settled=true;
+        if(ok&&img.decode){try{await img.decode()}catch(e){}}
+        mark(ok);resolve(ok);
+      };
+      img.onload=()=>end(true);img.onerror=()=>end(false);img.src=src;
+      setTimeout(()=>end(false),hardTimeoutMs);
+    });
+  }
+  function warm(src){
+    return Promise.race([
+      fetch(src,{cache:'force-cache'}).then(r=>{mark(r.ok);return r.ok}).catch(()=>{mark(false);return false}),
+      new Promise(resolve=>setTimeout(()=>{mark(false);resolve(false)},hardTimeoutMs))
+    ]);
+  }
+
+  async function finish(){
+    if(finished)return;finished=true;
+    const elapsed=performance.now()-started;
+    if(elapsed<minDisplayMs)await new Promise(r=>setTimeout(r,minDisplayMs-elapsed));
+    paint(100);ready.classList.add('show');
+    await new Promise(r=>setTimeout(r,260));
+    fade.classList.add('on');
+    await new Promise(r=>setTimeout(r,260));
+    location.replace(TARGET);
+  }
+
+  const all=[...imageAssets.map(preloadImage),...warmAssets.map(warm)];
+  Promise.allSettled(all).then(finish);
+  setTimeout(finish,hardTimeoutMs+900);
+})();
+</script>
+</body>
+</html>
