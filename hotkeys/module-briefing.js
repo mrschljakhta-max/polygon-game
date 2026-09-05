@@ -24,7 +24,7 @@ let selectedLevel=maxAccessibleLevel;
 let page=selectedLevel>pageSize?1:0,leaving=false,pageTimer=0;
 
 screen.style.backgroundImage='url("/hotkeys/assets/backgrounds/sectors-board.webp")';
-const shell=document.querySelector('.mbf-shell'),art=document.getElementById('mbf-art'),stamp=document.getElementById('mbf-stamp');
+const shell=document.querySelector('.mbf-shell'),art=document.getElementById('mbf-art'),stamp=document.getElementById('mbf-stamp'),progressWrap=document.querySelector('.mbf-progress-wrap');
 const f=layout.folder;
 shell.style.setProperty('--folder-x',`${f.xPct}%`);
 shell.style.setProperty('--folder-y',`${f.yPct}%`);
@@ -46,7 +46,7 @@ function setBox(el,r){
 setBox(document.querySelector('.mbf-title'),layout.title);
 setBox(document.getElementById('mbf-page-toggle'),layout.pageToggle);
 setBox(document.querySelector('.mbf-summary'),layout.summary);
-setBox(document.querySelector('.mbf-progress-wrap'),layout.progress);
+if(layout.progress){setBox(progressWrap,layout.progress)}else if(progressWrap){progressWrap.style.display='none'}
 setBox(document.querySelector('.mbf-stat'),layout.stat);
 setBox(stamp,layout.stamp);
 
