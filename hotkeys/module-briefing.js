@@ -175,7 +175,7 @@ function goForward(){
   leaving=true;
   screen.classList.add('mbf-leaving');
   try{sessionStorage.setItem('vidlik-hotkeys-selected-lesson-v1',JSON.stringify({sector,level:selectedLevel}))}catch(e){}
-  const rawTarget=cfg.target||(sector===1?'sector1.html?v=1':`desktop-sectors.html?directSector=${sector}&v=14`);
+  const rawTarget=cfg.target||(sector===1?'sector1.html?v=2':`desktop-sectors.html?sector=${sector}&v=15`);
   let target=rawTarget;
   try{const u=new URL(rawTarget,location.href);u.searchParams.set('level',String(selectedLevel));u.searchParams.set('from','briefing');target=u.href}catch(e){}
   setTimeout(()=>location.href=target,360);

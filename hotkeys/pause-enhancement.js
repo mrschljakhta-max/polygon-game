@@ -142,13 +142,13 @@
     clearPending(win,true);tone('resume');
     try{typeof win.startLevel==='function'?win.startLevel(levelIndex(doc)):win.eval('startLevel('+levelIndex(doc)+')')}catch(e){console.error(e)}
   }
-  function sector(win){
+  async function sector(win){
     clearPending(win,true);
-    try{
-      const leave=win.__vidlikOriginalLeave||win.leave;
-      if(typeof leave==='function')leave();
-      else win.eval('leave()');
-    }catch(e){console.error(e)}
+    try{win.navigator.keyboard?.unlock?.()}catch(e){}
+    try{if(win.document.fullscreenElement)await win.document.exitFullscreen()}catch(e){}
+    const params=new URLSearchParams(location.search);
+    if(params.get('from')==='briefing'&&history.length>1){history.back();return}
+    location.replace('module-briefing.html?sector=1');
   }
 
   function markup(doc){
@@ -162,7 +162,7 @@
       '<div class="pause-secondary">'+
         '<button id="pause-repeat-task">↻ Повторити завдання</button>'+
         '<button id="pause-restart-level">⟳ Перезапустити рівень</button>'+
-        '<button id="pause-sector">⌂ До рівнів</button>'+
+        '<button id="pause-sector">⌂ До папки сектора</button>'+
       '</div>'+
       '<div class="pause-tools">'+
         '<button class="pause-tool '+(prefs.sound?'on':'')+'" id="pause-sound">ЗВУК · '+(prefs.sound?'УВІМК.':'ВИМК.')+'</button>'+
