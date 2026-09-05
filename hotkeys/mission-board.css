@@ -119,10 +119,10 @@
 .mb-folder.mb-opening-card .mb-card-art{animation:none!important;filter:drop-shadow(0 25px 27px rgba(0,0,0,.54)) drop-shadow(0 0 8px rgba(94,246,232,.50)) drop-shadow(0 0 22px rgba(56,222,208,.28))}
 
 /* Keyboard-first hint. */
-.mb-keyhint{position:absolute;z-index:12;left:50%;bottom:1.45%;transform:translateX(-50%) translateY(5px);display:flex;align-items:center;gap:2em;padding:.48em .88em;border-radius:8px;background:rgba(1,9,8,.48);border:1px solid rgba(79,131,125,.18);color:#648f8a;font:700 clamp(6px,.48vw,9px)/1 Consolas,monospace;letter-spacing:.055em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.35s ease}
+.mb-keyhint{position:absolute;z-index:12;left:50%;bottom:3.2%;transform:translateX(-50%) translateY(5px);display:flex;align-items:center;gap:2.35em;padding:.62em 1.12em;border-radius:8px;background:rgba(1,9,8,.48);border:0;color:#648f8a;font:700 clamp(7px,.58vw,11px)/1 Consolas,monospace;letter-spacing:.055em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.35s ease}
 .mb-keyhint.show{opacity:.78;transform:translateX(-50%) translateY(0)}
 .mb-keyhint.dismissed{display:none}
-.mb-keyhint kbd{display:inline-flex;min-width:1.65em;justify-content:center;margin-right:.18em;padding:.24em .38em;border:1px solid #426b66;border-radius:4px;background:#091715;color:#a9d8d2;box-shadow:0 2px #020706;font:inherit}
+.mb-keyhint kbd{display:inline-flex;min-width:1.8em;justify-content:center;margin-right:.18em;padding:.3em .46em;border:1px solid #426b66;border-radius:4px;background:#091715;color:#a9d8d2;box-shadow:0 2px #020706;font:inherit}
 .mb-keyhint b{color:#8fffee}
 
 /* Tutorial stays available without competing with the artwork. */
