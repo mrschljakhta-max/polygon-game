@@ -197,6 +197,22 @@
   margin-top:.16em!important;
 }
 
+/* Sector 05: match sector 01 note readability. */
+.mbf-screen.mbf-v3.mbf-sector-5 .mbf-summary{
+  padding:.82% 1%!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-5 .mbf-summary b{
+  font-size:clamp(9px,.72vw,14px)!important;
+  line-height:1.05!important;
+  margin-bottom:.42em!important;
+}
+.mbf-screen.mbf-v3.mbf-sector-5 .mbf-summary p{
+  font-size:clamp(11px,.86vw,17px)!important;
+  line-height:1.22!important;
+  font-weight:800!important;
+  -webkit-line-clamp:4!important;
+}
+
 /* Sector 03: keep the redesigned text comfortably readable inside the larger paper areas. */
 .mbf-screen.mbf-v3.mbf-sector-3 .mbf-page-toggle{
   font-size:clamp(11px,.9vw,17px)!important;
