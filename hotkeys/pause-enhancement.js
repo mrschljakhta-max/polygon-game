@@ -24,11 +24,48 @@
     }catch(e){}
   }
 
+  function installEscapeGuard(doc,win){
+    if(!win.__vidlikOriginalLeave&&typeof win.leave==='function'){
+      win.__vidlikOriginalLeave=win.leave.bind(win);
+    }
+
+    if(!win.__vidlikPauseLeavePatched&&win.__vidlikOriginalLeave){
+      const originalLeave=win.__vidlikOriginalLeave;
+      win.leave=async function(...args){
+        try{
+          const playing=!!(doc.querySelector('.taskbox')&&doc.querySelector('.reader'));
+          const pauseVisible=!!doc.querySelector('.pause');
+          if(playing&&!pauseVisible){
+            win.eval("try{paused=true;stopTimer();render()}catch(e){}");
+            return;
+          }
+        }catch(e){}
+        return originalLeave(...args);
+      };
+      win.__vidlikPauseLeavePatched=true;
+    }
+
+    if(!doc.documentElement.dataset.pauseExitBound){
+      doc.documentElement.dataset.pauseExitBound='1';
+      doc.addEventListener('click',e=>{
+        const exit=e.target.closest&&e.target.closest('.exit');
+        if(!exit||doc.querySelector('.pause'))return;
+        const originalLeave=win.__vidlikOriginalLeave;
+        if(typeof originalLeave!=='function')return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        originalLeave();
+      },true);
+    }
+  }
+
   function install(){
     try{
       const doc=frame.contentDocument;
       const win=frame.contentWindow;
       if(!doc||!win||!doc.documentElement)return;
+
+      installEscapeGuard(doc,win);
 
       if(!doc.getElementById('vidlik-pause-enhancement')){
         const link=doc.createElement('link');
@@ -42,7 +79,10 @@
       if(observer)observer.disconnect();
       const root=doc.getElementById('game');
       if(!root)return;
-      observer=new MutationObserver(()=>upgradePause(doc,win));
+      observer=new MutationObserver(()=>{
+        installEscapeGuard(doc,win);
+        upgradePause(doc,win);
+      });
       observer.observe(root,{childList:true,subtree:true});
       upgradePause(doc,win);
 
@@ -104,7 +144,11 @@
   }
   function sector(win){
     clearPending(win,true);
-    try{typeof win.leave==='function'?win.leave():win.eval('leave()')}catch(e){console.error(e)}
+    try{
+      const leave=win.__vidlikOriginalLeave||win.leave;
+      if(typeof leave==='function')leave();
+      else win.eval('leave()');
+    }catch(e){console.error(e)}
   }
 
   function markup(doc){
