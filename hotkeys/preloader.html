@@ -110,10 +110,15 @@ body{background:radial-gradient(circle at 50% 42%,rgba(22,77,72,.13),transparent
     });
   }
   function warm(src){
-    return Promise.race([
-      fetch(src,{cache:'force-cache'}).then(r=>{mark(r.ok);return r.ok}).catch(()=>{mark(false);return false}),
-      new Promise(resolve=>setTimeout(()=>{mark(false);resolve(false)},hardTimeoutMs))
-    ]);
+    return new Promise(resolve=>{
+      let settled=false;
+      const end=ok=>{
+        if(settled)return;settled=true;
+        mark(ok);resolve(ok);
+      };
+      fetch(src,{cache:'force-cache'}).then(r=>end(r.ok)).catch(()=>end(false));
+      setTimeout(()=>end(false),hardTimeoutMs);
+    });
   }
 
   async function finish(){
