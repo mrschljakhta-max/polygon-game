@@ -15,13 +15,15 @@ assert.equal(keyboard.matches({code:'KeyL',ctrlKey:true,shiftKey:true,altKey:fal
 assert.equal(keyboard.matches({code:'KeyL',ctrlKey:true,shiftKey:false,altKey:false,metaKey:false},{code:'KeyL',ctrl:true,shift:true}),false);
 
 const html=fs.readFileSync(path.join(root,'hotkeys/desktop-sectors.html'),'utf8');
-assert.match(html,/keyboard-core\.js\?v=1[\s\S]*desktop-sectors\.js\?v=8/);
+assert.match(html,/keyboard-core\.js\?v=1[\s\S]*desktop-sectors\.js\?v=9/);
 
 const source=fs.readFileSync(path.join(root,'hotkeys/desktop-sectors.js'),'utf8');
 assert.match(source,/keyboard\.capture\(shell\)/);
 assert.match(source,/keyboard\.release\(true\)/);
 assert.match(source,/keyboard\.matches\(e,t\)/);
 assert.match(source,/document\.addEventListener\('fullscreenchange'/);
+assert.match(source,/fullscreenchange'.*leaveLevel\(\)/);
+assert.doesNotMatch(source,/fullscreenchange'.*paused=true/);
 assert.match(source,/location\.replace\(`module-briefing\.html\?sector=\$\{sector\}`\)/);
 assert.doesNotMatch(source,/async function leaveLevel\(\).*phase='levels'/);
 assert.match(source,/if\(e\.code==='Escape'\)\{e\.preventDefault\(\);leaveLevel\(\);return\}/);
