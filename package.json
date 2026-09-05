@@ -1,0 +1,8 @@
+{
+  "name": "polygon-game",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/check-hotkeys.js",
+    "check": "npm test"
+  }
+}

@@ -1,0 +1,26 @@
+'use strict';
+
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const keyboard=require('../hotkeys/keyboard-core.js');
+
+const root=path.resolve(__dirname,'..');
+
+assert.equal(keyboard.mode({code:'KeyB',ctrl:true}),'real');
+assert.equal(keyboard.mode({code:'KeyP',ctrl:true}),'browser-lock');
+assert.equal(keyboard.mode({code:'Tab',alt:true}),'simulation');
+assert.equal(keyboard.mode({code:'KeyL',meta:true}),'simulation');
+assert.equal(keyboard.matches({code:'KeyL',ctrlKey:true,shiftKey:true,altKey:false,metaKey:false},{code:'KeyL',ctrl:true,shift:true}),true);
+assert.equal(keyboard.matches({code:'KeyL',ctrlKey:true,shiftKey:false,altKey:false,metaKey:false},{code:'KeyL',ctrl:true,shift:true}),false);
+
+const html=fs.readFileSync(path.join(root,'hotkeys/desktop-sectors.html'),'utf8');
+assert.match(html,/keyboard-core\.js\?v=1[\s\S]*desktop-sectors\.js\?v=7/);
+
+const source=fs.readFileSync(path.join(root,'hotkeys/desktop-sectors.js'),'utf8');
+assert.match(source,/keyboard\.capture\(shell\)/);
+assert.match(source,/keyboard\.release\(true\)/);
+assert.match(source,/keyboard\.matches\(e,t\)/);
+assert.match(source,/document\.addEventListener\('fullscreenchange'/);
+
+console.log('Hotkeys core checks passed.');
