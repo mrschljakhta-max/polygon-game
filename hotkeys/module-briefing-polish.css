@@ -239,6 +239,11 @@
   margin-top:.16em!important;
 }
 
+/* Sector 07 sandbox has no standalone progress-stat note. */
+.mbf-screen.mbf-v3.mbf-sector-7 .mbf-stat{
+  display:none!important;
+}
+
 /* Sector 03: keep the redesigned text comfortably readable inside the larger paper areas. */
 .mbf-screen.mbf-v3.mbf-sector-3 .mbf-page-toggle{
   font-size:clamp(11px,.9vw,17px)!important;
