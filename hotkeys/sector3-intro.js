@@ -110,6 +110,7 @@ function boot(){
  el.pause.classList.remove('visible');
  el.subtitle.textContent='';
  el.adminChat.replaceChildren();
+ el.adminChat.scrollTop=0;
  el.adminFooter.textContent='ENTER · ПРОДОВЖИТИ';
  el.frame.src=scenes[0].image;
  el.frame.style.opacity='1';
@@ -189,6 +190,7 @@ function startAdminTakeover(){
   el.video.classList.remove('breaking');
   el.admin.classList.add('entering');
   el.adminChat.replaceChildren();
+  el.adminChat.scrollTop=0;
   phase='admin';
   adminIndex=-1;
   nextAdminLine();
@@ -198,6 +200,23 @@ function startAdminTakeover(){
 
 function adminTime(){
  return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false});
+}
+
+function scrollAdminToLatest(row,instant=false){
+ requestAnimationFrame(()=>{
+  requestAnimationFrame(()=>{
+   if(!el.adminChat)return;
+   const top=Math.max(0,el.adminChat.scrollHeight-el.adminChat.clientHeight);
+   if(instant){
+    el.adminChat.scrollTop=top;
+   }else if(typeof el.adminChat.scrollTo==='function'){
+    el.adminChat.scrollTo({top,behavior:'smooth'});
+   }else{
+    el.adminChat.scrollTop=top;
+   }
+   if(row)row.setAttribute('data-visible-latest','true');
+  });
+ });
 }
 
 function appendAdminMessage(text){
@@ -222,6 +241,7 @@ function appendAdminMessage(text){
  bubble.append(head,p);
  row.append(avatar,bubble);
  el.adminChat.appendChild(row);
+ scrollAdminToLatest(row);
 }
 
 function renderAdminLine(index){
@@ -267,7 +287,10 @@ function onKey(e){
 el.accept.addEventListener('click',acceptCall);
 document.addEventListener('keydown',onKey);
 document.addEventListener('pointerdown',()=>el.scene.focus({preventScroll:true}),{passive:true});
-window.addEventListener('resize',()=>{if(['zooming','call','admin-transition','admin'].includes(phase))zoomToTablet(false)});
+window.addEventListener('resize',()=>{
+ if(['zooming','call','admin-transition','admin'].includes(phase))zoomToTablet(false);
+ if(phase==='admin')scrollAdminToLatest(null,true);
+});
 
 updateClocks();
 setInterval(updateClocks,1000);
