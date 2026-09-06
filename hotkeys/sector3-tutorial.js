@@ -68,6 +68,10 @@ function clearTarget(){
  pc.classList.remove('vidlik-tutorial-target','vidlik-tutorial-double');
 }
 
+function selectPc(){
+ desk.querySelectorAll('.desktop-icon').forEach(x=>x.classList.toggle('is-selected',x===pc));
+}
+
 function reset(){
  active=false;
  step=0;
@@ -108,6 +112,7 @@ function completeMouse(){
 
 function completeSingleClick(){
  if(!active||step!==2)return;
+ selectPc();
  step=3;
  readyAt=performance.now()+800;
  pc.classList.add('vidlik-tutorial-double');
@@ -116,8 +121,15 @@ function completeSingleClick(){
  setHelp('<span><kbd>ЛКМ ×2</kbd> подвійний клік · відкрити</span>');
 }
 
+function openPcFromTutorial(){
+ if(!window.VIDLIK_OS?.openDesktopApp)return false;
+ window.VIDLIK_OS.openDesktopApp('pc');
+ return true;
+}
+
 function completeDoubleClick(){
  if(!active||step!==3)return;
+ if(!openPcFromTutorial())return;
  setTimeout(()=>{
   if(!active||step!==3)return;
   const explorer=document.querySelector('.os-window[data-window-id="explorer"]');
@@ -153,25 +165,26 @@ scene.addEventListener('pointermove',e=>{
  if(travelled>=140)completeMouse();
 },{passive:true});
 
+/* During these three steps the tutorial owns desktop clicks completely.
+   The normal VIDLIK OS desktop handler never receives them. */
 desk.addEventListener('click',e=>{
- if(!active)return;
+ if(!active||step>=4)return;
  const target=e.target.closest('.desktop-icon');
  if(!target)return;
 
+ stop(e);
+
  if(step===0||step===1){
-  stop(e);
   if(step===1)helper('Поки нічого не натискайте. Спочатку просто порухайте мишею.');
   return;
  }
 
  if(step===2){
   if(target!==pc){
-   stop(e);
    helper('Зараз працюємо з «Цей ПК». Наведіть курсор саме на цей значок.');
    return;
   }
-  if(e.detail>1){
-   stop(e);
+  if(e.detail!==1){
    helper('Спочатку лише один клік. Він потрібен, щоб вибрати об’єкт.');
    return;
   }
@@ -181,16 +194,22 @@ desk.addEventListener('click',e=>{
 
  if(step===3){
   if(target!==pc){
-   stop(e);
    helper('Відкриваємо «Цей ПК». Двічі натисніть саме на його значок.');
    return;
   }
-  if(performance.now()<readyAt){
-   stop(e);
-   return;
-  }
+  selectPc();
+  if(performance.now()<readyAt)return;
   if(e.detail===2)completeDoubleClick();
  }
+},true);
+
+desk.addEventListener('dblclick',e=>{
+ if(!active||step!==3)return;
+ const target=e.target.closest('.desktop-icon');
+ if(target!==pc)return;
+ stop(e);
+ if(performance.now()<readyAt)return;
+ completeDoubleClick();
 },true);
 
 desk.addEventListener('contextmenu',e=>{
