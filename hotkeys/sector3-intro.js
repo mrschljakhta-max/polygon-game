@@ -2,8 +2,6 @@
 'use strict';
 const A='assets/sector3-prologue/';
 
-// Поля — зовнішній персонаж. Після останньої репліки канал перехоплює
-// штатний безликий системний адміністратор навчального середовища VIDLIK.
 const scenes=[
  {image:A+'polya-01.webp',duration:3600,text:'Ти мене чуєш? Добре. У мене мало часу.'},
  {image:A+'polya-02.webp',duration:4400,text:'Слухай уважно. Якщо побачиш запис 267 — не відкривай його.'},
@@ -18,7 +16,8 @@ const adminLines=[
  'У Секторі 3 ви працюєте як стажер.',
  'Ваше завдання — навчитися працювати з робочим середовищем і Microsoft Excel.',
  'Я даватиму практичні завдання та короткі пояснення. Ви виконуватимете їх на комп’ютері.',
- 'Працюємо переважно клавіатурою. Почнемо з базових дій.'
+ 'Працюємо переважно клавіатурою. Почнемо з базових дій.',
+ 'Перед початком синхронізую планшет із вашою робочою станцією.'
 ];
 
 const el={
@@ -29,6 +28,17 @@ const el={
  incoming:document.getElementById('incomingLayer'),
  video:document.getElementById('videoLayer'),
  admin:document.getElementById('adminLayer'),
+ sync:document.getElementById('syncLayer'),
+ syncShell:document.getElementById('syncShell'),
+ syncStage:document.getElementById('syncStage'),
+ syncPercent:document.getElementById('syncPercent'),
+ syncBar:document.getElementById('syncBar'),
+ syncStatus:document.getElementById('syncStatus'),
+ monitorSyncOverlay:document.getElementById('monitorSyncOverlay'),
+ monitorSyncBadge:document.getElementById('monitorSyncBadge'),
+ monitorSyncCopy:document.getElementById('monitorSyncCopy'),
+ monitorSyncBar:document.getElementById('monitorSyncBar'),
+ monitorSyncPercent:document.getElementById('monitorSyncPercent'),
  adminChat:document.getElementById('adminChat'),
  adminFooter:document.getElementById('adminFooter'),
  frame:document.getElementById('polyaFrame'),
@@ -42,7 +52,7 @@ const el={
  lockDate:document.getElementById('lockDate')
 };
 
-let phase='boot',sceneIndex=-1,adminIndex=-1,bootTimer=0,takeoverTimer=0,cameraAnim=null,paused=false,token=0;
+let phase='boot',sceneIndex=-1,adminIndex=-1,bootTimer=0,takeoverTimer=0,syncTimer=0,syncRaf=0,cameraAnim=null,paused=false,token=0;
 
 scenes.forEach(()=>el.progress.appendChild(document.createElement('i')));
 [A+'desk.webp',A+'monitor-wallpaper.webp',A+'tablet-lock.webp',A+'incoming-call.webp',...scenes.map(s=>s.image)].forEach(src=>{
@@ -50,7 +60,7 @@ scenes.forEach(()=>el.progress.appendChild(document.createElement('i')));
 });
 
 function setLayer(name){
- [el.idle,el.incoming,el.video,el.admin].forEach(x=>x.classList.remove('visible'));
+ [el.idle,el.incoming,el.video,el.admin,el.sync].forEach(x=>x.classList.remove('visible'));
  el[name].classList.add('visible');
 }
 
@@ -101,9 +111,24 @@ function updateClocks(){
  }
 }
 
+function resetSyncUi(){
+ cancelAnimationFrame(syncRaf);syncRaf=0;
+ clearTimeout(syncTimer);syncTimer=0;
+ el.syncShell.classList.remove('sync-complete');
+ el.monitorSyncOverlay.classList.remove('visible','complete');
+ el.syncBar.style.width='0%';
+ el.monitorSyncBar.style.width='0%';
+ el.syncPercent.textContent='0%';
+ el.monitorSyncPercent.textContent='0%';
+ el.syncStage.textContent='ПОШУК РОБОЧОЇ СТАНЦІЇ';
+ el.syncStatus.textContent='Виявлення доступного комп’ютера…';
+ el.monitorSyncBadge.textContent='ПІДКЛЮЧЕННЯ';
+ el.monitorSyncCopy.textContent='Очікування планшета VIDLIK-TAB-03…';
+}
+
 function boot(){
  clearTimeout(bootTimer);clearTimeout(takeoverTimer);token++;paused=false;phase='boot';sceneIndex=-1;adminIndex=-1;
- stopCamera();zoomOut();
+ stopCamera();zoomOut();resetSyncUi();
  el.scene.classList.remove('ringing','system-takeover');
  el.video.classList.remove('breaking');
  el.admin.classList.remove('entering');
@@ -167,10 +192,7 @@ function renderScene(index){
 
 function nextScene(){
  if(phase!=='call'||paused)return;
- if(sceneIndex===scenes.length-1){
-  startAdminTakeover();
-  return;
- }
+ if(sceneIndex===scenes.length-1){startAdminTakeover();return}
  sceneIndex++;
  renderScene(sceneIndex);
 }
@@ -207,13 +229,9 @@ function scrollAdminToLatest(row,instant=false){
   requestAnimationFrame(()=>{
    if(!el.adminChat)return;
    const top=Math.max(0,el.adminChat.scrollHeight-el.adminChat.clientHeight);
-   if(instant){
-    el.adminChat.scrollTop=top;
-   }else if(typeof el.adminChat.scrollTo==='function'){
-    el.adminChat.scrollTo({top,behavior:'smooth'});
-   }else{
-    el.adminChat.scrollTop=top;
-   }
+   if(instant){el.adminChat.scrollTop=top}
+   else if(typeof el.adminChat.scrollTo==='function')el.adminChat.scrollTo({top,behavior:'smooth'});
+   else el.adminChat.scrollTop=top;
    if(row)row.setAttribute('data-visible-latest','true');
   });
  });
@@ -249,7 +267,13 @@ function renderAdminLine(index){
  setTimeout(()=>{
   if(t!==token||phase!=='admin'||adminIndex!==index)return;
   appendAdminMessage(adminLines[index]);
-  el.adminFooter.textContent=index===adminLines.length-1?'НАВЧАЛЬНА СЕСІЯ · АКТИВНА':'ENTER · ПРОДОВЖИТИ';
+  const isLast=index===adminLines.length-1;
+  el.adminFooter.textContent=isLast?'СИНХРОНІЗАЦІЯ · ПІДГОТОВКА':'ENTER · ПРОДОВЖИТИ';
+  if(isLast){
+   syncTimer=setTimeout(()=>{
+    if(phase==='admin'&&adminIndex===index&&!paused)startDeviceSync();
+   },1050);
+  }
  },80);
 }
 
@@ -260,17 +284,69 @@ function nextAdminLine(){
  renderAdminLine(adminIndex);
 }
 
+function syncCopyFor(progress){
+ if(progress<20)return ['ПОШУК РОБОЧОЇ СТАНЦІЇ','Виявлення VIDLIK-WS-03…','Очікування планшета VIDLIK-TAB-03…'];
+ if(progress<48)return ['ЗАХИЩЕНИЙ КАНАЛ','Встановлення захищеного каналу…','Встановлення захищеного каналу…'];
+ if(progress<73)return ['ПАРАМЕТРИ СЕСІЇ','Передача параметрів навчальної сесії…','Синхронізація параметрів сесії…'];
+ if(progress<94)return ['ПЕРЕВІРКА ДОСТУПУ','Перевірка дозволів і стану підключення…','Перевірка дозволів пристрою…'];
+ return ['ЗАВЕРШЕННЯ','Підтвердження синхронізації…','Підтвердження синхронізації…'];
+}
+
+function startDeviceSync(){
+ if(phase!=='admin')return;
+ clearTimeout(syncTimer);
+ resetSyncUi();
+ phase='sync';
+ setLayer('sync');
+ el.monitorSyncOverlay.classList.add('visible');
+ el.adminFooter.textContent='';
+ const started=performance.now();
+ const duration=4200;
+ const tick=now=>{
+  if(phase!=='sync')return;
+  const raw=Math.min(1,(now-started)/duration);
+  const eased=1-Math.pow(1-raw,2.2);
+  const pct=Math.min(100,Math.round(eased*100));
+  el.syncBar.style.width=pct+'%';
+  el.monitorSyncBar.style.width=pct+'%';
+  el.syncPercent.textContent=pct+'%';
+  el.monitorSyncPercent.textContent=pct+'%';
+  const [stage,status,monitorCopy]=syncCopyFor(pct);
+  el.syncStage.textContent=stage;
+  el.syncStatus.textContent=status;
+  el.monitorSyncCopy.textContent=monitorCopy;
+  if(raw<1){syncRaf=requestAnimationFrame(tick);return}
+  finishDeviceSync();
+ };
+ syncRaf=requestAnimationFrame(tick);
+}
+
+function finishDeviceSync(){
+ if(phase!=='sync')return;
+ el.syncBar.style.width='100%';
+ el.monitorSyncBar.style.width='100%';
+ el.syncPercent.textContent='100%';
+ el.monitorSyncPercent.textContent='100%';
+ el.syncStage.textContent='СИНХРОНІЗОВАНО';
+ el.syncStatus.textContent='Планшет підключено до робочої станції.';
+ el.syncShell.classList.add('sync-complete');
+ el.monitorSyncOverlay.classList.add('complete');
+ el.monitorSyncBadge.textContent='ПІДКЛЮЧЕНО';
+ el.monitorSyncCopy.textContent='VIDLIK-TAB-03 успішно підключено до VIDLIK-WS-03.';
+ syncTimer=setTimeout(()=>{
+  if(phase!=='sync')return;
+  el.monitorSyncOverlay.classList.remove('visible');
+  setLayer('admin');
+  phase='admin';
+  appendAdminMessage('Синхронізацію завершено. Планшет підключено до робочої станції. Завдання та статус виконання тепер синхронізовані.');
+  el.adminFooter.textContent='НАВЧАЛЬНА СЕСІЯ · СИНХРОНІЗОВАНО';
+ },850);
+}
+
 function togglePause(forceResume=false){
  if(!['call','admin'].includes(phase))return;
- if(!paused&&!forceResume){
-  paused=true;
-  el.pause.classList.add('visible');
-  return;
- }
- if(paused){
-  paused=false;
-  el.pause.classList.remove('visible');
- }
+ if(!paused&&!forceResume){paused=true;el.pause.classList.add('visible');return}
+ if(paused){paused=false;el.pause.classList.remove('visible')}
 }
 
 function onKey(e){
@@ -288,7 +364,7 @@ el.accept.addEventListener('click',acceptCall);
 document.addEventListener('keydown',onKey);
 document.addEventListener('pointerdown',()=>el.scene.focus({preventScroll:true}),{passive:true});
 window.addEventListener('resize',()=>{
- if(['zooming','call','admin-transition','admin'].includes(phase))zoomToTablet(false);
+ if(['zooming','call','admin-transition','admin','sync'].includes(phase))zoomToTablet(false);
  if(phase==='admin')scrollAdminToLatest(null,true);
 });
 
