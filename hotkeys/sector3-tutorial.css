@@ -21,6 +21,33 @@
   border-color:rgba(125,248,235,.98)!important;
   box-shadow:0 0 0 2px rgba(93,239,224,.23),0 0 28px rgba(69,224,211,.32)!important;
 }
+
+/* Generic focus target used after the desktop introduction. */
+.vidlik-tutorial-ui-target{
+  position:relative!important;
+  z-index:30!important;
+  outline:2px solid rgba(93,239,224,.78)!important;
+  outline-offset:2px!important;
+  box-shadow:0 0 0 2px rgba(83,235,220,.12),0 0 18px rgba(69,224,211,.26)!important;
+  animation:vidlikTutorialUiPulse 1.2s ease-in-out infinite!important;
+}
+.os-window-actions .vidlik-tutorial-ui-target{
+  background:rgba(47,182,173,.18)!important;
+  color:#dffef8!important;
+}
+.os-running-button.vidlik-tutorial-ui-target{
+  background:rgba(50,185,176,.16)!important;
+  border-bottom-color:#57e8da!important;
+}
+.os-file-item.vidlik-tutorial-ui-target{
+  background:rgba(47,181,173,.13)!important;
+  border-color:rgba(88,231,218,.52)!important;
+}
+.os-explorer-toolbar .vidlik-tutorial-ui-target{
+  background:rgba(47,181,173,.18)!important;
+  color:#e9fffb!important;
+}
+
 .admin-message.vidlik-tutorial-message .admin-bubble{
   border-color:rgba(86,235,220,.7);
   box-shadow:0 0 20px rgba(54,223,208,.075),inset 0 0 18px rgba(69,219,207,.04);
@@ -33,9 +60,14 @@
   border-color:rgba(82,231,216,.38);
   box-shadow:0 0 16px rgba(64,220,207,.08);
 }
+
 @keyframes vidlikTutorialTargetPulse{
   0%,100%{filter:brightness(1);transform:translateZ(0)}
   50%{filter:brightness(1.12);transform:translateZ(0)}
+}
+@keyframes vidlikTutorialUiPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.18)}
 }
 @keyframes vidlikTutorialRing{
   0%{opacity:.52;transform:scale(.97)}
@@ -43,5 +75,6 @@
 }
 @media (prefers-reduced-motion:reduce){
   .desktop-icon.vidlik-tutorial-target,
-  .desktop-icon.vidlik-tutorial-target::after{animation:none}
+  .desktop-icon.vidlik-tutorial-target::after,
+  .vidlik-tutorial-ui-target{animation:none!important}
 }
