@@ -119,20 +119,20 @@
   background:linear-gradient(180deg,rgba(7,33,36,.9),rgba(5,22,25,.92));
   box-shadow:0 8px 20px rgba(0,0,0,.16),inset 0 0 16px rgba(69,219,207,.025);
 }
-.admin-bubble-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}
+.admin-bubble-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:5px}
 .admin-bubble-name{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   color:#52eadc;
-  font:700 5.1px/1 ui-monospace,Consolas,monospace;
+  font:700 5.4px/1 ui-monospace,Consolas,monospace;
   letter-spacing:.105em;
 }
 .admin-bubble-time{
   flex:0 0 auto;color:#83a6a2;
-  font:600 4.8px/1 ui-monospace,Consolas,monospace;
+  font:600 5px/1 ui-monospace,Consolas,monospace;
 }
 .admin-bubble p{
   margin:0;color:#f0f7f6;
-  font-size:7.7px;line-height:1.36;font-weight:590;
+  font-size:8.9px;line-height:1.42;font-weight:590;
   text-shadow:0 1px 3px #000;
 }
 .admin-message:last-child .admin-bubble{
