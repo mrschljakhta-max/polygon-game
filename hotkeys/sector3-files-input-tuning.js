@@ -23,6 +23,18 @@ function tune(){
 
 const observer=new MutationObserver(()=>requestAnimationFrame(tune));
 observer.observe(document.body,{childList:true,subtree:true});
+
+const mon=document.querySelector('.monitor-screen');
+mon?.addEventListener('click',e=>{
+ const t=window.VIDLIK_FILES_TUTORIAL;
+ if(!t?.active||t.phase!=='select-training'||e.detail<2)return;
+ const row=e.target.closest('.os-file-item');
+ if(!row)return;
+ e.preventDefault();
+ e.stopPropagation();
+ e.stopImmediatePropagation();
+},true);
+
 window.addEventListener('vidlik:section2-ready',()=>{tuned=false});
 window.addEventListener('vidlik:os-reset',()=>{tuned=false});
 })();
