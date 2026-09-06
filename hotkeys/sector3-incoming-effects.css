@@ -1,0 +1,128 @@
+/* Sector 3 · Incoming call micro-interactions
+   Decorative only: the incoming-call.webp remains the source artwork. */
+
+.incoming{isolation:isolate}
+.incoming>img{z-index:1;will-change:filter}
+
+/* Two radar-like pulses around Polya's avatar. Coordinates are tied to
+   the current incoming-call artwork. */
+.incoming::before,
+.incoming::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:34%;
+  width:47%;
+  aspect-ratio:1;
+  z-index:3;
+  pointer-events:none;
+  border-radius:50%;
+  border:1px solid rgba(84,235,224,.72);
+  box-shadow:
+    0 0 8px rgba(67,238,224,.45),
+    inset 0 0 8px rgba(67,238,224,.18);
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.88);
+}
+
+.ringing .incoming.visible::before{
+  animation:avatarSignal 1.65s cubic-bezier(.18,.72,.25,1) infinite;
+}
+.ringing .incoming.visible::after{
+  border-color:rgba(110,247,236,.42);
+  animation:avatarSignal 1.65s .78s cubic-bezier(.18,.72,.25,1) infinite;
+}
+
+/* The invisible Enter/click hit-area already sits over the green answer
+   button. These pseudo-elements provide a soft breathing highlight without
+   replacing the artwork. */
+.accept{overflow:visible;outline:none}
+.accept::before,
+.accept::after{
+  content:"";
+  position:absolute;
+  inset:-8%;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+}
+.accept::before{
+  border:1px solid rgba(91,255,142,.7);
+  box-shadow:
+    0 0 10px rgba(64,255,125,.45),
+    0 0 20px rgba(64,255,125,.2),
+    inset 0 0 8px rgba(103,255,151,.12);
+}
+.accept::after{
+  inset:-18%;
+  border:1px solid rgba(92,255,146,.32);
+}
+.ringing .incoming.visible .accept::before{
+  animation:acceptBreath 1.08s ease-in-out infinite;
+}
+.ringing .incoming.visible .accept::after{
+  animation:acceptWave 1.55s ease-out infinite;
+}
+.accept:focus-visible::before{
+  opacity:1;
+  box-shadow:0 0 0 2px rgba(230,255,239,.9),0 0 22px rgba(64,255,125,.75);
+}
+
+/* Very slight screen luminance pulse: enough to make the static artwork
+   feel alive, but not enough to look like a gamey flashing UI. */
+.ringing .incoming.visible>img{
+  animation:incomingScreenBreath 1.85s ease-in-out infinite;
+}
+
+/* Replaces the older constant tablet halo with a periodic micro-vibration.
+   The shake happens only near the end of each cycle. */
+.ringing .tablet-screen{
+  will-change:transform,box-shadow;
+  animation:tabletRingFx 1.85s linear infinite;
+}
+
+@keyframes avatarSignal{
+  0%{opacity:.7;transform:translate(-50%,-50%) scale(.86)}
+  58%{opacity:.24}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.22)}
+}
+
+@keyframes acceptBreath{
+  0%,100%{opacity:.28;transform:scale(.96)}
+  50%{opacity:.95;transform:scale(1.08)}
+}
+
+@keyframes acceptWave{
+  0%{opacity:.52;transform:scale(.82)}
+  70%,100%{opacity:0;transform:scale(1.22)}
+}
+
+@keyframes incomingScreenBreath{
+  0%,100%{filter:brightness(1) saturate(1)}
+  50%{filter:brightness(1.045) saturate(1.035)}
+}
+
+@keyframes tabletRingFx{
+  0%,48%,76%,100%{
+    transform:translate3d(0,0,0);
+    box-shadow:0 0 0 1px rgba(85,231,212,.40),0 0 21px rgba(85,231,212,.18),inset 0 0 18px rgba(85,231,212,.07);
+  }
+  50%{
+    box-shadow:0 0 0 2px rgba(85,231,212,.58),0 0 36px rgba(85,231,212,.30),inset 0 0 22px rgba(85,231,212,.09);
+  }
+  80%{transform:translate3d(-1.4px,0,0)}
+  83%{transform:translate3d(1.5px,0,0)}
+  86%{transform:translate3d(-1px,0,0)}
+  89%{transform:translate3d(.8px,0,0)}
+  92%{transform:translate3d(0,0,0)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .ringing .incoming.visible::before,
+  .ringing .incoming.visible::after,
+  .ringing .incoming.visible .accept::before,
+  .ringing .incoming.visible .accept::after,
+  .ringing .incoming.visible>img,
+  .ringing .tablet-screen{animation:none}
+  .ringing .incoming.visible .accept::before{opacity:.55}
+}
