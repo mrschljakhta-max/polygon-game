@@ -33,10 +33,23 @@
   animation:avatarSignal 1.65s .78s cubic-bezier(.18,.72,.25,1) infinite;
 }
 
-/* The invisible Enter/click hit-area already sits over the green answer
-   button. These pseudo-elements provide a soft breathing highlight without
-   replacing the artwork. */
-.accept{overflow:visible;outline:none}
+/*
+  Exact green-answer-button calibration from the user's crop sandbox.
+  Full-scene measured center: x=406.26, y=759.56, radius≈35.77 px on 1920×1080.
+  Converted into the current tablet-screen local coordinate system:
+  left=54.86%, top=67.82%, width=27.16%, height=15.62%.
+*/
+.incoming .accept{
+  left:54.86%;
+  top:67.82%;
+  right:auto;
+  bottom:auto;
+  width:27.16%;
+  height:15.62%;
+  overflow:visible;
+  outline:none;
+}
+
 .accept::before,
 .accept::after{
   content:"";
