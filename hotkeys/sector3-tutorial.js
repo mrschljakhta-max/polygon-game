@@ -138,6 +138,12 @@ function helper(text){
  setTimeout(()=>{helperLock=false},1300);
 }
 
+function stop(e){
+ e.preventDefault();
+ e.stopPropagation();
+ e.stopImmediatePropagation();
+}
+
 scene.addEventListener('pointermove',e=>{
  if(!active||step!==1||e.pointerType==='touch')return;
  if(!lastPoint){lastPoint={x:e.clientX,y:e.clientY};return}
@@ -152,18 +158,20 @@ desk.addEventListener('click',e=>{
  const target=e.target.closest('.desktop-icon');
  if(!target)return;
 
+ if(step===0||step===1){
+  stop(e);
+  if(step===1)helper('Поки нічого не натискайте. Спочатку просто порухайте мишею.');
+  return;
+ }
+
  if(step===2){
   if(target!==pc){
-   e.preventDefault();
-   e.stopPropagation();
-   e.stopImmediatePropagation();
+   stop(e);
    helper('Зараз працюємо з «Цей ПК». Наведіть курсор саме на цей значок.');
    return;
   }
   if(e.detail>1){
-   e.preventDefault();
-   e.stopPropagation();
-   e.stopImmediatePropagation();
+   stop(e);
    helper('Спочатку лише один клік. Він потрібен, щоб вибрати об’єкт.');
    return;
   }
@@ -173,16 +181,12 @@ desk.addEventListener('click',e=>{
 
  if(step===3){
   if(target!==pc){
-   e.preventDefault();
-   e.stopPropagation();
-   e.stopImmediatePropagation();
+   stop(e);
    helper('Відкриваємо «Цей ПК». Двічі натисніть саме на його значок.');
    return;
   }
   if(performance.now()<readyAt){
-   e.preventDefault();
-   e.stopPropagation();
-   e.stopImmediatePropagation();
+   stop(e);
    return;
   }
   if(e.detail===2)completeDoubleClick();
@@ -190,12 +194,14 @@ desk.addEventListener('click',e=>{
 },true);
 
 desk.addEventListener('contextmenu',e=>{
- if(!active||!(step===2||step===3))return;
+ if(!active||step>=4)return;
  const target=e.target.closest('.desktop-icon');
  if(!target)return;
- e.preventDefault();
- e.stopPropagation();
- e.stopImmediatePropagation();
+ stop(e);
+ if(step===0||step===1){
+  if(step===1)helper('Поки нічого не натискайте. Спочатку просто порухайте мишею.');
+  return;
+ }
  helper('Це права кнопка миші. Вона відкриває додаткові дії. Зараз використайте ліву кнопку.');
 },true);
 
