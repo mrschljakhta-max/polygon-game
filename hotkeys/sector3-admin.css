@@ -84,11 +84,31 @@
   min-height:0;
   display:flex;flex-direction:column;
   gap:3.7%;
-  padding:5.2% 1% 3%;
-  overflow:hidden;
+  padding:5.2% 2.2% 3% 1%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scroll-behavior:smooth;
+  scroll-padding-bottom:10px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(75,221,210,.72) rgba(9,31,34,.42);
+}
+.admin-chat::-webkit-scrollbar{width:5px}
+.admin-chat::-webkit-scrollbar-track{
+  background:rgba(9,31,34,.34);
+  border-radius:999px;
+}
+.admin-chat::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(88,237,224,.92),rgba(37,154,149,.72));
+  border-radius:999px;
+  box-shadow:0 0 8px rgba(70,229,216,.22);
+}
+.admin-chat::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#66f0e1,#32aaa4);
 }
 .admin-message{
   display:flex;align-items:flex-start;gap:4.2%;
+  flex:0 0 auto;
   animation:adminMessageIn .28s cubic-bezier(.2,.72,.22,1) both;
 }
 .admin-bubble{
@@ -163,4 +183,5 @@
 
 @media (prefers-reduced-motion:reduce){
   .admin-layer.entering .admin-shell,.admin-message,.system-takeover .video .glitch{animation:none}
+  .admin-chat{scroll-behavior:auto}
 }
