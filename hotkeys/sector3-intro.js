@@ -53,7 +53,15 @@ const el={
 let phase='boot',sceneIndex=-1,adminIndex=-1,bootTimer=0,takeoverTimer=0,syncTimer=0,syncRaf=0,cameraAnim=null,paused=false,token=0;
 
 scenes.forEach(()=>el.progress.appendChild(document.createElement('i')));
-[A+'desk.webp',A+'monitor-wallpaper.webp',A+'tablet-lock.webp',A+'incoming-call.webp',...scenes.map(s=>s.image)].forEach(src=>{
+[
+ A+'desk.webp',
+ A+'monitor-wallpaper.webp',
+ A+'tablet-lock.webp',
+ A+'incoming-call.webp',
+ A+'sync-monitor-bg.webp',
+ A+'sync-tablet-bg.webp',
+ ...scenes.map(s=>s.image)
+].forEach(src=>{
  const im=new Image();im.decoding='async';im.src=src;
 });
 
