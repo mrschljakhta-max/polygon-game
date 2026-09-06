@@ -23,10 +23,12 @@ const folder=(name,children=[])=>({id:'d'+(++uid),type:'folder',name,children});
 const file=(name,kind='file',x={})=>({id:'f'+(++uid),type:'file',kind,name,...x});
 const root=folder('Цей ПК',[
  folder('Документи',[
+  file('TRAINING_SYNC_SECTOR_3.xlsx','xlsx',{training:true}),
   folder('Навчання',[file('пам’ятка_VIDLIK.txt','txt')]),
   folder('Звіти',[file('звіт_серпень.xlsx','xlsx'),file('табель.xlsx','xlsx')]),
   folder('Архів',[file('267.xlsx','xlsx',{locked:true}),file('журнал_переміщень.xlsx','xlsx',{journal:true})]),
   folder('temp',[file('чернетка.txt','txt')]),
+  file('чернетка.txt','txt',{training:true}),
   file('report_old.xlsx','xlsx')
  ]),
  folder('Системні файли',[file('VIDLIK_OS.cfg','txt',{system:true}),file('session.log','txt',{system:true})])
@@ -460,6 +462,7 @@ window.VIDLIK_OS={
  setLanguage:setLang,
  get language(){return lang},
  openDesktopApp:openApp,
+ getFileSystem:()=>clone(root),
  getState:()=>({enabled,lang,activeWindowId,windows:[...windows.values()].map(w=>({id:w.id,type:w.type,title:w.title,minimized:w.minimized,maximized:w.maximized})),trash:clone(trash)})
 };
 })();
