@@ -11,10 +11,12 @@ function applyState(win){
  win.classList.toggle('os-maximized',maximized);
  const btn=win.querySelector('[data-win="max"]');
  if(!btn)return;
- const restore=maximized;
- btn.textContent=restore?'❐':'□';
- btn.setAttribute('aria-label',restore?'Відновити розмір вікна':'Розгорнути вікно');
- btn.title=restore?'Відновити розмір':'Розгорнути';
+ const label=maximized?'❐':'□';
+ const aria=maximized?'Відновити розмір вікна':'Розгорнути вікно';
+ const title=maximized?'Відновити розмір':'Розгорнути';
+ if(btn.textContent!==label)btn.textContent=label;
+ if(btn.getAttribute('aria-label')!==aria)btn.setAttribute('aria-label',aria);
+ if(btn.title!==title)btn.title=title;
 }
 
 function ensureMaxButton(){
@@ -59,19 +61,18 @@ layer.addEventListener('dblclick',e=>{
  const titlebar=e.target.closest('.os-window-titlebar');
  if(!titlebar||e.target.closest('.os-window-actions'))return;
  e.preventDefault();
+ e.stopPropagation();
  maximized=!maximized;
  applyState(titlebar.closest('.os-window'));
 });
 
-const observer=new MutationObserver(()=>{
- const win=layer.querySelector('.os-window');
- if(!win){
-  maximized=false;
-  return;
- }
- ensureMaxButton();
+/* Windows are replaced as direct children of .os-layer by the OS core.
+   Observe only that level so button-label changes cannot retrigger us. */
+const observer=new MutationObserver(records=>{
+ if(!records.some(r=>r.type==='childList'&&(r.addedNodes.length||r.removedNodes.length)))return;
+ requestAnimationFrame(ensureMaxButton);
 });
-observer.observe(layer,{childList:true,subtree:true});
+observer.observe(layer,{childList:true});
 
 ensureMaxButton();
 })();
