@@ -15,11 +15,10 @@ const scenes=[
 
 const adminLines=[
  'Вітаю. Я — системний адміністратор навчального середовища VIDLIK.',
- 'Ваша роль у Секторі 3 — стажер.',
- 'Мета стажування — навчитися впевнено працювати з робочим середовищем і Microsoft Excel.',
- 'Зараз ви проходитимете практичні завдання. Я пояснюватиму, що потрібно зробити, а ви виконуватимете це на комп’ютері.',
- 'Основний інструмент тут — клавіатура. Поступово ви навчитеся виконувати робочі дії швидко й без зайвих рухів.',
- 'Почнемо з базових дій. Стажування розпочато.'
+ 'У Секторі 3 ви працюєте як стажер.',
+ 'Ваше завдання — навчитися працювати з робочим середовищем і Microsoft Excel.',
+ 'Я даватиму практичні завдання та короткі пояснення. Ви виконуватимете їх на комп’ютері.',
+ 'Працюємо переважно клавіатурою. Почнемо з базових дій.'
 ];
 
 const el={
@@ -30,14 +29,12 @@ const el={
  incoming:document.getElementById('incomingLayer'),
  video:document.getElementById('videoLayer'),
  admin:document.getElementById('adminLayer'),
+ adminChat:document.getElementById('adminChat'),
+ adminFooter:document.getElementById('adminFooter'),
  frame:document.getElementById('polyaFrame'),
  subtitle:document.getElementById('subtitle'),
  count:document.getElementById('sceneCount'),
  progress:document.getElementById('callProgress'),
- adminText:document.getElementById('adminText'),
- adminCount:document.getElementById('adminCount'),
- adminProgress:document.getElementById('adminProgress'),
- adminFooter:document.getElementById('adminFooter'),
  accept:document.getElementById('acceptBtn'),
  pause:document.getElementById('pause'),
  clock:document.getElementById('desktopClock'),
@@ -48,7 +45,6 @@ const el={
 let phase='boot',sceneIndex=-1,adminIndex=-1,bootTimer=0,takeoverTimer=0,cameraAnim=null,paused=false,token=0;
 
 scenes.forEach(()=>el.progress.appendChild(document.createElement('i')));
-adminLines.forEach(()=>el.adminProgress.appendChild(document.createElement('i')));
 [A+'desk.webp',A+'monitor-wallpaper.webp',A+'tablet-lock.webp',A+'incoming-call.webp',...scenes.map(s=>s.image)].forEach(src=>{
  const im=new Image();im.decoding='async';im.src=src;
 });
@@ -60,10 +56,6 @@ function setLayer(name){
 
 function updateProgress(index){
  [...el.progress.children].forEach((dot,i)=>dot.className=i<index?'done':i===index?'current':'');
-}
-
-function updateAdminProgress(index){
- [...el.adminProgress.children].forEach((dot,i)=>dot.className=i<index?'done':i===index?'current':'');
 }
 
 function tabletZoom(){
@@ -117,13 +109,12 @@ function boot(){
  el.admin.classList.remove('entering');
  el.pause.classList.remove('visible');
  el.subtitle.textContent='';
- el.adminText.textContent='';
+ el.adminChat.replaceChildren();
  el.adminFooter.textContent='ENTER · ПРОДОВЖИТИ';
  el.frame.src=scenes[0].image;
  el.frame.style.opacity='1';
  setLayer('idle');
  updateProgress(-1);
- updateAdminProgress(-1);
  bootTimer=setTimeout(showIncoming,2300);
 }
 
@@ -197,6 +188,7 @@ function startAdminTakeover(){
   el.scene.classList.remove('system-takeover');
   el.video.classList.remove('breaking');
   el.admin.classList.add('entering');
+  el.adminChat.replaceChildren();
   phase='admin';
   adminIndex=-1;
   nextAdminLine();
@@ -204,17 +196,41 @@ function startAdminTakeover(){
  },520);
 }
 
+function adminTime(){
+ return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false});
+}
+
+function appendAdminMessage(text){
+ const row=document.createElement('div');
+ row.className='admin-message';
+ const avatar=document.createElement('div');
+ avatar.className='admin-msg-avatar';
+ avatar.setAttribute('aria-hidden','true');
+ const bubble=document.createElement('div');
+ bubble.className='admin-bubble';
+ const head=document.createElement('div');
+ head.className='admin-bubble-head';
+ const name=document.createElement('span');
+ name.className='admin-bubble-name';
+ name.textContent='СИСТЕМНИЙ АДМІНІСТРАТОР';
+ const time=document.createElement('span');
+ time.className='admin-bubble-time';
+ time.textContent=adminTime();
+ const p=document.createElement('p');
+ p.textContent=text;
+ head.append(name,time);
+ bubble.append(head,p);
+ row.append(avatar,bubble);
+ el.adminChat.appendChild(row);
+}
+
 function renderAdminLine(index){
  const t=++token;
- el.adminText.style.opacity='0';
  setTimeout(()=>{
   if(t!==token||phase!=='admin'||adminIndex!==index)return;
-  el.adminText.textContent=adminLines[index];
-  el.adminText.style.opacity='1';
-  el.adminCount.textContent=`${String(index+1).padStart(2,'0')} / ${String(adminLines.length).padStart(2,'0')}`;
-  updateAdminProgress(index);
+  appendAdminMessage(adminLines[index]);
   el.adminFooter.textContent=index===adminLines.length-1?'НАВЧАЛЬНА СЕСІЯ · АКТИВНА':'ENTER · ПРОДОВЖИТИ';
- },100);
+ },80);
 }
 
 function nextAdminLine(){
