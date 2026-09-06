@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="sector3-intro.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-incoming-effects.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-caption-tuning.css?v=20260906-1">
-<link rel="stylesheet" href="sector3-admin.css?v=20260906-1">
+<link rel="stylesheet" href="sector3-admin.css?v=20260906-2">
 </head>
 <body>
 <div class="app">
@@ -45,23 +45,22 @@
           <div class="glitch"></div>
         </div>
 
-        <div class="tablet-layer admin-layer" id="adminLayer" aria-label="Системний адміністратор VIDLIK">
+        <div class="tablet-layer admin-layer" id="adminLayer" aria-label="Чат із системним адміністратором VIDLIK">
           <div class="admin-shell">
-            <div class="admin-topline">
-              <span><i class="status-dot"></i>VIDLIK · СИСТЕМНИЙ КАНАЛ</span>
-              <span id="adminCount">01 / 06</span>
-            </div>
+            <header class="admin-header">
+              <div class="admin-header-avatar" aria-hidden="true"></div>
+              <div class="admin-header-copy">
+                <div class="admin-header-name">СИСТЕМНИЙ АДМІНІСТРАТОР</div>
+                <div class="admin-online"><i></i><span>Онлайн</span></div>
+              </div>
+            </header>
 
-            <div class="admin-ident">
-              <div class="admin-avatar" aria-hidden="true"><span class="admin-avatar-ring"></span></div>
-              <div class="admin-name">СИСТЕМНИЙ АДМІНІСТРАТОР</div>
-              <div class="admin-role">НАВЧАЛЬНЕ СЕРЕДОВИЩЕ · СЕКТОР 3</div>
-            </div>
+            <div class="admin-chat" id="adminChat" aria-live="polite"></div>
 
-            <div class="admin-dialog">
-              <div class="admin-dialog-label">СИСТЕМНИЙ АДМІНІСТРАТОР</div>
-              <p id="adminText"></p>
-              <div class="admin-progress" id="adminProgress"></div>
+            <div class="admin-composer" aria-hidden="true">
+              <span class="admin-attach">⌕</span>
+              <span class="admin-placeholder">Напишіть повідомлення...</span>
+              <span class="admin-send">➤</span>
             </div>
             <div class="admin-footer" id="adminFooter">ENTER · ПРОДОВЖИТИ</div>
           </div>
@@ -74,6 +73,6 @@
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-intro.js?v=20260906-3"></script>
+<script src="sector3-intro.js?v=20260906-4"></script>
 </body>
 </html>
