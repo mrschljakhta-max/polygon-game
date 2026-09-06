@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="sector3-incoming-effects.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-caption-tuning.css?v=20260906-1">
 <link rel="stylesheet" href="sector3-admin.css?v=20260906-5">
-<link rel="stylesheet" href="sector3-sync.css?v=20260906-1">
+<link rel="stylesheet" href="sector3-sync.css?v=20260906-2">
 </head>
 <body>
 <div class="app">
@@ -27,14 +27,11 @@
         </div>
 
         <div class="monitor-sync-overlay" id="monitorSyncOverlay" aria-hidden="true">
-          <div class="monitor-sync-card">
-            <div class="monitor-sync-top">
-              <div class="monitor-sync-title">СИНХРОНІЗАЦІЯ ПРИСТРОЇВ</div>
-              <div class="monitor-sync-badge" id="monitorSyncBadge">ПІДКЛЮЧЕННЯ</div>
-            </div>
-            <div class="monitor-sync-copy" id="monitorSyncCopy">Очікування планшета VIDLIK-TAB-03…</div>
+          <div class="monitor-sync-screen">
+            <div class="monitor-sync-logo">VIDLIK</div>
+            <div class="monitor-sync-status" id="monitorSyncStatus">СИНХРОНІЗАЦІЯ</div>
             <div class="monitor-sync-track"><div class="monitor-sync-bar" id="monitorSyncBar"></div></div>
-            <div class="monitor-sync-foot"><span>VIDLIK-WS-03 ↔ VIDLIK-TAB-03</span><span id="monitorSyncPercent">0%</span></div>
+            <div class="monitor-sync-percent" id="monitorSyncPercent">0%</div>
           </div>
         </div>
 
@@ -82,38 +79,21 @@
 
         <div class="tablet-layer sync-layer" id="syncLayer" aria-label="Синхронізація планшета з робочою станцією">
           <div class="sync-shell" id="syncShell">
-            <div class="sync-eyebrow">VIDLIK · СИСТЕМНИЙ АДМІНІСТРАТОР</div>
-            <div class="sync-title">СИНХРОНІЗАЦІЯ ПРИСТРОЇВ</div>
-
-            <div class="sync-devices">
-              <div class="sync-device">
-                <div class="sync-device-icon">▯</div>
-                <strong>VIDLIK-TAB-03</strong>
-                <span>ПЛАНШЕТ</span>
-              </div>
-              <div class="sync-link" aria-hidden="true"></div>
-              <div class="sync-device">
-                <div class="sync-device-icon">⊞</div>
-                <strong>VIDLIK-WS-03</strong>
-                <span>РОБОЧА СТАНЦІЯ</span>
-              </div>
-            </div>
-
-            <div class="sync-progress-wrap">
-              <div class="sync-progress-head"><span id="syncStage">ПОШУК РОБОЧОЇ СТАНЦІЇ</span><span id="syncPercent">0%</span></div>
-              <div class="sync-track"><div class="sync-bar" id="syncBar"></div></div>
-            </div>
-            <div class="sync-status" id="syncStatus">Виявлення доступного комп’ютера…</div>
+            <div class="sync-logo">VIDLIK</div>
+            <div class="sync-title" id="syncStage">СИНХРОНІЗАЦІЯ</div>
+            <div class="sync-track"><div class="sync-bar" id="syncBar"></div></div>
+            <div class="sync-percent" id="syncPercent">0%</div>
           </div>
         </div>
       </section>
     </div>
 
+    <div class="sync-flash-layer" aria-hidden="true"></div>
     <div class="shade"></div>
     <div class="keys" id="help"><span><kbd>ENTER</kbd> прийняти / далі</span><span><kbd>ESC</kbd> пауза</span><span><kbd>R</kbd> спочатку</span></div>
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-intro.js?v=20260906-6"></script>
+<script src="sector3-intro.js?v=20260906-7"></script>
 </body>
 </html>
