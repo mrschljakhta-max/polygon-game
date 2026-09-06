@@ -1,0 +1,47 @@
+/* Sector 3 · first-contact tutorial for absolute PC beginners */
+.desktop-icon.vidlik-tutorial-target{
+  position:relative;
+  z-index:3;
+  border-color:rgba(91,239,224,.9)!important;
+  background:rgba(27,112,111,.16)!important;
+  box-shadow:0 0 0 2px rgba(83,235,220,.18),0 0 22px rgba(69,224,211,.24)!important;
+  animation:vidlikTutorialTargetPulse 1.35s ease-in-out infinite;
+}
+.desktop-icon.vidlik-tutorial-target::after{
+  content:"";
+  position:absolute;
+  inset:-5px;
+  pointer-events:none;
+  border:1px solid rgba(96,244,228,.52);
+  border-radius:8px;
+  opacity:.15;
+  animation:vidlikTutorialRing 1.35s ease-out infinite;
+}
+.desktop-icon.vidlik-tutorial-target.vidlik-tutorial-double{
+  border-color:rgba(125,248,235,.98)!important;
+  box-shadow:0 0 0 2px rgba(93,239,224,.23),0 0 28px rgba(69,224,211,.32)!important;
+}
+.admin-message.vidlik-tutorial-message .admin-bubble{
+  border-color:rgba(86,235,220,.7);
+  box-shadow:0 0 20px rgba(54,223,208,.075),inset 0 0 18px rgba(69,219,207,.04);
+}
+.admin-footer.vidlik-tutorial-footer{
+  color:#72d9d0;
+  letter-spacing:.08em;
+}
+.keys.vidlik-tutorial-help{
+  border-color:rgba(82,231,216,.38);
+  box-shadow:0 0 16px rgba(64,220,207,.08);
+}
+@keyframes vidlikTutorialTargetPulse{
+  0%,100%{filter:brightness(1);transform:translateZ(0)}
+  50%{filter:brightness(1.12);transform:translateZ(0)}
+}
+@keyframes vidlikTutorialRing{
+  0%{opacity:.52;transform:scale(.97)}
+  70%,100%{opacity:0;transform:scale(1.08)}
+}
+@media (prefers-reduced-motion:reduce){
+  .desktop-icon.vidlik-tutorial-target,
+  .desktop-icon.vidlik-tutorial-target::after{animation:none}
+}
