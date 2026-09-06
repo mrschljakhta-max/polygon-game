@@ -148,6 +148,7 @@ function resetSyncUi(){
 }
 
 function boot(){
+ window.dispatchEvent(new CustomEvent('vidlik:os-reset'));
  clearTimeout(bootTimer);clearTimeout(takeoverTimer);token++;paused=false;phase='boot';sceneIndex=-1;adminIndex=-1;
  stopCamera();zoomOut();resetSyncUi();
  el.scene.classList.remove('ringing','system-takeover');
@@ -352,17 +353,22 @@ function finishDeviceSync(){
   el.scene.classList.remove('sync-active','sync-flash');
   appendAdminMessage('Синхронізацію завершено.\nРобоча станція готова.\nПереходимо до першого завдання.');
   el.adminFooter.textContent='РОБОЧА СТАНЦІЯ · ГОТОВА';
+  window.dispatchEvent(new CustomEvent('vidlik:os-ready'));
  },650);
 }
 
 function togglePause(forceResume=false){
- if(!['call','admin'].includes(phase))return;
+ if(!['call','admin','post-sync'].includes(phase))return;
  if(!paused&&!forceResume){paused=true;el.pause.classList.add('visible');return}
  if(paused){paused=false;el.pause.classList.remove('visible')}
 }
 
 function onKey(e){
  const k=e.key.toLowerCase();
+ if(phase==='post-sync'){
+  if(paused&&(k==='enter'||k===' ')){e.preventDefault();togglePause(true)}
+  return;
+ }
  if(['enter',' ','escape','r'].includes(k))e.preventDefault();
  if(k==='r'){boot();return}
  if(k==='escape'){togglePause();return}
@@ -374,7 +380,11 @@ function onKey(e){
 
 el.accept.addEventListener('click',acceptCall);
 document.addEventListener('keydown',onKey);
-document.addEventListener('pointerdown',()=>el.scene.focus({preventScroll:true}),{passive:true});
+document.addEventListener('pointerdown',e=>{
+ if(e.target.closest?.('.os-ui'))return;
+ el.scene.focus({preventScroll:true});
+},{passive:true});
+window.addEventListener('vidlik:pause-request',()=>{if(phase==='post-sync')togglePause()});
 window.addEventListener('resize',()=>{
  if(['zooming','call','admin-transition','admin'].includes(phase))zoomToTablet(false);
  if(phase==='admin')scrollAdminToLatest(null,true);
