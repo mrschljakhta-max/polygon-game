@@ -1,0 +1,188 @@
+/* Sector 3 · cinematic section/episode transition */
+.vidlik-section-transition{
+  --st-accent:#55e6d6;
+  --st-text:#edf8f6;
+  --st-muted:#8aaba7;
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  isolation:isolate;
+  color:var(--st-text);
+  background:
+    radial-gradient(circle at 50% 28%,rgba(51,218,197,.12),transparent 34%),
+    radial-gradient(circle at 80% 8%,rgba(35,130,130,.10),transparent 23%),
+    linear-gradient(180deg,#051516 0%,#020a0b 68%,#010506 100%);
+  opacity:0;
+  pointer-events:auto;
+  animation:vidlikSectionStageIn .42s ease forwards;
+}
+.vidlik-section-transition::before{
+  content:"";
+  position:absolute;
+  inset:-8%;
+  pointer-events:none;
+  opacity:.22;
+  background:
+    repeating-radial-gradient(ellipse at 20% 90%,transparent 0 28px,rgba(86,225,211,.08) 29px 30px,transparent 31px 47px),
+    repeating-radial-gradient(ellipse at 83% 12%,transparent 0 34px,rgba(86,225,211,.055) 35px 36px,transparent 37px 55px);
+}
+.vidlik-section-transition::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 0 17%,rgba(64,225,210,.025) 17% 17.15%,transparent 17.2% 100%),
+    linear-gradient(25deg,transparent 0 72%,rgba(64,225,210,.02) 72% 72.15%,transparent 72.2% 100%);
+}
+.vidlik-section-transition.is-leaving{animation:vidlikSectionStageOut .62s ease forwards}
+.vidlik-section-corner{
+  position:absolute;
+  z-index:4;
+  font:700 clamp(8px,.62vw,11px)/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.18em;
+  color:rgba(121,184,178,.45);
+  text-transform:uppercase;
+}
+.vidlik-section-corner.tl{top:3.3vh;left:2.5vw}
+.vidlik-section-corner.br{right:2.5vw;bottom:3.2vh;text-align:right}
+.vidlik-section-scan{
+  position:absolute;
+  z-index:5;
+  left:8%;
+  right:8%;
+  top:50%;
+  height:1px;
+  opacity:0;
+  transform:scaleX(.04);
+  background:linear-gradient(90deg,transparent,rgba(100,246,230,.2),var(--st-accent),rgba(100,246,230,.2),transparent);
+  box-shadow:0 0 18px rgba(85,230,214,.38);
+}
+.vidlik-section-transition.is-switching .vidlik-section-scan{animation:vidlikSectionScan .68s cubic-bezier(.2,.72,.2,1) both}
+.vidlik-section-panel{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:7vw;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.vidlik-section-panel.is-active{
+  visibility:visible;
+  animation:vidlikSectionPanelIn .68s ease forwards;
+}
+.vidlik-section-panel.is-out{
+  visibility:visible;
+  animation:vidlikSectionPanelOut .42s ease forwards;
+}
+.vidlik-section-content{
+  width:min(980px,86vw);
+  text-align:center;
+  animation:vidlikSectionContentIn .9s cubic-bezier(.2,.75,.2,1) .06s both;
+}
+.vidlik-section-counter{
+  margin-bottom:clamp(18px,2.2vh,28px);
+  color:#c9f5ef;
+  font-size:clamp(19px,2vw,32px);
+  font-weight:850;
+  letter-spacing:.18em;
+}
+.vidlik-section-kicker{
+  margin-bottom:clamp(20px,2.3vh,28px);
+  color:var(--st-accent);
+  font-size:clamp(12px,1.15vw,18px);
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.30em;
+  text-transform:uppercase;
+}
+.vidlik-section-title{
+  margin:0 auto;
+  max-width:1000px;
+  color:var(--st-text);
+  font-size:clamp(31px,4.35vw,66px);
+  line-height:1.06;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+  font-weight:850;
+  text-wrap:balance;
+  text-shadow:0 0 28px rgba(89,237,220,.08);
+}
+.vidlik-section-next .vidlik-section-title{
+  font-size:clamp(42px,6vw,92px);
+  letter-spacing:.075em;
+}
+.vidlik-section-rule{
+  width:min(470px,52vw);
+  height:1px;
+  margin:clamp(22px,3vh,30px) auto 0;
+  background:linear-gradient(90deg,transparent,rgba(86,233,216,.8),transparent);
+  box-shadow:0 0 14px rgba(86,233,216,.2);
+}
+.vidlik-section-done{
+  margin-top:clamp(24px,3vh,31px);
+  color:var(--st-accent);
+  font-size:clamp(17px,1.7vw,26px);
+  font-weight:850;
+  letter-spacing:.23em;
+  text-transform:uppercase;
+}
+.vidlik-section-subtitle{
+  margin-top:clamp(20px,2.5vh,25px);
+  color:var(--st-muted);
+  font-size:clamp(11px,1.02vw,17px);
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.vidlik-section-enter{
+  position:absolute;
+  z-index:8;
+  left:50%;
+  bottom:4.2vh;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#7ed9d0;
+  font:700 clamp(9px,.7vw,12px)/1 ui-monospace,Consolas,monospace;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  opacity:0;
+  animation:vidlikSectionPromptIn .35s ease .72s forwards,vidlikSectionPromptPulse 1.45s ease-in-out 1.25s infinite;
+}
+.vidlik-section-enter kbd{
+  display:inline-block;
+  padding:5px 8px;
+  border:1px solid rgba(91,229,216,.42);
+  border-radius:5px;
+  background:rgba(4,24,25,.72);
+  color:#dffaf6;
+  box-shadow:0 0 12px rgba(85,230,214,.06);
+}
+@keyframes vidlikSectionStageIn{to{opacity:1}}
+@keyframes vidlikSectionStageOut{to{opacity:0}}
+@keyframes vidlikSectionPanelIn{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
+@keyframes vidlikSectionPanelOut{from{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(5px)}}
+@keyframes vidlikSectionContentIn{from{opacity:0;transform:translateY(16px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes vidlikSectionScan{0%{opacity:0;transform:scaleX(.04)}30%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
+@keyframes vidlikSectionPromptIn{from{opacity:0;transform:translate(-50%,6px)}to{opacity:.9;transform:translate(-50%,0)}}
+@keyframes vidlikSectionPromptPulse{0%,100%{opacity:.62}50%{opacity:1}}
+@media(max-width:720px){
+  .vidlik-section-title{font-size:clamp(26px,8vw,44px)}
+  .vidlik-section-next .vidlik-section-title{font-size:clamp(34px,10vw,58px)}
+  .vidlik-section-subtitle{max-width:88vw;line-height:1.45}
+}
+@media(prefers-reduced-motion:reduce){
+  .vidlik-section-transition,
+  .vidlik-section-panel.is-active,
+  .vidlik-section-panel.is-out,
+  .vidlik-section-content,
+  .vidlik-section-transition.is-switching .vidlik-section-scan,
+  .vidlik-section-enter{animation:none!important}
+  .vidlik-section-transition,.vidlik-section-panel.is-active,.vidlik-section-enter{opacity:1}
+}
