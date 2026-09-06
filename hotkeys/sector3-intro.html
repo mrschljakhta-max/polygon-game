@@ -4,35 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05090c">
-<title>HOTKI — Сектор 3 · Знайомство</title>
-<link rel="stylesheet" href="sector3-intro.css?v=20260906-1">
+<title>HOTKI — Сектор 3 · Стартовий дзвінок Полі</title>
+<link rel="stylesheet" href="sector3-intro.css?v=20260906-2">
 </head>
 <body>
 <div class="app">
-  <main class="scene" id="scene" tabindex="0" aria-label="Сектор 3 — Знайомство">
+  <main class="scene" id="scene" tabindex="0" aria-label="Стартовий дзвінок Полі">
     <div class="camera" id="camera">
       <img class="desk" src="assets/sector3-prologue/desk.webp" alt="Робочий стіл HOTKI">
 
       <section class="monitor-screen" aria-label="Монітор">
         <img class="monitor-wallpaper" src="assets/sector3-prologue/monitor-wallpaper.webp" alt="">
         <div class="desktop-icons" id="desktopIcons">
-          <button class="desktop-icon is-selected" type="button" data-app="pc"><img src="assets/sector3-prologue/icon-pc.webp" alt=""><span>Цей ПК</span></button>
+          <button class="desktop-icon" type="button" data-app="pc"><img src="assets/sector3-prologue/icon-pc.webp" alt=""><span>Цей ПК</span></button>
           <button class="desktop-icon" type="button" data-app="folder"><img src="assets/sector3-prologue/icon-folder.webp" alt=""><span>Документи</span></button>
           <button class="desktop-icon" type="button" data-app="excel"><img src="assets/sector3-prologue/icon-excel.webp" alt=""><span>Microsoft<br>Excel</span></button>
           <button class="desktop-icon" type="button" data-app="trash"><img src="assets/sector3-prologue/icon-trash.webp" alt=""><span>Кошик</span></button>
         </div>
         <div class="taskbar"><span class="start-mark">⊞</span><span>VIDLIK OS</span><span class="taskbar-spacer"></span><span id="desktopClock">--:--</span><span>UKR</span></div>
-        <section class="excel-window" id="excelWindow" aria-hidden="true">
-          <div class="excel-title">Знайомство.xlsx — Excel</div>
-          <div class="excel-ribbon"><span>Файл</span><span>Головна</span><span>Вставка</span><span>Формули</span><span>Дані</span><span>Вигляд</span></div>
-          <div class="excel-grid">
-            <div class="excel-cell head">A</div><div class="excel-cell head">B</div><div class="excel-cell head">C</div><div class="excel-cell head">D</div>
-            <div class="excel-cell">Сектор</div><div class="excel-cell active">3</div><div class="excel-cell">Статус</div><div class="excel-cell">Готово</div>
-            <div class="excel-cell">Файл</div><div class="excel-cell">TRAINING_SYNC_SECTOR_3.xlsx</div><div class="excel-cell">Режим</div><div class="excel-cell">Клавіатура</div>
-            <div class="excel-cell">Нова назва</div><div class="excel-cell">Знайомство.xlsx</div><div class="excel-cell"></div><div class="excel-cell"></div>
-          </div>
-          <div class="excel-note">Excel відкрито. Пролог завершено — далі починається перше практичне завдання.</div>
-        </section>
       </section>
 
       <section class="tablet-screen" id="tabletScreen" aria-label="Екран планшета">
@@ -45,28 +34,21 @@
           <button class="accept" id="acceptBtn" type="button" aria-label="Прийняти дзвінок"></button>
         </div>
         <div class="tablet-layer video" id="videoLayer">
-          <img class="polya-frame" id="polyaFrame" src="assets/sector3-prologue/polya-01.webp" alt="Поля під час відеодзвінка">
+          <img class="polya-frame" id="polyaFrame" src="assets/sector3-prologue/polya-01.webp" alt="Поля під час таємного відеодзвінка">
           <div class="video-shade"></div>
           <div class="call-top"><span><i></i> захищений канал</span><span id="sceneCount">01 / 06</span></div>
           <div class="caption"><b>ПОЛЯ</b><p id="subtitle"></p></div>
           <div class="call-progress" id="callProgress"></div>
           <div class="glitch"></div>
         </div>
-        <div class="tablet-layer thread" id="threadLayer">
-          <div class="thread-head"><img src="assets/sector3-prologue/polya-01.webp" alt=""><div><b>Поля</b><small>щойно · захищений канал</small></div></div>
-          <div class="bubble">Надсилаю стартовий файл. Почни із синхронізації, а потім відкрий Excel без миші.</div>
-          <div class="file-card"><span>X</span><div><b>TRAINING_SYNC_SECTOR_3.xlsx</b><small>Excel · 148 КБ</small></div></div>
-          <div class="bubble">Відкрий <b>Microsoft Excel</b> з робочого столу. Мишу поки не використовуємо.</div>
-        </div>
       </section>
     </div>
 
     <div class="shade"></div>
-    <div class="hud" id="hud"><div class="hud-label">ПОТОЧНЕ ЗАВДАННЯ</div><div id="objective">Очікування. Через кілька секунд на планшет надійде виклик від Полі.</div></div>
-    <div class="keys"><span><kbd>Enter</kbd> дія / далі</span><span><kbd>↑ ↓</kbd> вибір</span><span><kbd>Tab</kbd> наступне</span><span><kbd>R</kbd> спочатку</span></div>
-    <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter — продовжити · R — почати спочатку</p></div></div>
+    <div class="keys" id="help"><span><kbd>ENTER</kbd> прийняти / далі</span><span><kbd>ESC</kbd> пауза</span><span><kbd>R</kbd> спочатку</span></div>
+    <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-intro.js?v=20260906-1"></script>
+<script src="sector3-intro.js?v=20260906-2"></script>
 </body>
 </html>
