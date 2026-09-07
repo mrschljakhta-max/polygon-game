@@ -1,58 +1,66 @@
 (()=>{
 'use strict';
 
+/*
+ * Canonical story hierarchy: ACT → SCENE → EPISODE → TASK.
+ * Legacy "section" CSS hooks and events are preserved as compatibility aliases.
+ */
 let overlay=null;
 let phase='idle';
 let locked=false;
 let current=null;
 
 const transitions={
- section1:{
+ episode1:{
   count:'9 / 9',
   complete:'Базове знайомство<br>з операційною системою',
-  nextKicker:'Розділ 2',
+  nextKicker:'Епізод 2',
   nextTitle:'Файли та папки',
   subtitle:'Створення · перейменування · копіювання · переміщення · видалення',
-  footer:'РОЗДІЛ 2 · ФАЙЛИ ТА ПАПКИ',
-  help:'<span><kbd>РОЗДІЛ 2</kbd> файли та папки</span>',
-  event:'vidlik:section2-ready'
+  footer:'ЕПІЗОД 2 · ФАЙЛИ ТА ПАПКИ',
+  help:'<span><kbd>ЕПІЗОД 2</kbd> файли та папки</span>',
+  event:'vidlik:episode2-ready',
+  legacyEvent:'vidlik:section2-ready'
  },
- section2:{
+ episode2:{
   count:'11 / 11',
   complete:'Файли та папки',
-  nextKicker:'Розділ 3',
+  nextKicker:'Епізод 3',
   nextTitle:'Робота з клавіатурою',
   subtitle:'Навігація · Enter · Tab · Ctrl-комбінації · пошук',
-  footer:'РОЗДІЛ 3 · РОБОТА З КЛАВІАТУРОЮ',
-  help:'<span><kbd>РОЗДІЛ 3</kbd> робота з клавіатурою</span>',
-  event:'vidlik:section3-ready'
+  footer:'ЕПІЗОД 3 · РОБОТА З КЛАВІАТУРОЮ',
+  help:'<span><kbd>ЕПІЗОД 3</kbd> робота з клавіатурою</span>',
+  event:'vidlik:episode3-ready',
+  legacyEvent:'vidlik:section3-ready'
  },
- section3:{
+ episode3:{
   count:'11 / 11',
   complete:'Робота з клавіатурою',
-  nextKicker:'Розділ 4',
+  nextKicker:'Епізод 4',
   nextTitle:'Мова введення',
   subtitle:'UKR · ENG · символи · розкладка · введення тексту',
-  footer:'РОЗДІЛ 4 · МОВА ВВЕДЕННЯ',
-  help:'<span><kbd>РОЗДІЛ 4</kbd> мова введення</span>',
-  event:'vidlik:section4-ready'
+  footer:'ЕПІЗОД 4 · МОВА ВВЕДЕННЯ',
+  help:'<span><kbd>ЕПІЗОД 4</kbd> мова введення</span>',
+  event:'vidlik:episode4-ready',
+  legacyEvent:'vidlik:section4-ready'
  },
- section4:{
+ episode4:{
   count:'7 / 7',
   complete:'Мова введення',
-  nextKicker:'Розділ 5',
+  nextKicker:'Епізод 5',
   nextTitle:'Перша таблиця',
   subtitle:'Клітинки · рядки · стовпці · введення даних · перша формула',
-  footer:'РОЗДІЛ 5 · ПЕРША ТАБЛИЦЯ',
-  help:'<span><kbd>РОЗДІЛ 5</kbd> перша таблиця Excel</span>',
-  event:'vidlik:section5-ready'
+  footer:'ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ',
+  help:'<span><kbd>ЕПІЗОД 5</kbd> перша таблиця Excel</span>',
+  event:'vidlik:episode5-ready',
+  legacyEvent:'vidlik:section5-ready'
  }
 };
 
 function build(cfg){
  const root=document.createElement('section');
  root.className='vidlik-section-transition';
- root.setAttribute('aria-label','Перехід між навчальними розділами');
+ root.setAttribute('aria-label','Перехід між епізодами');
  root.innerHTML=`
   <div class="vidlik-section-corner tl">VIDLIK OS / TRAINING ENVIRONMENT</div>
   <div class="vidlik-section-corner br">SECTOR 3<br>OPERATOR TRAINING</div>
@@ -63,7 +71,7 @@ function build(cfg){
     <div class="vidlik-section-counter">${cfg.count}</div>
     <h2 class="vidlik-section-title">${cfg.complete}</h2>
     <div class="vidlik-section-rule"></div>
-    <div class="vidlik-section-done">Завершено ✓</div>
+    <div class="vidlik-section-done">Епізод завершено ✓</div>
    </div>
   </div>
 
@@ -80,13 +88,13 @@ function build(cfg){
  return root;
 }
 
-function show(which='section1'){
+function show(which='episode1'){
  if(overlay)return;
  current=transitions[which];
  if(!current)return;
  overlay=build(current);
  document.body.appendChild(overlay);
- document.body.classList.add('vidlik-section-transition-active');
+ document.body.classList.add('vidlik-section-transition-active','vidlik-episode-transition-active');
  phase='complete';
  locked=false;
 }
@@ -124,7 +132,7 @@ function finish(){
   overlay?.remove();
   overlay=null;
   current=null;
-  document.body.classList.remove('vidlik-section-transition-active');
+  document.body.classList.remove('vidlik-section-transition-active','vidlik-episode-transition-active');
   phase='idle';
   locked=false;
 
@@ -132,7 +140,9 @@ function finish(){
   if(footer){footer.textContent=cfg.footer;footer.classList.add('vidlik-tutorial-footer')}
   const help=document.getElementById('help');
   if(help){help.classList.add('vidlik-tutorial-help');help.innerHTML=cfg.help}
+
   window.dispatchEvent(new CustomEvent(cfg.event));
+  if(cfg.legacyEvent)window.dispatchEvent(new CustomEvent(cfg.legacyEvent));
  },700);
 }
 
@@ -142,7 +152,7 @@ function hideImmediate(){
  current=null;
  phase='idle';
  locked=false;
- document.body.classList.remove('vidlik-section-transition-active');
+ document.body.classList.remove('vidlik-section-transition-active','vidlik-episode-transition-active');
 }
 
 function key(e){
@@ -156,12 +166,20 @@ function key(e){
  else if(phase==='next')finish();
 }
 
+function complete(legacyEvent,canonicalEvent,episodeKey){
+ window.addEventListener(legacyEvent,()=>{
+  window.dispatchEvent(new CustomEvent(canonicalEvent));
+  show(episodeKey);
+ });
+}
+
 window.addEventListener('keydown',key,true);
-window.addEventListener('vidlik:tutorial-basic-window-block-complete',()=>show('section1'));
-window.addEventListener('vidlik:files-section-complete',()=>show('section2'));
-window.addEventListener('vidlik:keyboard-section-complete',()=>show('section3'));
-window.addEventListener('vidlik:language-section-complete',()=>show('section4'));
+complete('vidlik:tutorial-basic-window-block-complete','vidlik:episode1-complete','episode1');
+complete('vidlik:files-section-complete','vidlik:episode2-complete','episode2');
+complete('vidlik:keyboard-section-complete','vidlik:episode3-complete','episode3');
+complete('vidlik:language-section-complete','vidlik:episode4-complete','episode4');
 window.addEventListener('vidlik:os-reset',hideImmediate);
 
-window.VIDLIK_SECTION_TRANSITION={show,finish,get phase(){return phase}};
+window.VIDLIK_EPISODE_TRANSITION={show,finish,get phase(){return phase}};
+window.VIDLIK_SECTION_TRANSITION=window.VIDLIK_EPISODE_TRANSITION;
 })();
