@@ -27,6 +27,7 @@ function tutorial(){
 }
 function explorerWin(){return mon.querySelector('.os-window[data-window-id="explorer"]')}
 function current(){return A()?.currentExplorer?.()||{open:false,trashMode:false,path:[],folder:null}}
+function selected(){return A()?.selectedId?.()||null}
 function osState(){return OS()?.getState?.()||{activeWindowId:null}}
 function by(sel){return mon.querySelector(sel)}
 function menu(action){return mon.querySelector(`.os-context-menu:not([hidden]) [data-menu="${action}"]`)}
@@ -41,7 +42,6 @@ function taskbarExplorer(){return by('[data-task-window="explorer"]')}
 function desktop(kind){return by(`.desktop-icon[data-app="${kind}"]`)}
 function sidebar(nav){return by(`.os-window[data-window-id="explorer"] [data-nav="${nav}"]`)}
 function help(){return document.getElementById('help')}
-function ids(path){return(path||[]).map(x=>x.id)}
 function same(a,b){return String(a||'')===String(b||'')}
 function cut(id){return !!id&&!!P()?.isCut?.(id)}
 
@@ -132,7 +132,7 @@ function routeTrash(id,key='trash'){
  if(!cur.trashMode)return result(sidebar('trash'),`${key}:open-trash`);
  const top=hit.trashTop||hit.node;
  const restore=menu('restore');
- if(restore&&A()?.selectedId?.()===top?.id)return result(restore,`${key}:restore:${top.id}`);
+ if(restore&&selected()===top?.id)return result(restore,`${key}:restore:${top.id}`);
  return rowResult(top?.id,`${key}:item:${top?.id}`)||searchClearIfFiltering(key);
 }
 function routeToObject(id,key='object'){
@@ -176,11 +176,11 @@ function filesHint(t){
  }
  if(task===5){
   const ok=dialogOk();if(ok)return result(ok,'f5-dialog-ok');
-  const prop=menu('prop');if(prop)return result(prop,'f5-properties');
+  const prop=menu('prop');if(prop&&selected()===r.training)return result(prop,'f5-properties');
   return routeToObject(r.training,'f5-training');
  }
  if(task===6){
-  const copy=menu('copy');if(copy)return result(copy,'f6-copy-action');
+  const copyAction=menu('copy');if(copyAction&&selected()===r.training)return result(copyAction,'f6-copy-action');
   return routeToObject(r.training,'f6-training');
  }
  if(task===7){
@@ -190,7 +190,7 @@ function filesHint(t){
  }
  if(task===8){
   const input=inlineInput();if(input)return result(input,'f8-rename-input');
-  const rename=menu('rename');if(rename)return result(rename,'f8-rename-action');
+  const rename=menu('rename');if(rename&&selected()===r.copy)return result(rename,'f8-rename-action');
   return routeToObject(r.copy,'f8-copy');
  }
  if(task===9){
@@ -204,13 +204,13 @@ function filesHint(t){
    const paste=menu('paste');if(paste)return result(paste,'f9-paste-action');
    return result(pane(),'f9-paste-area');
   }
-  const cutAction=menu('cut');if(cutAction)return result(cutAction,'f9-cut-action');
+  const cutAction=menu('cut');if(cutAction&&selected()===r.draft)return result(cutAction,'f9-cut-action');
   return routeToObject(r.draft,'f9-draft');
  }
  if(task===10){
   const dl=A()?.locate?.(r.draft);
   if(dl?.where==='trash')return routeTrash(r.draft,'f10-trash');
-  const del=menu('delete');if(del)return result(del,'f10-delete-action');
+  const del=menu('delete');if(del&&selected()===r.draft)return result(del,'f10-delete-action');
   return routeToObject(r.draft,'f10-draft');
  }
  if(task===11){
