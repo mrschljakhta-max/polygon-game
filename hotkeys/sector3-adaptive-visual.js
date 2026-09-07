@@ -102,7 +102,7 @@ function sidebarForNode(node){
  return null;
 }
 function commonPrefix(a,b){
- let i=0;while(i<a.length&&i<b.length&&same(a[i],b[i]))i++;return i;
+ let i=0;while(i<a.length&&i<b.length&&same(a[i]?.id,b[i]?.id))i++;return i;
 }
 function navigateToPath(path,key='route'){
  const launch=ensureExplorerVisible(path,false);if(launch)return launch;
