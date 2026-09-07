@@ -1,0 +1,27 @@
+/* Sector 3 · Section 3 keyboard tutorial */
+.os-keyboard-focus{
+  position:relative!important;
+  z-index:35!important;
+  outline:2px solid rgba(103,244,229,.96)!important;
+  outline-offset:2px!important;
+  background:rgba(54,190,179,.17)!important;
+  color:#effffc!important;
+  box-shadow:0 0 0 2px rgba(85,231,215,.12),0 0 20px rgba(76,229,214,.28)!important;
+  animation:vidlikKeyboardFocusPulse 1.15s ease-in-out infinite!important;
+}
+.os-file-item.os-keyboard-target{
+  border-color:rgba(99,238,224,.55)!important;
+  box-shadow:inset 0 0 0 1px rgba(84,225,211,.09),0 0 16px rgba(74,221,208,.11)!important;
+}
+.os-search-row.visible .os-inline-keyboard-search,
+.os-search-row.visible input.vidlik-tutorial-ui-target{
+  border-color:#64eadc!important;
+  box-shadow:0 0 0 1px rgba(92,235,221,.18),0 0 14px rgba(74,221,208,.18)!important;
+}
+@keyframes vidlikKeyboardFocusPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.16)}
+}
+@media(prefers-reduced-motion:reduce){
+  .os-keyboard-focus{animation:none!important}
+}
