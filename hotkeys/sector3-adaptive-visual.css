@@ -1,11 +1,13 @@
 /* VIDLIK OS · adaptive visual navigator */
 .vidlik-adaptive-visual-target{
-  position:relative!important;
   z-index:36!important;
   outline:1px solid rgba(92,238,224,.78)!important;
   outline-offset:2px!important;
   box-shadow:0 0 0 2px rgba(77,222,210,.08),0 0 14px rgba(68,224,210,.16)!important;
   transition:outline-color .18s ease,box-shadow .18s ease,background .18s ease,filter .18s ease!important;
+}
+.vidlik-adaptive-visual-target:not(.vidlik-adaptive-scroll-hint){
+  position:relative!important;
 }
 .vidlik-adaptive-visual-target.vidlik-adaptive-pulse{
   outline-color:rgba(110,251,235,.98)!important;
@@ -44,9 +46,13 @@
   outline-offset:4px!important;
 }
 .vidlik-adaptive-scroll-hint{
-  position:absolute;
-  z-index:79;
-  display:flex;
+  position:absolute!important;
+  z-index:79!important;
+  display:inline-flex!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:calc(100% - 20px)!important;
+  flex:0 0 auto!important;
   align-items:center;
   gap:5px;
   padding:5px 8px;
@@ -61,9 +67,20 @@
   transform:translate(-100%,-50%);
   white-space:nowrap;
 }
+.vidlik-adaptive-scroll-hint.vidlik-adaptive-visual-target{
+  position:absolute!important;
+  z-index:79!important;
+  display:inline-flex!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:calc(100% - 20px)!important;
+  outline:none!important;
+  outline-offset:0!important;
+  box-shadow:0 0 18px rgba(62,225,211,.22)!important;
+}
 .vidlik-adaptive-scroll-hint[hidden]{display:none!important}
-.vidlik-adaptive-scroll-hint[hidden].vidlik-adaptive-visual-target{display:flex!important}
-.vidlik-adaptive-scroll-hint.vidlik-adaptive-pulse{animation:vidlikAdaptiveScrollPulse 1.05s ease-in-out infinite}
+.vidlik-adaptive-scroll-hint[hidden].vidlik-adaptive-visual-target{display:inline-flex!important}
+.vidlik-adaptive-scroll-hint.vidlik-adaptive-pulse{animation:vidlikAdaptiveScrollPulse 1.05s ease-in-out infinite!important}
 @keyframes vidlikAdaptiveVisualPulse{
   0%,100%{filter:brightness(1)}
   50%{filter:brightness(1.16)}
