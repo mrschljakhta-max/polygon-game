@@ -62,6 +62,7 @@
   white-space:nowrap;
 }
 .vidlik-adaptive-scroll-hint[hidden]{display:none!important}
+.vidlik-adaptive-scroll-hint[hidden].vidlik-adaptive-visual-target{display:flex!important}
 .vidlik-adaptive-scroll-hint.vidlik-adaptive-pulse{animation:vidlikAdaptiveScrollPulse 1.05s ease-in-out infinite}
 @keyframes vidlikAdaptiveVisualPulse{
   0%,100%{filter:brightness(1)}
