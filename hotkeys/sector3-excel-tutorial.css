@@ -1,0 +1,70 @@
+.os-excel-story-window{
+  left:4%;top:4%;width:92%;height:82%;z-index:245;
+  min-width:0;min-height:0;border-color:rgba(130,190,160,.42);
+  box-shadow:0 18px 55px rgba(0,0,0,.62),0 0 26px rgba(33,115,70,.10);
+}
+.os-excel-story-window.os-maximized{left:1%!important;top:1%!important;width:98%!important;height:91%!important}
+.os-excel-story-window .excel-titlebar{cursor:default;background:linear-gradient(90deg,#174c32,#123a29)!important;color:#eafff3!important}
+.excel-app-mark{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:7px;border-radius:3px;background:#217346;color:#fff;font-weight:900;font-size:11px}
+.excel-body{position:relative;display:flex;flex-direction:column;overflow:hidden;background:#edf2ef!important;color:#1e2723!important}
+.excel-ribbon{flex:0 0 auto;background:#f8faf9;border-bottom:1px solid #bac6c0;box-shadow:0 2px 5px rgba(0,0,0,.08)}
+.excel-tabs{height:25px;display:flex;align-items:center;gap:18px;padding:0 10px;border-bottom:1px solid #d4dcd8;font-size:9px;color:#32423a}
+.excel-tabs b{color:#fff;background:#217346;margin-left:-10px;height:25px;display:flex;align-items:center;padding:0 12px;font-weight:700}
+.excel-tabs span.is-active{color:#17633d;font-weight:800;border-bottom:2px solid #217346;height:25px;display:flex;align-items:center}
+.excel-tabs i{margin-left:auto;font-style:normal;font-size:8px;letter-spacing:.08em;color:#59816d}
+.excel-tabs i.is-saving{color:#c88a21}
+.excel-tools{height:31px;display:flex;align-items:center;gap:14px;padding:0 11px;color:#617169;font-size:8px}
+.excel-tools span{padding-right:12px;border-right:1px solid #d7dfdb}
+.excel-declared{margin-left:auto;padding:5px 8px;border:1px solid rgba(33,115,70,.25);border-radius:4px;background:#eef7f1;color:#217346;font-size:8px;letter-spacing:.08em}
+.excel-declared.is-mismatch{border-color:rgba(197,57,57,.50);background:#fff0f0;color:#b73131;animation:excelMismatchPulse 1.05s ease-in-out infinite}
+.excel-formula-bar{flex:0 0 25px;display:grid;grid-template-columns:48px 26px 1fr;align-items:center;border-bottom:1px solid #c8d1cc;background:#fff;font-size:9px}
+.excel-name-box{height:100%;display:flex;align-items:center;padding-left:8px;border-right:1px solid #c8d1cc;font-weight:700;color:#34483d}
+.excel-fx{height:100%;display:grid;place-items:center;border-right:1px solid #d5ddd9;color:#6a7b72;font-style:italic;font-weight:700}
+.excel-formula-value{height:100%;display:flex;align-items:center;padding:0 8px;overflow:hidden;white-space:nowrap;color:#16241d;font-family:"Cascadia Code",Consolas,monospace}
+.excel-grid-body{position:relative;flex:1;min-height:0;overflow:auto;background:#fff;scrollbar-width:thin;scrollbar-color:#9aa9a1 #edf2ef}
+.excel-col-head-row,.excel-row{display:grid;grid-template-columns:31px repeat(6,minmax(76px,1fr));min-width:520px}
+.excel-col-head-row{position:sticky;top:0;z-index:9;height:20px}
+.excel-corner,.excel-col-head,.excel-row-head{display:flex;align-items:center;justify-content:center;background:#edf1ef;border-right:1px solid #c9d1cd;border-bottom:1px solid #c9d1cd;color:#5e6a64;font-size:8px;user-select:none}
+.excel-row{min-height:20px}
+.excel-cell{appearance:none;display:block;min-width:0;height:20px;padding:2px 5px;border:0;border-right:1px solid #d9dfdc;border-bottom:1px solid #d9dfdc;background:#fff;color:#26332d;text-align:left;font:500 8px/15px "Segoe UI",Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:cell}
+.excel-cell:hover{background:#f4fbf7}
+.excel-cell.is-header{background:#eaf3ed;color:#1b5436;font-weight:800}
+.excel-cell.is-selected{position:relative;z-index:4;outline:2px solid #217346;outline-offset:-2px;background:#f6fff9}
+.excel-cell.is-selected:after{content:"";position:absolute;right:-1px;bottom:-1px;width:4px;height:4px;background:#217346}
+.excel-row.is-hidden-row{display:none}
+.excel-row.is-found-row{animation:excelFoundIn .55s ease both}
+.excel-row.is-found-row .excel-row-head{background:#5e1717;color:#fff}
+.excel-cell.is-found-cell{background:#fff0f0;color:#761d1d;font-weight:750;border-color:#e4bcbc}
+.excel-cell.is-found-cell.is-selected{outline-color:#d03c3c;background:#ffe4e4}
+.excel-more-rows{min-width:520px;height:24px;display:grid;place-items:center;background:#f5f7f6;border-bottom:1px solid #d9dfdc;color:#829089;font-size:8px;letter-spacing:.12em}
+.excel-sheetbar{flex:0 0 24px;display:flex;align-items:center;background:#f1f4f2;border-top:1px solid #c7d0cb;padding:0 8px;gap:3px;font-size:8px;color:#637068}
+.excel-sheetbar button{height:23px;padding:0 13px;border:0;border-right:1px solid #ccd5d0;background:transparent;color:#4f6057;font-size:8px;cursor:pointer}
+.excel-sheetbar button.is-active{background:#fff;color:#17613c;font-weight:800;border-bottom:2px solid #217346}
+.excel-sheet-spacer{flex:1}
+.excel-search{position:absolute;right:10px;top:86px;z-index:30;width:185px;padding:8px;border:1px solid #85958c;border-radius:5px;background:#fff;box-shadow:0 9px 24px rgba(0,0,0,.25);color:#34413a}
+.excel-search span{display:block;font-size:8px;color:#68776f;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em}
+.excel-search strong{display:block;min-height:24px;padding:5px 7px;border:1px solid #217346;background:#fbfffc;color:#15281e;font:700 10px/13px "Cascadia Code",Consolas,monospace}
+.excel-search em{display:block;margin-top:5px;color:#87948d;font-size:7px;font-style:normal}
+.excel-toast{position:absolute;left:50%;top:50%;z-index:50;transform:translate(-50%,-50%);padding:9px 14px;border:1px solid rgba(33,115,70,.45);border-radius:6px;background:rgba(20,59,42,.94);color:#effff6;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:9px;font-weight:700;letter-spacing:.05em;pointer-events:none}
+.vidlik-excel-target{position:relative!important;z-index:20!important;outline:2px solid rgba(45,224,188,.95)!important;outline-offset:-2px!important;box-shadow:0 0 0 3px rgba(45,224,188,.09),0 0 15px rgba(45,224,188,.28)!important;animation:excelTargetPulse 1.15s ease-in-out infinite}
+.vidlik-excel-taskbar-button{max-width:148px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.excel-story-message.is-polya .admin-bubble{border-color:rgba(255,51,75,.45)!important;background:linear-gradient(145deg,rgba(43,11,16,.92),rgba(18,7,10,.90))!important;box-shadow:0 0 18px rgba(255,38,63,.07)!important}
+.excel-story-message.is-polya .admin-bubble-name{color:#ff5b70!important}
+.admin-header.excel-admin-reconnect .admin-online i{background:#e2a64c!important;box-shadow:0 0 8px #e2a64c!important;animation:excelStatusBlink .52s steps(1,end) infinite}
+.admin-header.excel-admin-reconnect .admin-online span{color:#d6ad6a!important}
+.admin-header.excel-admin-offline .admin-online i{background:#6b7774!important;box-shadow:none!important}
+.admin-header.excel-admin-offline .admin-online span{color:#7c8985!important}
+.admin-header.excel-polya-channel .admin-header-name{color:#ff6b7e!important}
+.admin-header.excel-polya-channel .admin-online i{background:#ff3d58!important;box-shadow:0 0 9px rgba(255,61,88,.8)!important}
+.admin-header.excel-polya-channel .admin-online span{color:#d98d98!important}
+.admin-header.excel-polya-channel .admin-header-avatar{border-color:rgba(255,61,88,.45)!important;box-shadow:0 0 14px rgba(255,61,88,.12)!important}
+@keyframes excelTargetPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+@keyframes excelStatusBlink{0%,47%{opacity:1}48%,100%{opacity:.25}}
+@keyframes excelMismatchPulse{0%,100%{box-shadow:0 0 0 rgba(197,57,57,0)}50%{box-shadow:0 0 12px rgba(197,57,57,.18)}}
+@keyframes excelFoundIn{from{opacity:.15;transform:translateX(-6px);filter:brightness(1.6)}to{opacity:1;transform:none;filter:none}}
+@media(max-width:900px){
+ .os-excel-story-window{left:2%;width:96%;top:3%;height:84%}
+ .excel-tabs{gap:10px}.excel-tools{gap:8px}.excel-tools span{padding-right:7px}
+ .excel-col-head-row,.excel-row{grid-template-columns:28px repeat(6,minmax(66px,1fr));min-width:470px}
+ .excel-more-rows{min-width:470px}
+}
