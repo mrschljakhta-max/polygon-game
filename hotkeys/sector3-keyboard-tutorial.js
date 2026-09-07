@@ -26,6 +26,8 @@ let cutKeyUsed=false;
 let ctrlZUsed=false;
 let selectAllUsed=false;
 let searchKeyUsed=false;
+let searchIntroReady=false;
+let searchConfirmed=false;
 let beforePasteIds=new Set();
 let moveOriginParentId=null;
 let praised=new Set();
@@ -67,7 +69,7 @@ function objectName(id,fallback='об’єкт'){return A()?.objectName?.(id,fal
 function loc(id){return A()?.locate?.(id)||{where:'missing',node:null,parent:null,path:[]}}
 function parentId(id){return A()?.parentId?.(id)||null}
 function allRows(){return [...document.querySelectorAll('.os-window[data-window-id="explorer"] .os-file-item')]}
-function searchInput(){return document.querySelector('.os-window[data-window-id="explorer"] input[id^="osSearch-"]')}
+function searchInput(){return document.querySelector('.os-window[data-window-id="explorer"] .os-search-row.visible input[id^="osSearch-"]')}
 function searchButton(){return document.querySelector('.os-window[data-window-id="explorer"] [data-act="search"]')}
 function backButton(){return document.querySelector('.os-window[data-window-id="explorer"] [data-act="back"]')}
 function newButton(){return document.querySelector('.os-window[data-window-id="explorer"] [data-act="new"]')}
@@ -88,7 +90,7 @@ function findInitialRefs(){
  const docsHit=api.findByName('Документи',(n)=>n.type==='folder');
  if(!docsHit)return false;
  refs.docs=docsHit.node.id;
- refs.reports=(docsHit.node.children||[]).find(x=>x.type==='folder'&&x.name==='Звіти')?.id||null;
+ refs.reports=(docsHit.node.children||[]).find(x=>x.name==='report_old.xlsx')?.id||(docsHit.node.children||[]).find(x=>x.type==='folder'&&x.name==='Звіти')?.id||null;
  let candidate=(docsHit.node.children||[]).find(x=>x.type==='folder'&&(x.children||[]).some(y=>y.kind==='xlsx'&&y.training));
  if(!candidate)candidate=(docsHit.node.children||[]).find(x=>x.type==='folder'&&(x.children||[]).some(y=>y.kind==='xlsx'));
  if(!candidate)return false;
@@ -181,7 +183,13 @@ function beginTask7(){task=7;phase='paste';lastGuide='';pasteKeyUsed=false;alter
 function beginTask8(){task=8;phase='move';lastGuide='';clearVisuals();cutKeyUsed=false;pasteKeyUsed=false;alternateMove=false;moveOriginParentId=refs.copy?parentId(refs.copy):null;taskLabel(8,'ПЕРЕМІСТІТЬ ФАЙЛ CTRL + X / CTRL + V');reconcile()}
 function beginTask9(){task=9;phase='undo';lastGuide='';ctrlZUsed=false;taskLabel(9,'СКАСУЙТЕ ДІЮ CTRL + Z');reconcile()}
 function beginTask10(){task=10;phase='select-all';lastGuide='';selectAllUsed=false;taskLabel(10,'ВИДІЛІТЬ УСІ ОБ’ЄКТИ CTRL + A');reconcile()}
-function beginTask11(){task=11;phase='search';lastGuide='';searchKeyUsed=false;alternateSearch=false;taskLabel(11,'ЗНАЙДІТЬ ОБ’ЄКТ CTRL + F');reconcile()}
+function beginTask11(){
+ task=11;phase='search';lastGuide='';searchKeyUsed=false;alternateSearch=false;searchIntroReady=false;searchConfirmed=false;
+ taskLabel(11,'ЗНАЙДІТЬ ФАЙЛ CTRL + F');
+ adminMessage('Добре. Усі об’єкти виділено.\nТепер навчимося швидко знаходити конкретний файл у папці.');
+ setHelp('<span><kbd>CTRL</kbd> + <kbd>F</kbd> відкрити пошук</span>');
+ setTimeout(()=>{if(active&&task===11){searchIntroReady=true;reconcile()}},520);
+}
 
 function discoverCopy(){
  if(refs.copy&&loc(refs.copy).where!=='missing')return refs.copy;
@@ -339,23 +347,27 @@ function reconcile(){
  }
 
  if(task===11){
+  if(!searchIntroReady)return;
   if(!refs.reports){finish();return}
-  if(!recoveryFor(refs.reports,'Папка для пошуку'))return;
-  const target=loc(refs.reports);const parent=target.parent;const cur=explorer();const targetName=target.node?.name||'Звіти';
+  if(!recoveryFor(refs.reports,'Файл для пошуку'))return;
+  const target=loc(refs.reports);const parent=target.parent;const cur=explorer();const targetName=target.node?.name||'report_old.xlsx';
   if(!cur.open||cur.trashMode||cur.folder?.id!==parent?.id){
    strictNavigate((target.path||[]).slice(0,-1),'t11-parent');return;
   }
   const input=searchInput();
-  if(input&&!searchKeyUsed){
-   alternateSearch=true;
-   praise('k11-alt','Ви відкрили пошук кнопкою миші.');
-  }
+  if(input&&!searchKeyUsed&&alternateSearch)praise('k11-alt','Ви відкрили пошук кнопкою миші.');
   if(!input){
    guide('t11-ctrl-f','Натисніть Ctrl+F.','<span><kbd>CTRL</kbd> + <kbd>F</kbd> пошук</span>');return;
   }
   input.classList.add('vidlik-tutorial-ui-target','os-inline-keyboard-search');
+  const query=input.value.trim();
+  const exact=query.toLowerCase()===targetName.toLowerCase();
   const visible=A()?.rowById(refs.reports);
-  if(visible&&input.value.trim()){finish();return}
+  if(searchConfirmed&&exact&&visible){finish();return}
+  if(searchConfirmed&&!exact){
+   searchConfirmed=false;
+   guide(`t11-retry-${query}`,`Пошук не збігається з потрібним ім’ям. Введіть точно «${targetName}» і натисніть Enter.`,`<span><kbd>ТЕКСТ</kbd> ${targetName} · <kbd>ENTER</kbd></span>`);return;
+  }
   guide(`t11-type-${targetName}`,`Введіть «${targetName}» і натисніть Enter.`,`<span><kbd>ТЕКСТ</kbd> ${targetName} · <kbd>ENTER</kbd></span>`);
  }
 }
@@ -370,7 +382,7 @@ function finish(){
 
 function start(){
  if(active)return;
- active=true;task=0;phase='starting';lastGuide='';clearVisuals();praised.clear();
+ active=true;task=0;phase='starting';lastGuide='';clearVisuals();praised.clear();searchIntroReady=false;searchConfirmed=false;
  OS()?.openDesktopApp?.('docs');
  setTimeout(()=>{
   if(!active)return;
@@ -381,7 +393,7 @@ function start(){
  },180);
 }
 function reset(){
- active=false;task=0;phase='idle';lastGuide='';clearTimeout(reconcileTimer);clearVisuals();refs={docs:null,folder:null,original:null,draft:null,copy:null,reports:null};praised.clear();
+ active=false;task=0;phase='idle';lastGuide='';clearTimeout(reconcileTimer);clearVisuals();refs={docs:null,folder:null,original:null,draft:null,copy:null,reports:null};praised.clear();searchIntroReady=false;searchConfirmed=false;
 }
 
 window.addEventListener('keydown',e=>{
@@ -414,8 +426,8 @@ window.addEventListener('keydown',e=>{
 
  if(task===9&&isCtrl(e,'z')){ctrlZUsed=true;schedule(120);return}
  if(task===10&&isCtrl(e,'a')){selectAllUsed=true;schedule(60);return}
- if(task===11&&isCtrl(e,'f')){searchKeyUsed=true;schedule(70);return}
- if(task===11&&searchInput()&&e.key==='Enter'){schedule(110);return}
+ if(task===11&&isCtrl(e,'f')){searchKeyUsed=true;searchConfirmed=false;schedule(70);return}
+ if(task===11&&searchInput()&&e.key==='Enter'){searchConfirmed=true;schedule(120);return}
 
  if(e.key==='Enter'&&document.querySelector('.os-keyboard-focus')){
   const el=document.querySelector('.os-keyboard-focus');if(el){stop(e);el.click();schedule(40);return}
