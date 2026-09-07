@@ -121,6 +121,10 @@ function navigateToPath(path,key='route'){
  }
  const next=dp[cp.length];
  if(!next)return null;
+ if(next.name==='Документи'){
+  const docs=sidebar('docs');
+  if(docs)return result(docs,`${key}:sidebar-docs:${next.id}`);
+ }
  const row=rowResult(next.id,`${key}:next:${next.id}`);if(row)return row;
  const filtered=searchClearIfFiltering(key);if(filtered)return filtered;
  return result(sidebarForNode(next),`${key}:sidebar:${next.id}`);
@@ -160,7 +164,10 @@ function routeToContainer(id,key='container'){
 
 function filesHint(t){
  const r=t.refs||{},task=Number(t.task)||0,cur=current();
- if(task===1)return routeIntoFolder(r.docs,'f1-docs');
+ if(task===1){
+  if(cur.open&&!cur.trashMode&&same(cur.folder?.id,r.docs))return null;
+  return result(sidebar('docs'),'f1-sidebar-docs')||routeIntoFolder(r.docs,'f1-docs');
+ }
  if(task===2)return routeToObject(r.training,'f2-training');
  if(task===3){
   if(r.folder){
@@ -242,19 +249,20 @@ function keyboardHint(t){
  if(task===8){
   if(!r.copy)return result(help(),'k8-no-copy');
   if(cut(r.copy)){
-   const nav=routeIntoFolder(r.docs,'k8-docs');if(nav)return nav;
+   if(!same(cur.folder?.id,r.docs))return result(sidebar('docs'),'k8-sidebar-docs')||routeIntoFolder(r.docs,'k8-docs');
    return result(pane(),'k8-paste-docs');
   }
   return routeToObject(r.copy,'k8-copy');
  }
  if(task===9)return result(help(),'k9-undo');
  if(task===10){
-  const p=pane();return p?result(p,'k10-select-all'):routeIntoFolder(r.docs,'k10-docs');
+  if(!same(cur.folder?.id,r.docs))return result(sidebar('docs'),'k10-sidebar-docs')||routeIntoFolder(r.docs,'k10-docs');
+  return result(help(),'k10-select-all');
  }
  if(task===11){
   const nav=routeToContainer(r.reports,'k11-search-parent');if(nav)return nav;
   const input=searchInput();if(input)return result(input,'k11-search-input');
-  return result(searchButton()||help(),'k11-search');
+  return result(help(),'k11-search-shortcut');
  }
  return null;
 }
