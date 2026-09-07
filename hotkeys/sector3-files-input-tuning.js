@@ -11,9 +11,9 @@ function tune(){
  if(dot>0){input.focus();input.setSelectionRange(0,dot)}
  const chat=document.getElementById('adminChat');
  const last=chat?.querySelector('.admin-message:last-child .admin-bubble p');
- if(last)last.textContent='Введіть будь-яку зрозумілу нову назву й натисніть Enter. Наприклад: «Знайомство». Розширення .xlsx залиште без змін.';
+ if(last)last.textContent='Введіть назву «Знайомство» і натисніть Enter. Розширення .xlsx залишиться без змін.';
  const help=document.getElementById('help');
- if(help)help.innerHTML='<span><kbd>ТЕКСТ</kbd> нова назва · <kbd>ENTER</kbd></span>';
+ if(help)help.innerHTML='<span><kbd>ТЕКСТ</kbd> Знайомство · <kbd>ENTER</kbd></span>';
  tunedFor=input;
 }
 
