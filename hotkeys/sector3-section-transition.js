@@ -36,6 +36,16 @@ const transitions={
   footer:'РОЗДІЛ 4 · МОВА ВВЕДЕННЯ',
   help:'<span><kbd>РОЗДІЛ 4</kbd> мова введення</span>',
   event:'vidlik:section4-ready'
+ },
+ section4:{
+  count:'7 / 7',
+  complete:'Мова введення',
+  nextKicker:'Розділ 5',
+  nextTitle:'Перша таблиця',
+  subtitle:'Клітинки · рядки · стовпці · введення даних · перша формула',
+  footer:'РОЗДІЛ 5 · ПЕРША ТАБЛИЦЯ',
+  help:'<span><kbd>РОЗДІЛ 5</kbd> перша таблиця Excel</span>',
+  event:'vidlik:section5-ready'
  }
 };
 
@@ -150,6 +160,7 @@ window.addEventListener('keydown',key,true);
 window.addEventListener('vidlik:tutorial-basic-window-block-complete',()=>show('section1'));
 window.addEventListener('vidlik:files-section-complete',()=>show('section2'));
 window.addEventListener('vidlik:keyboard-section-complete',()=>show('section3'));
+window.addEventListener('vidlik:language-section-complete',()=>show('section4'));
 window.addEventListener('vidlik:os-reset',hideImmediate);
 
 window.VIDLIK_SECTION_TRANSITION={show,finish,get phase(){return phase}};
