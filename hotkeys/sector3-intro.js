@@ -337,6 +337,47 @@ function startDeviceSync(){
  setTimeout(()=>el.scene.classList.remove('sync-flash'),560);
 }
 
+function prepareActOneWorkstation(){
+ el.monitorSyncOverlay.classList.remove('visible','complete');
+ setLayer('admin');
+ phase='post-sync';
+ el.scene.classList.remove('sync-active','sync-flash');
+ appendAdminMessage('Синхронізацію завершено.\nРобоча станція готова.\nПочинаємо перший епізод.');
+ el.adminFooter.textContent='РОБОЧА СТАНЦІЯ · ГОТОВА';
+}
+
+function completeActOneTitle(){
+ window.dispatchEvent(new CustomEvent('vidlik:os-ready'));
+}
+
+function launchActOneTitle(){
+ const start=()=>{
+  if(!window.VIDLIK_ACT1_TITLE?.show){
+   prepareActOneWorkstation();
+   completeActOneTitle();
+   return;
+  }
+  window.VIDLIK_ACT1_TITLE.show({
+   beforeReveal:prepareActOneWorkstation,
+   onComplete:completeActOneTitle
+  });
+ };
+
+ if(window.VIDLIK_ACT1_TITLE?.show){start();return}
+ const previous=document.querySelector('script[data-vidlik-act1-title]');
+ if(previous){
+  previous.addEventListener('load',start,{once:true});
+  previous.addEventListener('error',()=>{prepareActOneWorkstation();completeActOneTitle()},{once:true});
+  return;
+ }
+ const script=document.createElement('script');
+ script.src='sector3-act1-title.js?v=20260907-1';
+ script.dataset.vidlikAct1Title='true';
+ script.onload=start;
+ script.onerror=()=>{prepareActOneWorkstation();completeActOneTitle()};
+ document.head.appendChild(script);
+}
+
 function finishDeviceSync(){
  if(phase!=='sync')return;
  setSyncProgress(100);
@@ -347,14 +388,10 @@ function finishDeviceSync(){
 
  syncTimer=setTimeout(()=>{
   if(phase!=='sync')return;
-  el.monitorSyncOverlay.classList.remove('visible','complete');
-  setLayer('admin');
-  phase='post-sync';
-  el.scene.classList.remove('sync-active','sync-flash');
-  appendAdminMessage('Синхронізацію завершено.\nРобоча станція готова.\nПереходимо до першого завдання.');
-  el.adminFooter.textContent='РОБОЧА СТАНЦІЯ · ГОТОВА';
-  window.dispatchEvent(new CustomEvent('vidlik:os-ready'));
- },650);
+  phase='act1-title';
+  window.dispatchEvent(new CustomEvent('vidlik:prologue-complete',{detail:{title:'Стартовий дзвінок'}}));
+  launchActOneTitle();
+ },900);
 }
 
 function togglePause(forceResume=false){
@@ -365,6 +402,7 @@ function togglePause(forceResume=false){
 
 function onKey(e){
  const k=e.key.toLowerCase();
+ if(phase==='act1-title')return;
  if(phase==='post-sync'){
   if(paused&&(k==='enter'||k===' ')){e.preventDefault();togglePause(true)}
   return;
