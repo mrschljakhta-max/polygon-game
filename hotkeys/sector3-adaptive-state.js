@@ -79,7 +79,9 @@ function emit(){
 function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(emit)}
 function subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)}
 const observer=new MutationObserver(schedule);
-observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']});
+/* OS navigation and file operations rebuild DOM nodes. Watching childList is enough
+   and avoids reacting to our own instructional highlight classes. */
+observer.observe(document.body,{subtree:true,childList:true});
 window.addEventListener('keydown',()=>setTimeout(schedule,0),true);
 window.addEventListener('pointerup',()=>setTimeout(schedule,0),true);
 window.addEventListener('contextmenu',()=>setTimeout(schedule,0),true);
