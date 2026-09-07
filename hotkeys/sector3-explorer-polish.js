@@ -65,5 +65,11 @@ const observer=new MutationObserver(records=>{
 observer.observe(mon,{childList:true,subtree:true});
 
 window.addEventListener('vidlik:os-reset',clearCut);
+window.VIDLIK_EXPLORER_POLISH={
+ isCut:id=>cutIds.has(String(id)),
+ getCutIds:()=>[...cutIds],
+ applyCutState,
+ clearCut
+};
 applyCutState();
 })();
