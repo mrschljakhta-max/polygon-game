@@ -34,10 +34,23 @@ function schedule(){
  raf=requestAnimationFrame(()=>requestAnimationFrame(keepSelectedVisible));
 }
 
+function selectSearchText(){
+ requestAnimationFrame(()=>{
+  const input=explorerWindow()?.querySelector('.os-search-row.visible input[id^="osSearch-"]');
+  if(!input)return;
+  input.focus();
+  try{input.select()}catch{}
+ });
+}
+
 window.addEventListener('keydown',e=>{
- if(!['ArrowUp','ArrowDown','PageUp','PageDown','Home','End'].includes(e.key))return;
  const state=window.VIDLIK_OS?.getState?.();
  if(state?.activeWindowId!=='explorer')return;
+ if(e.ctrlKey&&!e.altKey&&!e.metaKey&&e.key.toLowerCase()==='f'){
+  selectSearchText();
+  return;
+ }
+ if(!['ArrowUp','ArrowDown','PageUp','PageDown','Home','End'].includes(e.key))return;
  schedule();
 },false);
 
