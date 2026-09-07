@@ -22,10 +22,20 @@ const transitions={
   complete:'Файли та папки',
   nextKicker:'Розділ 3',
   nextTitle:'Робота з клавіатурою',
-  subtitle:'Навігація · Enter · F2 · копіювання · вставлення · пошук',
+  subtitle:'Навігація · Enter · Tab · Ctrl-комбінації · пошук',
   footer:'РОЗДІЛ 3 · РОБОТА З КЛАВІАТУРОЮ',
   help:'<span><kbd>РОЗДІЛ 3</kbd> робота з клавіатурою</span>',
   event:'vidlik:section3-ready'
+ },
+ section3:{
+  count:'11 / 11',
+  complete:'Робота з клавіатурою',
+  nextKicker:'Розділ 4',
+  nextTitle:'Мова введення',
+  subtitle:'UKR · ENG · символи · розкладка · введення тексту',
+  footer:'РОЗДІЛ 4 · МОВА ВВЕДЕННЯ',
+  help:'<span><kbd>РОЗДІЛ 4</kbd> мова введення</span>',
+  event:'vidlik:section4-ready'
  }
 };
 
@@ -139,6 +149,7 @@ function key(e){
 window.addEventListener('keydown',key,true);
 window.addEventListener('vidlik:tutorial-basic-window-block-complete',()=>show('section1'));
 window.addEventListener('vidlik:files-section-complete',()=>show('section2'));
+window.addEventListener('vidlik:keyboard-section-complete',()=>show('section3'));
 window.addEventListener('vidlik:os-reset',hideImmediate);
 
 window.VIDLIK_SECTION_TRANSITION={show,finish,get phase(){return phase}};
