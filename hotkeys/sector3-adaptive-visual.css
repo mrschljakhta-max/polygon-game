@@ -1,0 +1,77 @@
+/* VIDLIK OS · adaptive visual navigator */
+.vidlik-adaptive-visual-target{
+  position:relative!important;
+  z-index:36!important;
+  outline:1px solid rgba(92,238,224,.78)!important;
+  outline-offset:2px!important;
+  box-shadow:0 0 0 2px rgba(77,222,210,.08),0 0 14px rgba(68,224,210,.16)!important;
+  transition:outline-color .18s ease,box-shadow .18s ease,background .18s ease,filter .18s ease!important;
+}
+.vidlik-adaptive-visual-target.vidlik-adaptive-pulse{
+  outline-color:rgba(110,251,235,.98)!important;
+  box-shadow:0 0 0 2px rgba(84,237,222,.14),0 0 23px rgba(66,231,215,.31)!important;
+  animation:vidlikAdaptiveVisualPulse 1.25s ease-in-out infinite!important;
+}
+.vidlik-adaptive-visual-target.vidlik-adaptive-stuck{
+  outline-width:2px!important;
+  box-shadow:0 0 0 3px rgba(89,239,224,.16),0 0 30px rgba(64,233,216,.38)!important;
+}
+.os-file-item.vidlik-adaptive-visual-target,
+.os-sidebar button.vidlik-adaptive-visual-target,
+.os-explorer-toolbar button.vidlik-adaptive-visual-target,
+.os-context-menu button.vidlik-adaptive-visual-target,
+.os-running-button.vidlik-adaptive-visual-target{
+  background:rgba(42,177,168,.14)!important;
+  color:#f0fffc!important;
+}
+.os-file-item.vidlik-adaptive-visual-target{
+  border-color:rgba(98,238,224,.68)!important;
+}
+.os-file-pane.vidlik-adaptive-visual-target{
+  outline-offset:-3px!important;
+  box-shadow:inset 0 0 0 1px rgba(86,230,216,.28),inset 0 0 24px rgba(61,210,199,.055)!important;
+}
+.os-inline-input.vidlik-adaptive-visual-target,
+.os-search-row input.vidlik-adaptive-visual-target{
+  border-color:#63eadc!important;
+  box-shadow:0 0 0 2px rgba(88,235,220,.16),0 0 18px rgba(70,224,210,.22)!important;
+}
+.desktop-icon.vidlik-adaptive-visual-target{
+  border-color:rgba(93,239,224,.82)!important;
+  background:rgba(35,151,144,.14)!important;
+}
+#help.vidlik-adaptive-visual-target{
+  outline-offset:4px!important;
+}
+.vidlik-adaptive-scroll-hint{
+  position:absolute;
+  z-index:79;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border:1px solid rgba(94,239,224,.58);
+  border-radius:999px;
+  background:rgba(4,25,27,.94);
+  color:#cffff8;
+  font:750 7px/1 ui-monospace,Consolas,monospace;
+  letter-spacing:.08em;
+  pointer-events:none;
+  box-shadow:0 0 18px rgba(62,225,211,.22);
+  transform:translate(-100%,-50%);
+  white-space:nowrap;
+}
+.vidlik-adaptive-scroll-hint[hidden]{display:none!important}
+.vidlik-adaptive-scroll-hint.vidlik-adaptive-pulse{animation:vidlikAdaptiveScrollPulse 1.05s ease-in-out infinite}
+@keyframes vidlikAdaptiveVisualPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.16)}
+}
+@keyframes vidlikAdaptiveScrollPulse{
+  0%,100%{opacity:.68;transform:translate(-100%,-50%) translateX(0)}
+  50%{opacity:1;transform:translate(-100%,-50%) translateX(-3px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .vidlik-adaptive-visual-target.vidlik-adaptive-pulse,
+  .vidlik-adaptive-scroll-hint.vidlik-adaptive-pulse{animation:none!important}
+}
