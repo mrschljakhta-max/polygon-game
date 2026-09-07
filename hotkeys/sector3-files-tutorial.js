@@ -7,325 +7,262 @@ const footer=document.getElementById('adminFooter');
 const help=document.getElementById('help');
 if(!mon||!chat||!footer)return;
 
-const TRAINING='TRAINING_SYNC_SECTOR_3.xlsx';
-const FOLDER='Сектор 3';
-const RENAMED='Знайомство.xlsx';
-const DRAFT='чернетка.txt';
-
 let active=false;
 let task=0;
 let phase='idle';
-let helperLock=false;
-let currentTarget=null;
+let lastGuide='';
+let timer=null;
+let refs={docs:null,training:null,folder:null,copy:null,draft:null};
+let baselineIds=new Set();
+let folderInitialName='';
+let copyInitialName='';
+let folderOpened=false;
+let propertiesSeen=false;
+let copyDone=false;
+let deleteSeen=false;
 
-function explorer(){return document.querySelector('.os-window[data-window-id="explorer"]')}
-function address(){return explorer()?.querySelector('.os-address')?.textContent.trim()||''}
-function row(name){
- return [...(explorer()?.querySelectorAll('.os-file-item')||[])].find(x=>x.querySelector('.os-file-name b')?.textContent.trim()===name)||null;
-}
-function nav(name){return explorer()?.querySelector(`[data-nav="${name}"]`)||null}
-function act(name){return explorer()?.querySelector(`[data-act="${name}"]`)||null}
-function pane(){return explorer()?.querySelector('.os-file-pane')||null}
-function menu(name){return document.querySelector(`.os-context-menu:not([hidden]) [data-menu="${name}"]`)||null}
-function inlineInput(){return explorer()?.querySelector('.os-inline-input')||null}
-function dialogOk(){return document.querySelector('.os-dialog-wrap [data-dlg]')||null}
+const A=()=>window.VIDLIK_ADAPTIVE_STATE;
+const OS=()=>window.VIDLIK_OS;
 
-function nowTime(){
- return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false});
-}
-function scrollLatest(rowEl){
- requestAnimationFrame(()=>requestAnimationFrame(()=>{
-  const top=Math.max(0,chat.scrollHeight-chat.clientHeight);
-  if(typeof chat.scrollTo==='function')chat.scrollTo({top,behavior:'smooth'});
-  else chat.scrollTop=top;
-  rowEl?.setAttribute('data-visible-latest','true');
- }));
-}
+function nowTime(){return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false})}
+function scrollLatest(rowEl){requestAnimationFrame(()=>requestAnimationFrame(()=>{const top=Math.max(0,chat.scrollHeight-chat.clientHeight);if(typeof chat.scrollTo==='function')chat.scrollTo({top,behavior:'smooth'});else chat.scrollTop=top;rowEl?.setAttribute('data-visible-latest','true')}))}
 function adminMessage(text){
- const r=document.createElement('div');
- r.className='admin-message vidlik-tutorial-message';
- const bubble=document.createElement('div');
- bubble.className='admin-bubble';
- const head=document.createElement('div');
- head.className='admin-bubble-head';
- const name=document.createElement('span');
- name.className='admin-bubble-name';
- name.textContent='СИСТЕМНИЙ АДМІНІСТРАТОР';
- const time=document.createElement('span');
- time.className='admin-bubble-time';
- time.textContent=nowTime();
- const p=document.createElement('p');
- p.textContent=text;
- p.style.whiteSpace='pre-line';
+ const r=document.createElement('div');r.className='admin-message vidlik-tutorial-message';
+ const bubble=document.createElement('div');bubble.className='admin-bubble';
+ const head=document.createElement('div');head.className='admin-bubble-head';
+ const name=document.createElement('span');name.className='admin-bubble-name';name.textContent='СИСТЕМНИЙ АДМІНІСТРАТОР';
+ const time=document.createElement('span');time.className='admin-bubble-time';time.textContent=nowTime();
+ const p=document.createElement('p');p.textContent=text;p.style.whiteSpace='pre-line';
  head.append(name,time);bubble.append(head,p);r.append(bubble);chat.appendChild(r);scrollLatest(r);
 }
 function setFooter(text){footer.textContent=text;footer.classList.add('vidlik-tutorial-footer')}
 function setHelp(html){if(help){help.classList.add('vidlik-tutorial-help');help.innerHTML=html}}
-function clearTarget(){
- document.querySelectorAll('.vidlik-tutorial-ui-target,.vidlik-files-tutorial-target').forEach(x=>x.classList.remove('vidlik-tutorial-ui-target','vidlik-files-tutorial-target'));
- currentTarget=null;
-}
-function target(el){clearTarget();if(!el)return;currentTarget=el;el.classList.add('vidlik-tutorial-ui-target','vidlik-files-tutorial-target')}
-function helper(text){if(helperLock)return;helperLock=true;adminMessage(text);setTimeout(()=>helperLock=false,1200)}
-function stop(e){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
-function later(fn,ms=70){setTimeout(()=>{if(active)fn()},ms)}
+function taskLabel(n,text){setFooter(`ЗАВДАННЯ ${n} / 11 · ${text}`)}
+function guide(key,text,html){if(!active||lastGuide===key)return;lastGuide=key;adminMessage(text);if(html)setHelp(html)}
+function schedule(ms=35){clearTimeout(timer);timer=setTimeout(reconcile,ms)}
+function explorer(){return A()?.currentExplorer?.()||{open:false,trashMode:false,folder:null,selectedIds:[]}}
+function selectedId(){return A()?.selectedId?.()||null}
+function loc(id){return A()?.locate?.(id)||{where:'missing',node:null,parent:null,path:[]}}
+function objectName(id,f='об’єкт'){return A()?.objectName?.(id,f)||f}
+function parentId(id){return A()?.parentId?.(id)||null}
+function rowById(id){return A()?.rowById?.(id)||null}
+function currentFolderId(){return A()?.currentFolderId?.()||null}
+function pathText(hit){return A()?.describePath?.((hit?.path||[]).slice(0,-1))||''}
+function clearTargets(){document.querySelectorAll('.vidlik-tutorial-ui-target,.vidlik-files-tutorial-target,.os-keyboard-target').forEach(x=>x.classList.remove('vidlik-tutorial-ui-target','vidlik-files-tutorial-target','os-keyboard-target'))}
+function mark(id){clearTargets();const row=rowById(id);if(row)row.classList.add('vidlik-files-tutorial-target')}
+function visibleMenu(action){return document.querySelector(`.os-context-menu:not([hidden]) [data-menu="${action}"]`)}
+function dialog(){return document.querySelector('.os-dialog-wrap')}
+function inlineInput(){return document.querySelector('.os-window[data-window-id="explorer"] .os-inline-input')}
+function pane(){return document.querySelector('.os-window[data-window-id="explorer"] .os-file-pane')}
 
-function fs(){return window.VIDLIK_OS?.getFileSystem?.()||null}
-function findFolder(n,name){
- if(!n)return null;
- if(n.type==='folder'&&n.name===name)return n;
- for(const x of n.children||[]){const q=findFolder(x,name);if(q)return q}
+function findInitialRefs(){
+ const docs=A()?.findByName?.('Документи',n=>n.type==='folder');if(!docs)return false;
+ refs.docs=docs.node.id;
+ refs.training=(docs.node.children||[]).find(x=>x.kind==='xlsx'&&x.training)?.id||(docs.node.children||[]).find(x=>x.kind==='xlsx')?.id||null;
+ refs.draft=(docs.node.children||[]).find(x=>x.kind==='txt'&&x.training)?.id||(docs.node.children||[]).find(x=>x.name==='чернетка.txt')?.id||null;
+ return !!refs.training;
+}
+
+function recovery(id,label='Потрібний об’єкт'){
+ if(!id)return true;
+ const hit=loc(id);
+ if(hit.where==='tree')return true;
+ if(hit.where==='trash'){
+  const top=hit.trashTop||hit.node;const cur=explorer();
+  if(!cur.open){guide(`r-open-${id}`,`${label} «${hit.node?.name||top?.name}» зараз у Кошику. Відкрийте Провідник і перейдіть до Кошика.`, '<span><kbd>КОШИК</kbd> знайти об’єкт</span>')}
+  else if(!cur.trashMode){guide(`r-trash-${id}`,`${label} «${hit.node?.name||top?.name}» було видалено. Відкрийте «Кошик» у лівій панелі.`, '<span><kbd>КОШИК</kbd> відкрити Кошик</span>')}
+  else{
+   clearTargets();rowById(top.id)?.classList.add('vidlik-files-tutorial-target');
+   const restore=visibleMenu('restore');
+   if(restore){restore.classList.add('vidlik-tutorial-ui-target');guide(`r-restore-${id}`,'Натисніть «Відновити». Після відновлення ми автоматично повернемося до поточного завдання.','<span><kbd>ЛКМ</kbd> Відновити</span>')}
+   else guide(`r-menu-${id}`,`Натисніть правою кнопкою «${top.name}» і виберіть «Відновити».`, '<span><kbd>ПКМ</kbd> об’єкт · <kbd>ВІДНОВИТИ</kbd></span>');
+  }
+  return false;
+ }
+ guide(`r-missing-${id}`,`${label} не знайдено навіть у Кошику. Натискайте Ctrl+Z, доки об’єкт не повернеться.`, '<span><kbd>CTRL</kbd> + <kbd>Z</kbd> скасувати видалення</span>');
+ return false;
+}
+
+function guideToParent(id,purpose='продовжити'){ 
+ const hit=loc(id);if(hit.where!=='tree')return false;
+ const cur=explorer();if(cur.open&&!cur.trashMode&&cur.folder?.id===hit.parent?.id)return true;
+ const dest=pathText(hit),name=hit.node?.name||'об’єкт';
+ if(cur.folder?.id===id&&hit.node?.type==='folder')guide(`up-${task}-${id}`,`Ви зараз усередині «${name}». Поверніться на рівень вище кнопкою ←, щоб ${purpose}.`, '<span><kbd>←</kbd> на рівень вище</span>');
+ else guide(`nav-${task}-${id}-${cur.folder?.id||'none'}`,`Потрібний об’єкт «${name}» зараз у «${dest}». Перейдіть туди будь-яким уже знайомим способом.`, '<span><kbd>ПРОВІДНИК</kbd> перейти до потрібної папки</span>');
+ return false;
+}
+
+function begin(n,label,p=''){task=n;phase=p||`task-${n}`;lastGuide='';clearTargets();taskLabel(n,label);schedule(0)}
+function discoverFolder(){
+ if(refs.folder&&loc(refs.folder).where!=='missing')return refs.folder;
+ const added=A()?.findAll?.(n=>n.type==='folder'&&!baselineIds.has(n.id))||[];
+ if(added.length){refs.folder=added[0].node.id;folderInitialName=added[0].node.name;return refs.folder}
  return null;
 }
-function docsFs(){return findFolder(fs(),'Документи')}
-function sectorFs(){return findFolder(docsFs(),FOLDER)}
-function hasChild(folder,name){return !!folder?.children?.some(x=>x.name===name)}
+function discoverCopy(){
+ if(refs.copy&&loc(refs.copy).where!=='missing')return refs.copy;
+ const added=A()?.findAll?.(n=>n.kind==='xlsx'&&!baselineIds.has(n.id)&&n.id!==refs.training)||[];
+ if(added.length){refs.copy=added[0].node.id;copyInitialName=added[0].node.name;return refs.copy}
+ return null;
+}
 
-function taskLabel(n,text){setFooter(`ЗАВДАННЯ ${n} / 11 · ${text}`)}
+function reconcile(){
+ if(!active||!A())return;
+ clearTimeout(timer);
+ if(refs.folder&&task>=4&&task<=11&&!recovery(refs.folder,'Навчальна папка'))return;
 
-function beginTask1(){
- task=1;phase='docs-nav';
- target(nav('docs'));
- adminMessage('Розділ 2 починаємо з папки «Документи».\nЛіворуч у Провіднику є панель швидкої навігації. Натисніть «Документи» один раз.');
- taskLabel(1,'ВІДКРИЙТЕ «ДОКУМЕНТИ»');
- setHelp('<span><kbd>ЛКМ</kbd> «Документи» у лівій панелі</span>');
+ if(task===1){
+  const cur=explorer();
+  if(cur.open&&!cur.trashMode&&cur.folder?.id===refs.docs){begin(2,'ВИБЕРІТЬ НАВЧАЛЬНИЙ ФАЙЛ');return}
+  guide('t1','Починаємо з «Документів». Відкрийте цю папку через ліву панель, робочий стіл або будь-який інший уже знайомий спосіб.','<span><kbd>ДОКУМЕНТИ</kbd> відкрити папку</span>');return;
+ }
+
+ if(task===2){
+  if(!recovery(refs.training,'Навчальний файл'))return;
+  if(!guideToParent(refs.training,'вибрати його'))return;
+  mark(refs.training);const name=objectName(refs.training,'навчальний файл');
+  if(selectedId()===refs.training){baselineIds=A()?.allIds?.()||new Set();begin(3,'СТВОРІТЬ НОВУ ПАПКУ','folder-create');return}
+  guide(`t2-${name}`,`Знайдіть навчальний файл «${name}» і виберіть його одним кліком. Якщо ви його перейменували — орієнтуйтеся на поточну назву, яку показує система.`, '<span><kbd>ЛКМ</kbd> вибрати навчальний файл</span>');return;
+ }
+
+ if(task===3){
+  const folder=discoverFolder();
+  if(!folder){
+   const cur=explorer();
+   if(!cur.open||cur.trashMode){guide('t3-nav','Перейдіть у звичайну папку Провідника й створіть нову папку кнопкою ＋.','<span><kbd>＋</kbd> створити папку</span>');return}
+   guide(`t3-create-${cur.folder?.id}`,`Створіть нову папку кнопкою ＋. Дайте їй зрозумілу назву — наприклад «Сектор 3». Система запам’ятає саму папку, навіть якщо ви назвете її інакше.`, '<span><kbd>＋</kbd> нова папка · <kbd>ENTER</kbd> підтвердити назву</span>');return;
+  }
+  const name=objectName(folder,'нова папка');
+  if(name==='Нова папка'){
+   mark(folder);guide('t3-name','Папка створена. Дайте їй назву й підтвердьте Enter. Назва може бути будь-якою — далі ми відстежуємо її за внутрішнім ID.','<span><kbd>ТЕКСТ</kbd> назва папки · <kbd>ENTER</kbd></span>');return;
+  }
+  begin(4,'ВІДКРИЙТЕ ПАПКУ Й ПОВЕРНІТЬСЯ НАЗАД','folder-roundtrip');return;
+ }
+
+ if(task===4){
+  if(!recovery(refs.folder,'Навчальна папка'))return;
+  const hit=loc(refs.folder),cur=explorer(),name=hit.node?.name||'папка';
+  if(cur.folder?.id===refs.folder){folderOpened=true;guide('t4-back',`Папка «${name}» відкрита. Тепер поверніться назад кнопкою ←.`, '<span><kbd>←</kbd> повернутися назад</span>');return}
+  if(folderOpened&&cur.folder?.id===hit.parent?.id){begin(5,'ПЕРЕВІРТЕ ВЛАСТИВОСТІ ФАЙЛУ','properties');return}
+  if(!guideToParent(refs.folder,'відкрити її'))return;
+  mark(refs.folder);guide(`t4-open-${name}`,`Відкрийте «${name}» подвійним кліком. Після перегляду поверніться назад кнопкою ←.`, '<span><kbd>ЛКМ ×2</kbd> відкрити папку</span>');return;
+ }
+
+ if(task===5){
+  if(!recovery(refs.training,'Навчальний файл'))return;
+  if(propertiesSeen&&!dialog()){begin(6,'СКОПІЮЙТЕ ФАЙЛ','copy');return}
+  if(!guideToParent(refs.training,'перевірити його властивості'))return;
+  mark(refs.training);const name=objectName(refs.training,'файл');
+  const dlg=dialog();
+  if(dlg&&selectedId()===refs.training){propertiesSeen=true;guide('t5-dialog','Перегляньте ім’я, тип і розташування, потім натисніть OK.','<span><kbd>OK</kbd> закрити властивості</span>');return}
+  const prop=visibleMenu('prop');
+  if(prop&&selectedId()===refs.training){prop.classList.add('vidlik-tutorial-ui-target');guide('t5-prop','Натисніть «Властивості».','<span><kbd>ЛКМ</kbd> Властивості</span>');return}
+  guide(`t5-menu-${name}`,`Натисніть правою кнопкою файл «${name}» і відкрийте «Властивості».`, '<span><kbd>ПКМ</kbd> файл · <kbd>ВЛАСТИВОСТІ</kbd></span>');return;
+ }
+
+ if(task===6){
+  if(!recovery(refs.training,'Навчальний файл'))return;
+  if(copyDone){baselineIds=A()?.allIds?.()||new Set();begin(7,'ВСТАВТЕ КОПІЮ','paste');return}
+  if(!guideToParent(refs.training,'скопіювати його'))return;
+  mark(refs.training);const name=objectName(refs.training,'файл');
+  const copy=visibleMenu('copy');
+  if(copy&&selectedId()===refs.training){copy.classList.add('vidlik-tutorial-ui-target');guide('t6-copy','Натисніть «Копіювати».','<span><kbd>ЛКМ</kbd> Копіювати</span>');return}
+  guide(`t6-menu-${name}`,`Натисніть правою кнопкою «${name}» і виберіть «Копіювати». Якщо використаєте Ctrl+C — система теж це прийме.`, '<span><kbd>ПКМ</kbd> · Копіювати</span>');return;
+ }
+
+ if(task===7){
+  const copy=discoverCopy();if(copy){begin(8,'ПЕРЕЙМЕНУЙТЕ КОПІЮ','rename');return}
+  const folder=refs.folder;
+  if(!recovery(folder,'Навчальна папка'))return;
+  const cur=explorer();
+  if(cur.folder?.id!==folder){
+   if(!guideToParent(folder,'відкрити її для вставлення'))return;
+   mark(folder);guide(`t7-open-${objectName(folder,'папка')}`,`Відкрийте папку «${objectName(folder,'папка')}» і вставте туди копію.`, '<span><kbd>ЛКМ ×2</kbd> відкрити папку</span>');return;
+  }
+  const paste=visibleMenu('paste');
+  if(paste){paste.classList.add('vidlik-tutorial-ui-target');guide('t7-paste','Натисніть «Вставити».','<span><kbd>ЛКМ</kbd> Вставити</span>');return}
+  pane()?.classList.add('vidlik-files-tutorial-target');guide('t7-context','Натисніть правою кнопкою по порожньому місцю й виберіть «Вставити». Ctrl+V також буде прийнято.','<span><kbd>ПКМ</kbd> порожнє місце · Вставити</span>');return;
+ }
+
+ if(task===8){
+  const copy=discoverCopy();if(!copy){begin(7,'ВСТАВТЕ КОПІЮ','paste');return}
+  if(!recovery(copy,'Створена копія'))return;
+  const hit=loc(copy),name=hit.node?.name||'копія';
+  if(copyInitialName&&name!==copyInitialName&&!inlineInput()){begin(9,'ПЕРЕМІСТІТЬ ТРЕНУВАЛЬНИЙ ФАЙЛ','move-draft');return}
+  if(!guideToParent(copy,'перейменувати її'))return;
+  mark(copy);
+  const input=inlineInput();
+  if(input){phase='rename-input';input.classList.add('vidlik-tutorial-ui-target');guide('t8-input','Введіть будь-яку зрозумілу нову назву й натисніть Enter. Наприклад: «Знайомство». Розширення .xlsx краще залишити без змін.','<span><kbd>ТЕКСТ</kbd> нова назва · <kbd>ENTER</kbd></span>');return}
+  const ren=visibleMenu('rename');
+  if(ren&&selectedId()===copy){ren.classList.add('vidlik-tutorial-ui-target');guide('t8-ren','Натисніть «Перейменувати».','<span><kbd>ЛКМ</kbd> Перейменувати</span>');return}
+  guide(`t8-menu-${name}`,`Натисніть правою кнопкою «${name}» і виберіть «Перейменувати». Система продовжить відстежувати цей самий файл під новою назвою.`, '<span><kbd>ПКМ</kbd> · Перейменувати</span>');return;
+ }
+
+ if(task===9){
+  if(!refs.draft){begin(10,'ВИДАЛІТЬ ФАЙЛ','delete');return}
+  if(!recovery(refs.draft,'Тренувальна чернетка'))return;
+  if(parentId(refs.draft)===refs.folder){begin(10,'ВИДАЛІТЬ ФАЙЛ','delete');return}
+  if(!guideToParent(refs.draft,'перемістити її'))return;
+  mark(refs.draft);const name=objectName(refs.draft,'чернетка');
+  const cut=visibleMenu('cut');
+  if(cut&&selectedId()===refs.draft){cut.classList.add('vidlik-tutorial-ui-target');guide('t9-cut','Натисніть «Вирізати», потім перейдіть до навчальної папки й вставте файл.','<span><kbd>ЛКМ</kbd> Вирізати</span>');return}
+  guide(`t9-${name}`,`Перемістіть «${name}» до папки «${objectName(refs.folder,'навчальна папка')}». Можна використати ПКМ → Вирізати / Вставити або вже знайомі Ctrl+X / Ctrl+V.`, '<span><kbd>ВИРІЗАТИ</kbd> → <kbd>ВСТАВИТИ</kbd></span>');return;
+ }
+
+ if(task===10){
+  if(!refs.draft){begin(11,'ВІДНОВІТЬ ФАЙЛ ІЗ КОШИКА','restore');return}
+  const d=loc(refs.draft);
+  if(d.where==='trash'){deleteSeen=true;begin(11,'ВІДНОВІТЬ ФАЙЛ ІЗ КОШИКА','restore');return}
+  if(d.where==='missing'){recovery(refs.draft,'Тренувальна чернетка');return}
+  if(!guideToParent(refs.draft,'видалити її'))return;
+  mark(refs.draft);const name=objectName(refs.draft,'файл');
+  const del=visibleMenu('delete');
+  if(del&&selectedId()===refs.draft){del.classList.add('vidlik-tutorial-ui-target');guide('t10-del','Натисніть «Видалити».','<span><kbd>ЛКМ</kbd> Видалити</span>');return}
+  guide(`t10-${name}`,`Видаліть «${name}». Можна через контекстне меню або клавішу Delete. Файл повинен опинитися в Кошику.`, '<span><kbd>ВИДАЛИТИ</kbd> файл</span>');return;
+ }
+
+ if(task===11){
+  const d=loc(refs.draft);
+  if(d.where==='tree'&&deleteSeen){finish();return}
+  if(d.where==='missing'){recovery(refs.draft,'Тренувальна чернетка');return}
+  if(d.where==='trash'){
+   recovery(refs.draft,'Тренувальна чернетка');return;
+  }
+  guide('t11-wait','Файл уже відновлено. Завершуємо розділ.','<span><kbd>ГОТОВО</kbd></span>');finish();
+ }
 }
-function beginTask2(){
- task=2;phase='select-training';
- target(row(TRAINING));
- adminMessage('Перед вами папки та файли. Папка зберігає об’єкти, а файл містить інформацію.\nЗнайдіть TRAINING_SYNC_SECTOR_3.xlsx і виберіть його одним кліком.');
- taskLabel(2,'ВИБЕРІТЬ НАВЧАЛЬНИЙ ФАЙЛ');
- setHelp('<span><kbd>ЛКМ</kbd> один клік · вибрати файл</span>');
-}
-function beginTask3(){
- task=3;phase='new-folder';
- target(act('new'));
- adminMessage('Тепер створимо місце для матеріалів цього сектора.\nНатисніть кнопку ＋ у верхній частині Провідника.');
- taskLabel(3,'СТВОРІТЬ ПАПКУ «СЕКТОР 3»');
- setHelp('<span><kbd>＋</kbd> створити нову папку</span>');
-}
-function waitFolderName(){
- phase='folder-name';
- const i=inlineInput();target(i);
- adminMessage('Нова папка створена. Її назву вже виділено.\nВведіть «Сектор 3» і натисніть Enter.');
- setHelp('<span><kbd>ТЕКСТ</kbd> Сектор 3 · <kbd>ENTER</kbd> підтвердити</span>');
-}
-function beginTask4(){
- task=4;phase='folder-open';
- target(row(FOLDER));
- adminMessage('Папка готова. Відкрийте «Сектор 3» подвійним кліком.\nПісля цього ми одразу перевіримо, як повернутися назад.');
- taskLabel(4,'ВІДКРИЙТЕ ПАПКУ Й ПОВЕРНІТЬСЯ НАЗАД');
- setHelp('<span><kbd>ЛКМ ×2</kbd> відкрити «Сектор 3»</span>');
-}
-function task4Back(){
- phase='folder-back';target(act('back'));
- adminMessage('Папка поки порожня. Натисніть ←, щоб повернутися до «Документів».');
- setHelp('<span><kbd>←</kbd> повернутися назад</span>');
-}
-function beginTask5(){
- task=5;phase='prop-context';target(row(TRAINING));
- adminMessage('Подивимось, що система знає про файл.\nНатисніть TRAINING_SYNC_SECTOR_3.xlsx правою кнопкою миші.');
- taskLabel(5,'ПЕРЕВІРТЕ ВЛАСТИВОСТІ ФАЙЛУ');
- setHelp('<span><kbd>ПКМ</kbd> відкрити додаткові дії</span>');
-}
-function task5Menu(){phase='prop-menu';target(menu('prop'));adminMessage('Відкрилося меню додаткових дій. Натисніть «Властивості».');setHelp('<span><kbd>ЛКМ</kbd> Властивості</span>')}
-function task5Dialog(){
- phase='prop-ok';target(dialogOk());
- adminMessage('Тут видно ім’я, тип і розташування об’єкта. Розширення .xlsx означає файл Microsoft Excel.\nОзнайомтесь і натисніть OK.');
- setHelp('<span><kbd>OK</kbd> закрити властивості</span>');
-}
-function beginTask6(){
- task=6;phase='copy-context';target(row(TRAINING));
- adminMessage('Зробимо копію навчального файлу.\nНатисніть його правою кнопкою миші.');
- taskLabel(6,'СКОПІЮЙТЕ ФАЙЛ');setHelp('<span><kbd>ПКМ</kbd> TRAINING_SYNC_SECTOR_3.xlsx</span>');
-}
-function task6Menu(){phase='copy-menu';target(menu('copy'));adminMessage('Натисніть «Копіювати». Оригінал залишиться на місці, а копія потрапить у буфер VIDLIK.');setHelp('<span><kbd>ЛКМ</kbd> Копіювати</span>')}
-function beginTask7(){
- task=7;phase='paste-open';target(row(FOLDER));
- adminMessage('Тепер вставимо копію в нашу папку.\nВідкрийте «Сектор 3» подвійним кліком.');
- taskLabel(7,'ВСТАВТЕ КОПІЮ В «СЕКТОР 3»');setHelp('<span><kbd>ЛКМ ×2</kbd> відкрити «Сектор 3»</span>');
-}
-function task7Context(){phase='paste-context';target(pane());adminMessage('У папці натисніть правою кнопкою миші по порожньому місцю.');setHelp('<span><kbd>ПКМ</kbd> порожнє місце в папці</span>')}
-function task7Menu(){phase='paste-menu';target(menu('paste'));adminMessage('Натисніть «Вставити».');setHelp('<span><kbd>ЛКМ</kbd> Вставити</span>')}
-function beginTask8(){
- task=8;phase='rename-context';target(row(TRAINING));
- adminMessage('Копія вже в папці. Тепер дамо їй зрозумілу назву.\nНатисніть файл правою кнопкою миші.');
- taskLabel(8,'ПЕРЕЙМЕНУЙТЕ КОПІЮ');setHelp('<span><kbd>ПКМ</kbd> навчальний файл</span>');
-}
-function task8Menu(){phase='rename-menu';target(menu('rename'));adminMessage('Оберіть «Перейменувати».');setHelp('<span><kbd>ЛКМ</kbd> Перейменувати</span>')}
-function task8Input(){phase='rename-input';target(inlineInput());adminMessage('Введіть нову назву: «Знайомство.xlsx» і натисніть Enter.');setHelp('<span><kbd>ТЕКСТ</kbd> Знайомство.xlsx · <kbd>ENTER</kbd></span>')}
-function beginTask9(){
- task=9;phase='move-back';target(act('back'));
- adminMessage('Тепер навчимося не копіювати, а переміщувати об’єкти.\nСпочатку поверніться до «Документів» кнопкою ←.');
- taskLabel(9,'ПЕРЕМІСТІТЬ «ЧЕРНЕТКА.TXT»');setHelp('<span><kbd>←</kbd> до «Документів»</span>');
-}
-function task9Draft(){phase='move-draft-context';target(row(DRAFT));adminMessage('Знайдіть «чернетка.txt» і натисніть її правою кнопкою миші.');setHelp('<span><kbd>ПКМ</kbd> чернетка.txt</span>')}
-function task9Cut(){phase='move-cut-menu';target(menu('cut'));adminMessage('Оберіть «Вирізати». На відміну від копіювання, після вставлення файл змінить своє місце.');setHelp('<span><kbd>ЛКМ</kbd> Вирізати</span>')}
-function task9OpenFolder(){phase='move-open-folder';target(row(FOLDER));adminMessage('Відкрийте папку «Сектор 3».');setHelp('<span><kbd>ЛКМ ×2</kbd> «Сектор 3»</span>')}
-function task9PasteContext(){phase='move-paste-context';target(pane());adminMessage('Натисніть правою кнопкою по порожньому місцю.');setHelp('<span><kbd>ПКМ</kbd> порожнє місце</span>')}
-function task9PasteMenu(){phase='move-paste-menu';target(menu('paste'));adminMessage('Натисніть «Вставити».');setHelp('<span><kbd>ЛКМ</kbd> Вставити</span>')}
-function beginTask10(){
- task=10;phase='delete-context';target(row(DRAFT));
- adminMessage('Чернетка більше не потрібна. Видалимо її.\nНатисніть «чернетка.txt» правою кнопкою миші.');
- taskLabel(10,'ВИДАЛІТЬ ФАЙЛ');setHelp('<span><kbd>ПКМ</kbd> чернетка.txt</span>');
-}
-function task10Menu(){phase='delete-menu';target(menu('delete'));adminMessage('Натисніть «Видалити». Файл буде переміщено до Кошика, а не знищено остаточно.');setHelp('<span><kbd>ЛКМ</kbd> Видалити</span>')}
-function beginTask11(){
- task=11;phase='trash-nav';target(nav('trash'));
- adminMessage('Перевіримо, куди потрапив файл.\nНатисніть «Кошик» у лівій панелі Провідника.');
- taskLabel(11,'ВІДНОВІТЬ ФАЙЛ ІЗ КОШИКА');setHelp('<span><kbd>ЛКМ</kbd> Кошик</span>');
-}
-function task11File(){phase='trash-file-context';target(row(DRAFT));adminMessage('Ось видалена чернетка. Натисніть її правою кнопкою миші.');setHelp('<span><kbd>ПКМ</kbd> чернетка.txt</span>')}
-function task11Menu(){phase='trash-restore-menu';target(menu('restore'));adminMessage('Натисніть «Відновити». Файл повернеться туди, звідки його було видалено.');setHelp('<span><kbd>ЛКМ</kbd> Відновити</span>')}
 
 function finish(){
- active=false;task=12;phase='complete';clearTarget();
- adminMessage('Готово. Ви створили папку, перевірили властивості файлу, зробили копію, перейменували й перемістили об’єкти, а також відновили файл із Кошика.');
+ active=false;task=12;phase='complete';lastGuide='';clearTargets();
+ adminMessage('Готово. Ви працювали з файлами й папками вільно, а система відстежувала конкретні об’єкти навіть після перейменування, переміщення або видалення.');
  setFooter('11 / 11 · ФАЙЛИ ТА ПАПКИ · ЗАВЕРШЕНО ✓');
  setHelp('<span><kbd>ГОТОВО</kbd> розділ «Файли та папки» завершено</span>');
  setTimeout(()=>window.dispatchEvent(new CustomEvent('vidlik:files-section-complete')),450);
 }
-
 function start(){
- if(active)return;
- active=true;task=0;phase='starting';
- window.VIDLIK_OS?.openDesktopApp?.('pc');
- later(beginTask1,180);
+ if(active)return;active=true;task=0;phase='starting';lastGuide='';clearTargets();
+ OS()?.openDesktopApp?.('pc');
+ setTimeout(()=>{if(!active)return;if(findInitialRefs())begin(1,'ВІДКРИЙТЕ «ДОКУМЕНТИ»');else guide('init','Відкрийте «Документи». Система сканує навчальні об’єкти.','<span><kbd>ДОКУМЕНТИ</kbd> відкрити папку</span>')},180);
 }
-function reset(){active=false;task=0;phase='idle';helperLock=false;clearTarget()}
+function reset(){active=false;task=0;phase='idle';lastGuide='';clearTimeout(timer);clearTargets();refs={docs:null,training:null,folder:null,copy:null,draft:null};baselineIds=new Set()}
 
 mon.addEventListener('click',e=>{
  if(!active)return;
- const exp=explorer();
- if(!exp)return;
-
- const wrong=msg=>{stop(e);helper(msg)};
-
- if(phase==='docs-nav'){
-  const x=e.target.closest('[data-nav="docs"]');if(!x)return wrong('Зараз натисніть «Документи» у лівій панелі.');
-  later(()=>{if(address().includes('Документи'))beginTask2()});return;
- }
- if(phase==='select-training'){
-  const x=e.target.closest('.os-file-item');if(x!==row(TRAINING))return wrong('Потрібен файл TRAINING_SYNC_SECTOR_3.xlsx.');
-  if(e.detail===1)later(beginTask3,55);return;
- }
- if(phase==='new-folder'){
-  const x=e.target.closest('[data-act="new"]');if(!x)return wrong('Натисніть підсвічену кнопку ＋.');
-  later(waitFolderName,60);return;
- }
- if(phase==='folder-open'){
-  const x=e.target.closest('.os-file-item');if(x!==row(FOLDER))return wrong('Відкрийте папку «Сектор 3».');
-  if(e.detail===2)later(()=>{if(address().includes(FOLDER))task4Back()},90);return;
- }
- if(phase==='folder-back'){
-  const x=e.target.closest('[data-act="back"]');if(!x)return wrong('Натисніть стрілку ← у верхній частині Провідника.');
-  later(()=>{if(address().endsWith('Документи'))beginTask5()},80);return;
- }
- if(phase==='prop-menu'){
-  const x=e.target.closest('[data-menu="prop"]');if(!x)return wrong('У меню натисніть «Властивості».');
-  later(task5Dialog,70);return;
- }
- if(phase==='prop-ok'){
-  const x=e.target.closest('[data-dlg]');if(!x)return wrong('Закрийте вікно властивостей кнопкою OK.');
-  later(beginTask6,60);return;
- }
- if(phase==='copy-menu'){
-  const x=e.target.closest('[data-menu="copy"]');if(!x)return wrong('Натисніть «Копіювати».');
-  later(beginTask7,70);return;
- }
- if(phase==='paste-open'){
-  const x=e.target.closest('.os-file-item');if(x!==row(FOLDER))return wrong('Відкрийте папку «Сектор 3».');
-  if(e.detail===2)later(()=>{if(address().includes(FOLDER))task7Context()},90);return;
- }
- if(phase==='paste-menu'){
-  const x=e.target.closest('[data-menu="paste"]');if(!x)return wrong('Натисніть «Вставити».');
-  later(()=>{if(row(TRAINING))beginTask8()},90);return;
- }
- if(phase==='rename-menu'){
-  const x=e.target.closest('[data-menu="rename"]');if(!x)return wrong('Натисніть «Перейменувати».');
-  later(task8Input,60);return;
- }
- if(phase==='move-back'){
-  const x=e.target.closest('[data-act="back"]');if(!x)return wrong('Поверніться до «Документів» кнопкою ←.');
-  later(()=>{if(address().endsWith('Документи'))task9Draft()},80);return;
- }
- if(phase==='move-cut-menu'){
-  const x=e.target.closest('[data-menu="cut"]');if(!x)return wrong('Натисніть «Вирізати».');
-  later(task9OpenFolder,70);return;
- }
- if(phase==='move-open-folder'){
-  const x=e.target.closest('.os-file-item');if(x!==row(FOLDER))return wrong('Відкрийте папку «Сектор 3».');
-  if(e.detail===2)later(()=>{if(address().includes(FOLDER))task9PasteContext()},90);return;
- }
- if(phase==='move-paste-menu'){
-  const x=e.target.closest('[data-menu="paste"]');if(!x)return wrong('Натисніть «Вставити».');
-  later(()=>{if(row(DRAFT))beginTask10()},90);return;
- }
- if(phase==='delete-menu'){
-  const x=e.target.closest('[data-menu="delete"]');if(!x)return wrong('Натисніть «Видалити».');
-  later(()=>{if(!row(DRAFT))beginTask11()},90);return;
- }
- if(phase==='trash-nav'){
-  const x=e.target.closest('[data-nav="trash"]');if(!x)return wrong('Натисніть «Кошик» у лівій панелі.');
-  later(()=>{if(address()==='Кошик')task11File()},90);return;
- }
- if(phase==='trash-restore-menu'){
-  const x=e.target.closest('[data-menu="restore"]');if(!x)return wrong('Натисніть «Відновити».');
-  later(()=>{
-   const s=sectorFs();
-   if(s&&hasChild(s,DRAFT))finish();
-  },110);return;
- }
-
- if(['folder-name','rename-input'].includes(phase))return;
- if(['prop-context','copy-context','paste-context','rename-context','move-draft-context','move-paste-context','delete-context','trash-file-context'].includes(phase))return;
- },true);
-
-mon.addEventListener('contextmenu',e=>{
- if(!active)return;
- const file=e.target.closest('.os-file-item');
- const empty=e.target.closest('.os-file-pane')&&!file;
-
- const acceptFile=(name,next,msg)=>{
-  if(file!==row(name)){stop(e);helper(msg);return}
-  later(next,60);
- };
-
- if(phase==='prop-context')return acceptFile(TRAINING,task5Menu,'Натисніть правою кнопкою саме TRAINING_SYNC_SECTOR_3.xlsx.');
- if(phase==='copy-context')return acceptFile(TRAINING,task6Menu,'Натисніть правою кнопкою саме навчальний файл.');
- if(phase==='rename-context')return acceptFile(TRAINING,task8Menu,'Натисніть правою кнопкою файл у папці «Сектор 3».');
- if(phase==='move-draft-context')return acceptFile(DRAFT,task9Cut,'Натисніть правою кнопкою «чернетка.txt».');
- if(phase==='delete-context')return acceptFile(DRAFT,task10Menu,'Натисніть правою кнопкою «чернетка.txt».');
- if(phase==='trash-file-context')return acceptFile(DRAFT,task11Menu,'Натисніть правою кнопкою видалену «чернетка.txt».');
- if(phase==='paste-context'){
-  if(!empty){stop(e);helper('Натисніть правою кнопкою по порожньому місцю в папці.');return}
-  later(task7Menu,60);return;
- }
- if(phase==='move-paste-context'){
-  if(!empty){stop(e);helper('Натисніть правою кнопкою по порожньому місцю.');return}
-  later(task9PasteMenu,60);return;
- }
- stop(e);
+ const menu=e.target.closest('[data-menu]');
+ if(menu?.dataset.menu==='copy'&&selectedId()===refs.training){copyDone=true;schedule(70);return}
+ if(menu?.dataset.menu==='paste'){schedule(110);return}
+ if(menu?.dataset.menu==='restore'){schedule(110);return}
+ if(menu?.dataset.menu==='delete'){schedule(110);return}
+ schedule(35);
 },true);
-
+mon.addEventListener('contextmenu',()=>schedule(40),true);
 window.addEventListener('keydown',e=>{
  if(!active)return;
- if(phase==='folder-name'||phase==='rename-input'){
-  if(e.key==='Enter'){
-   const p=phase;
-   setTimeout(()=>{
-    if(!active)return;
-    if(p==='folder-name'&&hasChild(docsFs(),FOLDER))beginTask4();
-    if(p==='rename-input'&&hasChild(sectorFs(),RENAMED))beginTask9();
-   },90);
-  }
-  return;
- }
- stop(e);
- helper('У цьому розділі основні дії виконуємо мишкою. Клавіатура знадобиться лише для введення назв.');
+ if(e.ctrlKey&&e.key.toLowerCase()==='c'&&selectedId()===refs.training){copyDone=true;schedule(50);return}
+ if((e.ctrlKey&&['v','x','z'].includes(e.key.toLowerCase()))||e.key==='Delete'||e.key==='Enter')schedule(100);else schedule(35);
 },true);
-
+A()?.subscribe?.(()=>{if(active)schedule(20)});
 window.addEventListener('vidlik:section2-ready',start);
 window.addEventListener('vidlik:os-reset',reset);
-window.VIDLIK_FILES_TUTORIAL={start,reset,get task(){return task},get phase(){return phase},get active(){return active}};
+window.VIDLIK_FILES_TUTORIAL={start,reset,reconcile,get task(){return task},get phase(){return phase},get active(){return active},get refs(){return{...refs}}};
 })();
