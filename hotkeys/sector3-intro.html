@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05090c">
 <title>HOTKI — Сектор 3 · Стартовий дзвінок Полі</title>
+<style>body.prologue-title-pending .app{visibility:hidden}</style>
 <link rel="stylesheet" href="sector3-intro.css?v=20260906-2">
-<link rel="stylesheet" href="sector3-prologue-title.css?v=20260907-1">
 <link rel="stylesheet" href="sector3-incoming-effects.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-caption-tuning.css?v=20260906-1">
 <link rel="stylesheet" href="sector3-admin.css?v=20260906-6">
@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="sector3-adaptive-visual.css?v=20260907-3">
 <link rel="stylesheet" href="sector3-section-transition.css?v=20260906-1">
 </head>
-<body>
+<body class="prologue-title-pending">
 <div class="app">
   <main class="scene" id="scene" tabindex="0" aria-label="Стартовий дзвінок Полі">
     <div class="camera" id="camera">
@@ -104,7 +104,8 @@
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-intro.js?v=20260906-9"></script>
+<script src="sector3-prologue-title-bg.js?v=20260907-1"></script>
+<script src="sector3-prologue-title.js?v=20260907-3"></script>
 <script src="sector3-os.js?v=20260906-3"></script>
 <script src="sector3-safe-key-policy.js?v=20260907-1"></script>
 <script src="sector3-explorer-polish.js?v=20260907-2"></script>
@@ -119,6 +120,5 @@
 <script src="sector3-language-tutorial.js?v=20260907-1"></script>
 <script src="sector3-language-cleanup.js?v=20260907-1"></script>
 <script src="sector3-adaptive-visual.js?v=20260907-4"></script>
-<script src="sector3-prologue-title.js?v=20260907-1"></script>
 </body>
 </html>
