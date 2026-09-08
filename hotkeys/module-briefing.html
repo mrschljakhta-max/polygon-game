@@ -28,8 +28,22 @@
 </main>
 <script src="/hotkeys/module-briefing-data.js?v=10"></script>
 <script src="/hotkeys/module-briefing-layouts.js?v=10"></script>
-<script src="/hotkeys/module-briefing.js?v=14"></script>
-<script src="/hotkeys/module-briefing-polish.js?v=2"></script>
-<script src="/hotkeys/sector3-briefing-override.js?v=20260908-3"></script>
+<script>
+(()=>{
+  const sector=Math.min(8,Math.max(1,parseInt(new URLSearchParams(location.search).get('sector')||'1',10)||1));
+  const load=(src,onload)=>{
+    const s=document.createElement('script');
+    s.src=src;
+    if(onload)s.onload=onload;
+    document.body.appendChild(s);
+  };
+  if(sector===3){
+    /* Sector 3 owns its story navigator completely. Legacy lesson/page JS is not loaded. */
+    load('/hotkeys/sector3-briefing-override.js?v=20260908-5');
+  }else{
+    load('/hotkeys/module-briefing.js?v=14',()=>load('/hotkeys/module-briefing-polish.js?v=2'));
+  }
+})();
+</script>
 </body>
 </html>
