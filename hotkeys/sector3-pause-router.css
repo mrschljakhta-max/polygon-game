@@ -1,9 +1,9 @@
 :root{--pause-cyan:#55e7d4;--pause-cyan-soft:rgba(85,231,212,.18);--pause-ink:#eef8f7;--pause-muted:#8fa8a5;--pause-red:#ff5c70}
-.vidlik-menu-button{position:absolute;right:18px;top:18px;z-index:680;width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid rgba(85,231,212,.30);border-radius:10px;background:linear-gradient(180deg,rgba(5,22,25,.90),rgba(2,10,12,.92));color:#dffcf8;box-shadow:0 12px 34px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(10px);cursor:pointer;transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease,opacity .18s ease}
-.vidlik-menu-button:hover:not(:disabled),.vidlik-menu-button:focus-visible{border-color:rgba(85,231,212,.72);background:linear-gradient(180deg,rgba(8,33,35,.96),rgba(3,15,17,.96));box-shadow:0 12px 34px rgba(0,0,0,.38),0 0 22px rgba(85,231,212,.14);outline:none}
+.vidlik-menu-button{position:absolute;right:18px;top:18px;z-index:680;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:10px;background:linear-gradient(180deg,rgba(5,22,25,.90),rgba(2,10,12,.92));color:#dffcf8;box-shadow:0 12px 34px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(10px);cursor:pointer;transition:background .18s ease,box-shadow .18s ease,transform .18s ease,opacity .18s ease}
+.vidlik-menu-button:hover:not(:disabled),.vidlik-menu-button:focus-visible{background:linear-gradient(180deg,rgba(8,33,35,.96),rgba(3,15,17,.96));box-shadow:0 12px 34px rgba(0,0,0,.38),0 0 22px rgba(85,231,212,.14);outline:none}
 .vidlik-menu-button:active:not(:disabled){transform:translateY(1px)}
 .vidlik-menu-button:disabled{opacity:.28;cursor:default}
-.vidlik-menu-button.is-open{border-color:rgba(85,231,212,.82);background:rgba(7,35,35,.96);box-shadow:0 0 0 1px rgba(85,231,212,.10),0 0 28px rgba(85,231,212,.16)}
+.vidlik-menu-button.is-open{background:rgba(7,35,35,.96);box-shadow:0 0 28px rgba(85,231,212,.16)}
 .vidlik-menu-icon{display:block;width:23px;height:23px;background:currentColor;-webkit-mask:url('assets/ui/menu-2.svg') center/contain no-repeat;mask:url('assets/ui/menu-2.svg') center/contain no-repeat}
 
 .pause#pause{z-index:650;display:grid;place-items:center;padding:5.5%;background:radial-gradient(circle at 50% 38%,rgba(7,31,33,.40),rgba(0,4,6,.82) 66%),rgba(0,4,6,.72);backdrop-filter:blur(13px) saturate(.72);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s .2s}
