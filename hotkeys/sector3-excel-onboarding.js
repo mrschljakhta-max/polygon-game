@@ -9,6 +9,13 @@ const help=document.getElementById('help');
 const excelIcon=document.querySelector('.desktop-icon[data-app="excel"]');
 if(!mon||!chat||!footer||!help||!excelIcon)return;
 
+const SLIDES=[
+ 'assets/sector3-excel-onboarding/excel-slide-01.png',
+ 'assets/sector3-excel-onboarding/excel-slide-02.png',
+ 'assets/sector3-excel-onboarding/excel-slide-03.png',
+ 'assets/sector3-excel-onboarding/excel-slide-04.png'
+];
+
 let active=false;
 let completed=false;
 let stage=0;
@@ -29,6 +36,9 @@ function adminMessage(text){
 function setFooter(text){footer.textContent=text;footer.classList.add('vidlik-tutorial-footer')}
 function setHelp(html){help.classList.add('vidlik-tutorial-help');help.innerHTML=html}
 
+function preloadSlides(){
+ for(const src of SLIDES){const img=new Image();img.decoding='async';img.src=src}
+}
 function minimizeOldWindows(){
  document.querySelector('.os-language-training-window')?.remove();
  document.querySelector('.vidlik-language-taskbar-button')?.remove();
@@ -36,100 +46,65 @@ function minimizeOldWindows(){
   try{b.click()}catch(_){ }
  }
 }
-function removeOverlay(){overlay?.remove();overlay=null;mon.classList.remove('vidlik-excel-card-open','vidlik-excel-launching')}
+function removeOverlay(){
+ if(overlay){overlay.classList.add('is-leaving');const old=overlay;setTimeout(()=>old.remove(),180)}
+ overlay=null;
+ mon.classList.remove('vidlik-excel-card-open','vidlik-excel-launching','vidlik-excel-slides-open');
+}
 function ensureOverlay(){
  if(overlay?.isConnected)return overlay;
  overlay=document.createElement('section');
- overlay.className='vidlik-excel-onboarding';
+ overlay.className='vidlik-excel-onboarding vidlik-excel-slides';
  overlay.setAttribute('aria-label','Знайомство з Microsoft Excel');
  mon.appendChild(overlay);
  requestAnimationFrame(()=>overlay?.classList.add('is-visible'));
  return overlay;
 }
-function card(inner,foot=''){const root=ensureOverlay();root.innerHTML=`<div class="vidlik-excel-onboarding-card">${inner}<div class="vidlik-excel-onboarding-foot"><span>VIDLIK · ЕПІЗОД 05</span>${foot}</div></div>`;mon.classList.add('vidlik-excel-card-open')}
-
-function stageOne(){
- card(`
-  <div class="vidlik-excel-onboarding-head">
-   <div class="vidlik-excel-onboarding-logo">X</div>
-   <div><div class="vidlik-excel-onboarding-kicker">Microsoft Excel</div><h3>Що це за програма?</h3></div>
-  </div>
-  <p class="vidlik-excel-onboarding-copy"><strong>Excel</strong> — програма для роботи з електронними таблицями. У ній зберігають структуровані дані, виконують розрахунки, сортують і фільтрують записи та аналізують великі масиви інформації.</p>
-  <div class="vidlik-excel-onboarding-grid">
-   <div class="vidlik-excel-onboarding-item"><b>.XLSX</b><span>Основний формат файлу сучасної книги Excel.</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>ДАНІ</b><span>Текст, числа, дати й інші значення організовані в таблицю.</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>РОЗРАХУНКИ</b><span>Формули виконують обчислення автоматично.</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>АНАЛІЗ</b><span>Пошук, сортування й фільтри допомагають знаходити потрібне.</span></div>
-  </div>`,`<span><kbd>ENTER</kbd> далі</span>`);
- setHelp('<span><kbd>ENTER</kbd> далі · що таке Excel</span>');
-}
-function stageTwo(){
- card(`
-  <div class="vidlik-excel-onboarding-head">
-   <div class="vidlik-excel-onboarding-logo">X</div>
-   <div><div class="vidlik-excel-onboarding-kicker">Будова документа</div><h3>Книга → аркуш → клітинка</h3></div>
-  </div>
-  <p class="vidlik-excel-onboarding-copy">Файл Excel називається <strong>книгою</strong>. Усередині книги може бути кілька <strong>аркушів</strong>. Кожен аркуш складається зі стовпців і рядків, а їх перетин утворює <strong>клітинку</strong>.</p>
-  <div class="vidlik-excel-onboarding-grid">
-   <div class="vidlik-excel-onboarding-item"><b>КНИГА</b><span>Один файл .xlsx. У нашому випадку — TRAINING_SYNC_SECTOR_3.xlsx.</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>АРКУШ</b><span>Окрема вкладка всередині книги, наприклад «Вступ» або «Реєстр».</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>КЛІТИНКА B2</b><span>Стовпець B + рядок 2. Адреса дозволяє точно звернутися до значення.</span></div>
-   <div class="vidlik-excel-onboarding-item"><b>ФОРМУЛА</b><span>Починається зі знака = і може використовувати числа, функції та адреси клітинок.</span></div>
-  </div>`,`<span><kbd>ENTER</kbd> далі</span>`);
- setHelp('<span><kbd>ENTER</kbd> далі · книга, аркуш, клітинка</span>');
-}
-function stageThree(){
- card(`
-  <div class="vidlik-excel-onboarding-head">
-   <div class="vidlik-excel-onboarding-logo">X</div>
-   <div><div class="vidlik-excel-onboarding-kicker">Інтерфейс</div><h3>Що буде у вікні Excel</h3></div>
-  </div>
-  <p class="vidlik-excel-onboarding-copy">Не треба запам’ятовувати все одразу. Спочатку навчимося орієнтуватися у чотирьох основних зонах.</p>
-  <div class="vidlik-excel-onboarding-map">
-   <div><b>СТРІЧКА</b><span>Вкладки «Основне», «Вставлення», «Формули», «Дані» та команди програми.</span></div>
-   <div><b>РЯДОК ФОРМУЛ</b><span>Показує адресу активної клітинки та її значення або формулу.</span></div>
-   <div><b>ТАБЛИЦЯ</b><span>Літери позначають стовпці, числа — рядки. Стрілки переміщують активну клітинку.</span></div>
-   <div><b>ВКЛАДКИ</b><span>Унизу перемикаємося між аркушами однієї книги.</span></div>
-  </div>`,`<span><kbd>ENTER</kbd> до запуску</span>`);
- setHelp('<span><kbd>ENTER</kbd> далі · основні зони Excel</span>');
+function renderSlide(n){
+ const root=ensureOverlay();
+ root.innerHTML=`<div class="vidlik-excel-slide-shell"><img class="vidlik-excel-slide-image" src="${SLIDES[n-1]}" alt="Excel · навчальний слайд ${n} з ${SLIDES.length}" draggable="false"></div>`;
+ mon.classList.add('vidlik-excel-slides-open');
+ setFooter(`ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL · ${n}/${SLIDES.length}`);
+ setHelp(`<span><kbd>ENTER</kbd> далі · ${n}/${SLIDES.length}</span><span><kbd>ESC</kbd> пауза</span>`);
 }
 function stageReady(){
  removeOverlay();
+ stage=5;
  mon.classList.add('vidlik-excel-onboarding-active');
- adminMessage('Тепер відкрийте Microsoft Excel. Двічі клацніть зелений значок на робочому столі.\nПісля запуску ми спочатку закріпимо навігацію по клітинках — і лише потім перейдемо до введення даних та формул.');
+ excelIcon.classList.add('vidlik-excel-icon-focus','is-selected');
+ adminMessage('Базове знайомство завершено. Тепер відкрийте Microsoft Excel подвійним кліком по зеленому значку на робочому столі.');
  setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗАПУСК EXCEL');
- setHelp('<span><kbd>ЛКМ ×2</kbd> Microsoft Excel · відкрити</span>');
+ setHelp('<span><kbd>ЛКМ ×2</kbd> Microsoft Excel · відкрити</span><span><kbd>ESC</kbd> пауза</span>');
 }
 function setStage(next){
  if(!active||launching)return;
  stage=next;
- if(stage===1)stageOne();
- else if(stage===2)stageTwo();
- else if(stage===3)stageThree();
- else if(stage===4)stageReady();
+ if(stage>=1&&stage<=SLIDES.length)renderSlide(stage);
+ else if(stage===SLIDES.length+1)stageReady();
 }
 
 function begin(){
  if(active||completed)return;
  active=true;stage=0;launching=false;
+ preloadSlides();
  minimizeOldWindows();
  removeOverlay();
  mon.classList.add('vidlik-excel-onboarding-active');
  excelIcon.classList.add('vidlik-excel-icon-focus');
  setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL');
- setHelp('<span><kbd>ЛКМ</kbd> вибрати значок Microsoft Excel</span>');
- adminMessage('Перед наступним завданням — коротке знайомство з новою програмою.\nНа робочому столі знайдіть зелений значок Microsoft Excel і виберіть його одним кліком.');
+ setHelp('<span><kbd>ЛКМ</kbd> вибрати значок Microsoft Excel</span><span><kbd>ESC</kbd> пауза</span>');
+ adminMessage('Перед наступним завданням — коротке знайомство з новою програмою. На робочому столі знайдіть зелений значок Microsoft Excel і виберіть його одним кліком.');
 }
 
 function launch(){
- if(!active||launching||stage!==4)return;
+ if(!active||launching||stage!==5)return;
  launching=true;
  mon.classList.remove('vidlik-excel-onboarding-active');
  excelIcon.classList.remove('vidlik-excel-icon-focus','is-selected');
  const root=ensureOverlay();
- root.classList.add('is-visible');
+ root.classList.add('is-visible','vidlik-excel-launch-screen');
  mon.classList.add('vidlik-excel-launching');
- root.innerHTML=`<div class="vidlik-excel-onboarding-card"><div class="vidlik-excel-onboarding-head"><div class="vidlik-excel-onboarding-logo">X</div></div><div class="vidlik-excel-onboarding-kicker">Microsoft Excel</div><h3>Відкриття навчальної книги…</h3><p class="vidlik-excel-onboarding-copy">TRAINING_SYNC_SECTOR_3.xlsx</p><div class="vidlik-excel-onboarding-foot"><span>VIDLIK OS</span><span>ПІДГОТОВКА РОБОЧОГО СЕРЕДОВИЩА</span></div></div>`;
+ root.innerHTML='<div class="vidlik-excel-launch-copy"><strong>MICROSOFT EXCEL</strong><span>Відкриття TRAINING_SYNC_SECTOR_3.xlsx…</span></div>';
  setHelp('<span><kbd>EXCEL</kbd> відкриття книги…</span>');
  setTimeout(()=>{
   completed=true;active=false;launching=false;
@@ -140,10 +115,7 @@ function launch(){
 
 function gate(e){
  if(completed)return;
- e.preventDefault?.();
- e.stopImmediatePropagation();
- e.stopPropagation();
- begin();
+ e.preventDefault?.();e.stopImmediatePropagation();e.stopPropagation();begin();
 }
 window.addEventListener('vidlik:episode5-ready',gate,true);
 window.addEventListener('vidlik:section5-ready',gate,true);
@@ -151,42 +123,35 @@ window.addEventListener('vidlik:section5-ready',gate,true);
 mon.addEventListener('click',e=>{
  if(!active||launching)return;
  const icon=e.target.closest('.desktop-icon[data-app="excel"]');
- if(!icon)return;
- if(stage===0){
-  /*
-   * Own the first click completely. The OS desktop may still have minimized
-   * windows in its layer and we do not want its legacy icon handler to decide
-   * whether the onboarding advances. One click means one deterministic action:
-   * select Excel and open the explanation card.
-   */
+ if(icon&&stage===0){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
   excelIcon.classList.add('is-selected');
-  adminMessage('Так. Це Microsoft Excel. Спочатку розберемося, що саме він робить і як влаштований документ.');
-  setStage(1);
-  return;
+  adminMessage('Так. Це Microsoft Excel. На моніторі відкриється коротка довідка — перегляньте її клавішею Enter.');
+  setStage(1);return;
  }
- if(stage===4&&e.detail>=2){
+ if(stage>=1&&stage<=SLIDES.length&&e.target.closest('.vidlik-excel-slide-shell')){
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();setStage(stage+1);return;
+ }
+ if(icon&&stage===5&&e.detail>=2){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch();
  }
 },true);
 mon.addEventListener('dblclick',e=>{
- if(!active||stage!==4)return;
+ if(!active||stage!==5)return;
  if(!e.target.closest('.desktop-icon[data-app="excel"]'))return;
  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch();
 },true);
 
 window.addEventListener('keydown',e=>{
  if(!active||launching)return;
- if(e.key==='Escape')return; // Pause Router keeps ownership of Escape.
- if(stage>=1&&stage<=3&&e.key==='Enter'){
+ if(e.key==='Escape')return;
+ if(stage>=1&&stage<=SLIDES.length&&e.key==='Enter'){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();setStage(stage+1);return;
  }
- if(stage===4&&e.key==='Enter'&&excelIcon.classList.contains('is-selected')){
+ if(stage===5&&e.key==='Enter'&&excelIcon.classList.contains('is-selected')){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch();return;
  }
- if(stage>=1){
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
- }
+ if(stage>=1){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
 },true);
 
 window.addEventListener('vidlik:os-reset',()=>{
