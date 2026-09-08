@@ -18,13 +18,49 @@
   background:transparent!important;
   pointer-events:none!important;
   text-shadow:0 2px 16px rgba(0,0,0,.64)!important;
-  opacity:1!important;
-  transform:translateX(0)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  transform:translateX(-18px)!important;
+  filter:blur(3px)!important;
   box-shadow:none!important;
   color:inherit!important;
   font-size:inherit!important;
+  transition:opacity .28s ease,transform .28s ease,filter .28s ease,visibility 0s linear .28s!important;
 }
-.hotki-pause-scene .hotki-controls-context[hidden]{display:none!important}
+/* Do not let the native [hidden] display:none kill the transition. */
+.hotki-pause-scene .hotki-controls-context[hidden]{
+  display:grid!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  transform:translateX(-18px)!important;
+  filter:blur(3px)!important;
+  transition:opacity .22s ease,transform .22s ease,filter .22s ease,visibility 0s linear .22s!important;
+}
+
+/* Cross-fade the left information block exactly like the approved prototype:
+   old text leaves first, replacement text arrives with a tiny delay. */
+.hotki-pause-scene .hotki-pause-context{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translateX(0)!important;
+  filter:blur(0)!important;
+  transition:opacity .28s ease .06s,transform .28s ease .06s,filter .28s ease .06s,visibility 0s!important;
+}
+.hotki-pause-scene.hotki-controls-open .hotki-pause-context{
+  opacity:0!important;
+  visibility:hidden!important;
+  transform:translateX(-18px)!important;
+  filter:blur(3px)!important;
+  transition:opacity .22s ease,transform .22s ease,filter .22s ease,visibility 0s linear .22s!important;
+}
+.hotki-pause-scene.hotki-controls-open .hotki-controls-context:not([hidden]){
+  display:grid!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translateX(0)!important;
+  filter:blur(0)!important;
+  transition:opacity .28s ease .06s,transform .28s ease .06s,filter .28s ease .06s,visibility 0s!important;
+}
 
 .hotki-pause-scene .hotki-controls-heading{
   display:flex!important;
