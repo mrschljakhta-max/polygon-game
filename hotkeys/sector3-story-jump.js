@@ -1,39 +1,43 @@
 (()=>{
 'use strict';
+
 const params=new URLSearchParams(location.search);
 const requested=parseInt(params.get('storyScene')||'0',10)||0;
 if(requested!==1)return;
 
-const JUMP_LABEL='СЦЕНА 01 · ІНША ВЕРСІЯ';
-const overlay=document.createElement('div');
-overlay.id='vidlikStoryJump';
-overlay.innerHTML=`<div><span>VIDLIK · СЕКТОР 03</span><strong>${JUMP_LABEL}</strong><i></i><small>ПІДГОТОВКА КОНТРОЛЬНОЇ ТОЧКИ</small></div>`;
-const style=document.createElement('style');
-style.textContent=`
-#vidlikStoryJump{position:fixed;inset:0;z-index:120000;display:grid;place-items:center;background:#02090b;color:#e8f5f4;font-family:Inter,"Segoe UI",Arial,sans-serif;opacity:1;transition:opacity .65s ease}
-#vidlikStoryJump.is-out{opacity:0;pointer-events:none}
-#vidlikStoryJump>div{width:min(620px,78vw);text-align:center}
-#vidlikStoryJump span{display:block;margin-bottom:18px;color:#62d9d0;font:800 clamp(10px,.72vw,13px)/1.1 Consolas,monospace;letter-spacing:.18em}
-#vidlikStoryJump strong{display:block;font:800 clamp(25px,2.15vw,42px)/1.05 "Arial Narrow","Segoe UI",Arial,sans-serif;letter-spacing:.04em}
-#vidlikStoryJump i{display:block;width:min(320px,50vw);height:1px;margin:24px auto 18px;background:linear-gradient(90deg,transparent,#56d7cf,transparent);box-shadow:0 0 14px rgba(86,215,207,.28)}
-#vidlikStoryJump small{display:block;color:#7d9e9b;font:700 clamp(8px,.55vw,11px)/1 Consolas,monospace;letter-spacing:.12em}
-`;
-document.head.appendChild(style);
-document.body.appendChild(overlay);
-
-document.body.classList.remove('prologue-title-pending');
+/*
+ * Developer/story navigation checkpoint for Scene 01.
+ * No title card is rendered here: the player should land in the actual
+ * workstation, not in an extra loading/title screen.
+ */
+document.body.classList.remove('prologue-title-pending','vidlik-act1-title-active','vidlik-prologue-title-active');
 const app=document.querySelector('.app');
 if(app)app.style.visibility='visible';
 
+let ready=false;
 let mutationObserver=null;
+
 function removeTitleLayers(){
  document.getElementById('vidlikPrologueTitle')?.remove();
  document.getElementById('vidlikAct1Title')?.remove();
+ document.querySelector('.a1-desktop-reveal')?.remove();
  document.body.classList.remove('prologue-title-pending','vidlik-act1-title-active','vidlik-prologue-title-active');
 }
 removeTitleLayers();
 mutationObserver=new MutationObserver(removeTitleLayers);
 mutationObserver.observe(document.body,{childList:true,subtree:true});
+
+function returnToScenes(){
+ location.href='module-briefing.html?sector=3&from=story';
+}
+function escapeDuringJump(e){
+ if(ready||e.key!=='Escape')return;
+ e.preventDefault();
+ e.stopPropagation();
+ e.stopImmediatePropagation();
+ returnToScenes();
+}
+window.addEventListener('keydown',escapeDuringJump,true);
 
 function showOperationalLayer(){
  ['idleLayer','incomingLayer','videoLayer','syncLayer'].forEach(id=>document.getElementById(id)?.classList.remove('visible'));
@@ -57,49 +61,59 @@ function charSpec(ch){
  if(ch===';')return{key:';',code:'Semicolon'};
  return{key:ch,code:''};
 }
-function typeText(text,step=18){
+function typeText(text,step=14){
  [...text].forEach((ch,i)=>setTimeout(()=>{const s=charSpec(ch);fire(s.key,s.code,s)},i*step));
  return text.length*step;
+}
+function setPrepHint(text){
+ const help=document.getElementById('help');
+ if(help)help.innerHTML=`<span><kbd>СЦЕНА 01</kbd> ${text}</span>`;
+}
+
+function finishJump(){
+ ready=true;
+ mutationObserver?.disconnect();
+ window.removeEventListener('keydown',escapeDuringJump,true);
+ const help=document.getElementById('help');
+ if(help&&/СЦЕНА 01/.test(help.textContent||''))help.innerHTML='<span><kbd>EXCEL</kbd> продовжуйте за підказкою</span>';
 }
 
 function boot(){
  const OS=window.VIDLIK_OS;
  const excel=window.VIDLIK_EXCEL_STORY_TUTORIAL;
- if(!OS||!excel){setTimeout(boot,50);return}
+ if(!OS||!excel){setTimeout(boot,40);return}
+
  showOperationalLayer();
+ setPrepHint('підготовка контрольної точки… · ESC — назад');
  try{OS.enable()}catch(_){ }
  try{excel.start()}catch(_){ }
 
- // Complete only the introductory Excel steps behind the transition curtain.
- // This lands the developer at the exact takeover point where Scene 01 begins.
+ /* Complete only the introductory Excel steps invisibly in the live workstation. */
  setTimeout(()=>{
   clickCell('B2');
-  setTimeout(()=>{fire('3','Digit3');fire('Enter','Enter')},90);
- },980);
+  setTimeout(()=>{fire('3','Digit3');fire('Enter','Enter')},70);
+ },700);
 
  setTimeout(()=>{
   try{OS.setLanguage('ENG')}catch(_){ }
   clickCell('B3');
-  const wait=typeText('VIDLIK',16);
-  setTimeout(()=>fire('Tab','Tab'),wait+45);
- },1240);
+  const wait=typeText('VIDLIK');
+  setTimeout(()=>fire('Tab','Tab'),wait+35);
+ },930);
 
  setTimeout(()=>{
   clickCell('B5');
-  const wait=typeText('=SUM(12;8)',15);
-  setTimeout(()=>fire('Enter','Enter'),wait+55);
- },1580);
+  const wait=typeText('=SUM(12;8)');
+  setTimeout(()=>fire('Enter','Enter'),wait+45);
+ },1260);
 
- setTimeout(()=>fire('s','KeyS',{ctrlKey:true}),1980);
+ setTimeout(()=>fire('s','KeyS',{ctrlKey:true}),1640);
 
- // Remove training chatter just before Polya takes the channel, then reveal the scene.
  setTimeout(()=>{
   const chat=document.getElementById('adminChat');
   if(chat)chat.innerHTML='';
-  overlay.classList.add('is-out');
-  setTimeout(()=>overlay.remove(),700);
-  mutationObserver?.disconnect();
- },3380);
+  finishJump();
+ },2780);
 }
 
 boot();
