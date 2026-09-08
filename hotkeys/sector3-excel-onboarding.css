@@ -1,101 +1,41 @@
-/* Sector 3 · Episode 5 · gentle Microsoft Excel onboarding */
-/*
- * When older VIDLIK OS windows are merely minimized they still remain inside
- * .os-layer. The base OS stylesheet makes that whole layer pointer-active as long
- * as any .os-window exists, so an invisible minimized window layer can sit over
- * the desktop and steal clicks from the Excel icon. During onboarding we want the
- * desktop itself to own pointer input; taskbar controls live outside .os-layer.
- */
-.monitor-screen.vidlik-excel-onboarding-active .os-layer{
-  pointer-events:none!important;
-}
-.monitor-screen.vidlik-excel-onboarding-active .desktop-icons{
-  pointer-events:auto!important;
-}
+/* Sector 3 · Episode 5 · Microsoft Excel onboarding */
+.monitor-screen.vidlik-excel-onboarding-active .os-layer{pointer-events:none!important}
+.monitor-screen.vidlik-excel-onboarding-active .desktop-icons{pointer-events:auto!important}
 .monitor-screen.vidlik-excel-onboarding-active .desktop-icon[data-app="excel"]{
-  position:relative;
-  z-index:215!important;
-  pointer-events:auto!important;
-  cursor:pointer!important;
-  border-color:rgba(92,238,224,.76)!important;
-  background:rgba(40,165,153,.16)!important;
-  box-shadow:0 0 0 2px rgba(85,231,212,.10),0 0 22px rgba(67,225,211,.24)!important;
+  position:relative;z-index:215!important;pointer-events:auto!important;cursor:pointer!important;
+  border-color:rgba(92,238,224,.76)!important;background:rgba(40,165,153,.16)!important;
+  box-shadow:0 0 0 2px rgba(85,231,212,.10),0 0 22px rgba(67,225,211,.24)!important
 }
 .monitor-screen.vidlik-excel-onboarding-active .desktop-icon[data-app="excel"]::after{
-  content:"MICROSOFT EXCEL";
-  position:absolute;
-  left:calc(100% + 9px);
-  top:50%;
-  transform:translateY(-50%);
-  width:max-content;
-  padding:5px 8px;
-  border:1px solid rgba(100,231,218,.26);
-  border-radius:5px;
-  background:rgba(3,18,20,.96);
-  color:#dffffa;
-  font:750 7px/1 ui-monospace,"Cascadia Code",Consolas,monospace;
-  letter-spacing:.06em;
-  pointer-events:none;
-  box-shadow:0 8px 22px rgba(0,0,0,.35);
+  content:"MICROSOFT EXCEL";position:absolute;left:calc(100% + 9px);top:50%;transform:translateY(-50%);
+  width:max-content;padding:5px 8px;border:1px solid rgba(100,231,218,.26);border-radius:5px;
+  background:rgba(3,18,20,.96);color:#dffffa;font:750 7px/1 ui-monospace,"Cascadia Code",Consolas,monospace;
+  letter-spacing:.06em;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.35)
 }
+
+/* The onboarding is not a dialog anymore: it becomes the monitor content. */
 .vidlik-excel-onboarding{
-  position:absolute;
-  inset:0 0 8.6%;
-  z-index:210;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:7% 8%;
-  background:linear-gradient(90deg,rgba(2,10,12,.80),rgba(2,10,12,.54));
-  pointer-events:auto;
-  opacity:0;
-  transform:scale(.992);
-  transition:opacity .34s ease,transform .34s ease;
+  position:absolute;inset:0 0 8.6%;z-index:210;display:flex;align-items:stretch;justify-content:stretch;
+  padding:0;background:#001315;pointer-events:auto;opacity:0;transform:scale(.998);
+  transition:opacity .22s ease,transform .22s ease;overflow:hidden
 }
 .vidlik-excel-onboarding.is-visible{opacity:1;transform:none}
-.vidlik-excel-onboarding.is-leaving{opacity:0;transform:scale(1.008)}
-.vidlik-excel-onboarding-card{
-  width:min(590px,82%);
-  max-height:88%;
-  overflow:auto;
-  padding:22px 24px 20px;
-  border:1px solid rgba(100,235,220,.26);
-  border-radius:12px;
-  background:linear-gradient(160deg,rgba(7,29,30,.985),rgba(3,14,17,.985));
-  color:#e9f7f4;
-  box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 30px rgba(65,222,209,.07),inset 0 1px rgba(255,255,255,.035);
-}
-.vidlik-excel-onboarding-head{display:flex;align-items:center;gap:13px;margin-bottom:16px}
-.vidlik-excel-onboarding-logo{
-  width:48px;height:48px;display:grid;place-items:center;flex:0 0 48px;
-  border-radius:9px;background:linear-gradient(145deg,#1c8f5d,#10633f);color:white;
-  font:900 24px/1 Segoe UI,Arial,sans-serif;box-shadow:0 8px 22px rgba(0,0,0,.3)
-}
-.vidlik-excel-onboarding-kicker{color:#65e8da;font:750 7px/1 ui-monospace,Consolas,monospace;letter-spacing:.15em;text-transform:uppercase}
-.vidlik-excel-onboarding h3{margin:5px 0 0;font-size:19px;line-height:1.05;letter-spacing:.015em}
-.vidlik-excel-onboarding-copy{margin:0;color:#b9cfcb;font-size:10px;line-height:1.55}
-.vidlik-excel-onboarding-copy strong{color:#f1fffc}
-.vidlik-excel-onboarding-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
-.vidlik-excel-onboarding-item{padding:10px 11px;border:1px solid rgba(91,218,208,.13);border-radius:7px;background:rgba(77,191,181,.055)}
-.vidlik-excel-onboarding-item b{display:block;margin-bottom:4px;color:#eafffc;font-size:9px}
-.vidlik-excel-onboarding-item span{display:block;color:#8faeaa;font-size:8px;line-height:1.4}
-.vidlik-excel-onboarding-map{display:grid;gap:6px;margin-top:14px;padding:10px;border:1px solid rgba(91,218,208,.12);border-radius:8px;background:#061719}
-.vidlik-excel-onboarding-map div{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:center;padding:7px 8px;border-radius:5px;background:rgba(255,255,255,.025)}
-.vidlik-excel-onboarding-map b{color:#6ce9dc;font:750 7px/1 ui-monospace,Consolas,monospace;letter-spacing:.07em}
-.vidlik-excel-onboarding-map span{color:#b7ceca;font-size:8px;line-height:1.35}
-.vidlik-excel-onboarding-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:17px;padding-top:12px;border-top:1px solid rgba(91,218,208,.12);color:#779995;font:650 7px/1.25 ui-monospace,Consolas,monospace}
-.vidlik-excel-onboarding-foot kbd{padding:4px 7px;border:1px solid rgba(100,230,218,.25);border-radius:4px;background:#092426;color:#e7fffb}
-.vidlik-excel-launching .vidlik-excel-onboarding-card{text-align:center;padding-top:34px;padding-bottom:34px}
-.vidlik-excel-launching .vidlik-excel-onboarding-head{justify-content:center}
-.vidlik-excel-launching .vidlik-excel-onboarding-logo{width:60px;height:60px;flex-basis:60px;font-size:31px;animation:vidlikExcelLaunchPulse .9s ease-in-out infinite}
-@keyframes vidlikExcelLaunchPulse{50%{transform:scale(1.06);box-shadow:0 0 28px rgba(56,221,151,.26)}}
+.vidlik-excel-onboarding.is-leaving{opacity:0;transform:scale(1.004);pointer-events:none}
+.monitor-screen.vidlik-excel-slides-open .desktop-icons{opacity:0;pointer-events:none!important}
+.monitor-screen.vidlik-excel-slides-open .os-layer{opacity:0}
+
+.vidlik-excel-slide-shell{position:absolute;inset:0;display:grid;place-items:center;background:#001315;cursor:pointer;overflow:hidden}
+.vidlik-excel-slide-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center;user-select:none;-webkit-user-drag:none}
+
+.vidlik-excel-launch-screen{display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,rgba(12,95,84,.36),rgba(1,14,17,.97) 55%)}
+.vidlik-excel-launch-copy{display:grid;gap:10px;text-align:center;color:#dffffb;font-family:"Segoe UI",Arial,sans-serif}
+.vidlik-excel-launch-copy strong{font-size:22px;letter-spacing:.08em;color:#ecfffc}
+.vidlik-excel-launch-copy span{font:700 9px/1.4 ui-monospace,"Cascadia Code",Consolas,monospace;color:#75dcd2}
+.vidlik-excel-launch-copy::before{content:'X';width:64px;height:64px;margin:0 auto 8px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#1c8f5d,#10633f);color:#fff;font:900 34px/1 "Segoe UI",Arial,sans-serif;box-shadow:0 0 35px rgba(43,218,151,.22);animation:vidlikExcelLaunchPulse .9s ease-in-out infinite}
+@keyframes vidlikExcelLaunchPulse{50%{transform:scale(1.06);box-shadow:0 0 34px rgba(56,221,151,.32)}}
+
 @media(max-width:760px){
- .vidlik-excel-onboarding{padding:5%}
- .vidlik-excel-onboarding-card{width:88%;padding:14px 15px}
- .vidlik-excel-onboarding-logo{width:38px;height:38px;flex-basis:38px;font-size:20px}
- .vidlik-excel-onboarding h3{font-size:13px}
- .vidlik-excel-onboarding-copy{font-size:7px}
- .vidlik-excel-onboarding-grid{gap:5px}.vidlik-excel-onboarding-item{padding:7px}
- .vidlik-excel-onboarding-item b{font-size:7px}.vidlik-excel-onboarding-item span{font-size:6px}
- .vidlik-excel-onboarding-map div{grid-template-columns:66px 1fr;padding:5px}.vidlik-excel-onboarding-map b,.vidlik-excel-onboarding-map span{font-size:6px}
+ .vidlik-excel-slide-image{object-fit:cover}
+ .vidlik-excel-launch-copy strong{font-size:15px}
+ .vidlik-excel-launch-copy span{font-size:7px}
 }
