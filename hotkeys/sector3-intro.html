@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05090c">
 <title>HOTKI — Сектор 3 · Заборонений дзвінок</title>
-<style>body.prologue-title-pending .app{visibility:hidden}#vidlikAct1Title .a1-terminal:focus-visible{outline:none!important;outline-offset:0!important}</style>
+<script>
+(()=>{
+  const p=new URLSearchParams(location.search);
+  window.__VIDLIK_STORY_JUMP_REQUESTED=p.has('storyScene');
+  if(window.__VIDLIK_STORY_JUMP_REQUESTED)document.documentElement.classList.add('vidlik-story-jump');
+})();
+</script>
+<style>
+body.prologue-title-pending .app{visibility:hidden}
+html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
+#vidlikAct1Title .a1-terminal:focus-visible{outline:none!important;outline-offset:0!important}
+</style>
 <link rel="preload" as="image" href="assets/sector3-prologue/prologue-title-bg.png">
 <link rel="stylesheet" href="sector3-intro.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-incoming-effects.css?v=20260906-2">
@@ -111,9 +122,15 @@
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-prologue-title.js?v=20260907-4"></script>
-<script src="sector3-prologue-title-copy.js?v=20260908-1"></script>
-<script src="sector3-prologue-title-external-bg.js?v=20260907-1"></script>
+<script>
+if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
+  document.write('<script src="sector3-prologue-title.js?v=20260907-4"><\/script>');
+  document.write('<script src="sector3-prologue-title-copy.js?v=20260908-1"><\/script>');
+  document.write('<script src="sector3-prologue-title-external-bg.js?v=20260907-1"><\/script>');
+}else{
+  document.body.classList.remove('prologue-title-pending');
+}
+</script>
 <script src="sector3-shortcut-normalizer.js?v=20260908-1"></script>
 <script src="sector3-scene1-investigation.js?v=20260908-1"></script>
 <script src="sector3-pause-input-v2.js?v=20260908-2"></script>
@@ -135,7 +152,7 @@
 <script src="sector3-excel-onboarding.js?v=20260908-1"></script>
 <script src="sector3-excel-tutorial.js?v=20260907-1"></script>
 <script src="sector3-adaptive-visual.js?v=20260907-4"></script>
-<script src="sector3-story-jump.js?v=20260908-1"></script>
+<script src="sector3-story-jump.js?v=20260908-2"></script>
 <script src="sector3-hud-stability.js?v=20260908-1"></script>
 </body>
 </html>
