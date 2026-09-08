@@ -10,6 +10,31 @@
   const p=new URLSearchParams(location.search);
   window.__VIDLIK_STORY_JUMP_REQUESTED=p.has('storyScene');
   if(window.__VIDLIK_STORY_JUMP_REQUESTED)document.documentElement.classList.add('vidlik-story-jump');
+
+  /*
+   * Earliest Escape bridge for the pre-OS story runtime.
+   * It is registered before every prologue/scene module, so legacy handlers
+   * cannot swallow ESC on Polya's call before the canonical pause router sees it.
+   * Once VIDLIK OS is active, this bridge becomes inert and ESC keeps its
+   * normal context-sensitive OS behaviour.
+   */
+  window.addEventListener('keydown',e=>{
+    const isEscape=e.key==='Escape'||e.code==='Escape'||e.keyCode===27;
+    if(!isEscape||e.repeat)return;
+    const router=window.VIDLIK_PAUSE_ROUTER;
+    if(!router||router.paused)return;
+    let osReady=false;
+    try{osReady=!!window.VIDLIK_OS?.getState?.()?.enabled}catch(_){}
+    if(osReady)return;
+    const interactive=document.querySelector('.incoming.visible,.video.visible,.admin-layer.visible');
+    const blocked=document.querySelector('.sync-layer.visible,.monitor-sync-overlay.visible,.video.visible.breaking');
+    const title=document.getElementById('vidlikPrologueTitle')||document.getElementById('vidlikAct1Title');
+    if(!interactive||blocked||title)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    router.pause('escape-pre-os-bridge',true);
+  },true);
 })();
 </script>
 <style>
