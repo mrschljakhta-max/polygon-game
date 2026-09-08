@@ -9,35 +9,13 @@ const help=document.getElementById('help');
 const excelIcon=document.querySelector('.desktop-icon[data-app="excel"]');
 if(!mon||!chat||!footer||!help||!excelIcon)return;
 
-const ASSET_SCRIPTS=[
- 'sector3-excel-slide-1a.js','sector3-excel-slide-1b.js',
- 'sector3-excel-slide-2a.js','sector3-excel-slide-2b.js','sector3-excel-slide-2c.js',
- 'sector3-excel-slide-3a.js','sector3-excel-slide-3b.js','sector3-excel-slide-3c.js',
- 'sector3-excel-slide-4a.js','sector3-excel-slide-4b.js','sector3-excel-slide-4c.js'
+const SLIDES=[
+ 'assets/sector3-excel-onboarding/excel-slide-01.png',
+ 'assets/sector3-excel-onboarding/excel-slide-02.png',
+ 'assets/sector3-excel-onboarding/excel-slide-03.png',
+ 'assets/sector3-excel-onboarding/excel-slide-04.png'
 ];
-const asDataUri=v=>!v?'':(v.startsWith('data:')?v:`data:image/webp;base64,${v}`);
-let SLIDES=[];
-let slidesPromise=null;
-
-function loadAssetScript(src){
- return new Promise((resolve,reject)=>{
-  const old=document.querySelector(`script[data-excel-slide-src="${src}"]`);
-  if(old){if(old.dataset.loaded==='1')resolve();else old.addEventListener('load',resolve,{once:true});return}
-  const s=document.createElement('script');s.src=`${src}?v=20260908-1`;s.dataset.excelSlideSrc=src;s.async=false;
-  s.addEventListener('load',()=>{s.dataset.loaded='1';resolve()},{once:true});s.addEventListener('error',reject,{once:true});document.head.appendChild(s);
- })
-}
-function ensureSlides(){
- if(slidesPromise)return slidesPromise;
- slidesPromise=(async()=>{
-  for(const src of ASSET_SCRIPTS)await loadAssetScript(src);
-  SLIDES=[1,2,3,4].map(n=>asDataUri(window[`VIDLIK_EXCEL_SLIDE_${n}`]));
-  for(const src of SLIDES){if(!src)continue;const img=new Image();img.decoding='async';img.src=src}
-  return SLIDES;
- })().catch(err=>{console.error('Excel onboarding slides failed to load',err);SLIDES=[];return SLIDES});
- return slidesPromise;
-}
-ensureSlides();
+for(const src of SLIDES){const img=new Image();img.decoding='async';img.src=src}
 
 let active=false;
 let completed=false;
@@ -72,38 +50,54 @@ function ensureOverlay(){
 }
 function renderSlide(n){
  const src=SLIDES[n-1];const root=ensureOverlay();
- root.innerHTML=src?`<div class="vidlik-excel-slide-shell"><img class="vidlik-excel-slide-image" src="${src}" alt="Excel · навчальний слайд ${n} з 4" draggable="false"></div>`:`<div class="vidlik-excel-slide-error">Слайд ${n} недоступний</div>`;
- mon.classList.add('vidlik-excel-slides-open');setFooter(`ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL · ${n}/4`);setHelp(`<span><kbd>ENTER</kbd> далі · ${n}/4</span><span><kbd>ESC</kbd> пауза</span>`);
+ root.innerHTML=`<div class="vidlik-excel-slide-shell"><img class="vidlik-excel-slide-image" src="${src}?v=20260908-5" alt="Excel · навчальний слайд ${n} з 4" draggable="false"></div>`;
+ mon.classList.add('vidlik-excel-slides-open');
+ setFooter(`ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL · ${n}/4`);
+ setHelp(`<span><kbd>ENTER</kbd> далі · ${n}/4</span><span><kbd>ESC</kbd> пауза</span>`);
 }
 function stageReady(){
  removeOverlay();stage=5;mon.classList.add('vidlik-excel-onboarding-active');excelIcon.classList.add('vidlik-excel-icon-focus','is-selected');
- adminMessage('Базове знайомство завершено. Тепер відкрийте Microsoft Excel подвійним кліком по зеленому значку на робочому столі.');setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗАПУСК EXCEL');setHelp('<span><kbd>ЛКМ ×2</kbd> Microsoft Excel · відкрити</span><span><kbd>ESC</kbd> пауза</span>');
+ adminMessage('Базове знайомство завершено. Тепер відкрийте Microsoft Excel подвійним кліком по зеленому значку на робочому столі.');
+ setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗАПУСК EXCEL');
+ setHelp('<span><kbd>ЛКМ ×2</kbd> Microsoft Excel · відкрити</span><span><kbd>ESC</kbd> пауза</span>');
 }
 function setStage(next){if(!active||launching)return;stage=next;if(stage>=1&&stage<=4)renderSlide(stage);else if(stage===5)stageReady()}
 function begin(){
- if(active||completed)return;active=true;stage=0;launching=false;ensureSlides();minimizeOldWindows();removeOverlay();mon.classList.add('vidlik-excel-onboarding-active');excelIcon.classList.add('vidlik-excel-icon-focus');
- setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL');setHelp('<span><kbd>ЛКМ</kbd> вибрати значок Microsoft Excel</span><span><kbd>ESC</kbd> пауза</span>');adminMessage('Перед наступним завданням — коротке знайомство з новою програмою. На робочому столі знайдіть зелений значок Microsoft Excel і виберіть його одним кліком.');
+ if(active||completed)return;active=true;stage=0;launching=false;minimizeOldWindows();removeOverlay();mon.classList.add('vidlik-excel-onboarding-active');excelIcon.classList.add('vidlik-excel-icon-focus');
+ setFooter('ЕПІЗОД 5 · ПЕРША ТАБЛИЦЯ · ЗНАЙОМСТВО З EXCEL');
+ setHelp('<span><kbd>ЛКМ</kbd> вибрати значок Microsoft Excel</span><span><kbd>ESC</kbd> пауза</span>');
+ adminMessage('Перед наступним завданням — коротке знайомство з новою програмою. На робочому столі знайдіть зелений значок Microsoft Excel і виберіть його одним кліком.');
 }
 function launch(){
  if(!active||launching||stage!==5)return;launching=true;mon.classList.remove('vidlik-excel-onboarding-active');excelIcon.classList.remove('vidlik-excel-icon-focus','is-selected');
- const root=ensureOverlay();root.classList.add('is-visible','vidlik-excel-launch-screen');mon.classList.add('vidlik-excel-launching');root.innerHTML='<div class="vidlik-excel-launch-copy"><strong>MICROSOFT EXCEL</strong><span>Відкриття TRAINING_SYNC_SECTOR_3.xlsx…</span></div>';setHelp('<span><kbd>EXCEL</kbd> відкриття книги…</span>');
+ const root=ensureOverlay();root.classList.add('is-visible','vidlik-excel-launch-screen');mon.classList.add('vidlik-excel-launching');
+ root.innerHTML='<div class="vidlik-excel-launch-copy"><strong>MICROSOFT EXCEL</strong><span>Відкриття TRAINING_SYNC_SECTOR_3.xlsx…</span></div>';
+ setHelp('<span><kbd>EXCEL</kbd> відкриття книги…</span>');
  setTimeout(()=>{completed=true;active=false;launching=false;removeOverlay();window.VIDLIK_EXCEL_STORY_TUTORIAL?.start?.()},720);
 }
 function gate(e){if(completed)return;e.preventDefault?.();e.stopImmediatePropagation();e.stopPropagation();begin()}
 window.addEventListener('vidlik:episode5-ready',gate,true);window.addEventListener('vidlik:section5-ready',gate,true);
+
 mon.addEventListener('click',e=>{
- if(!active||launching)return;const icon=e.target.closest('.desktop-icon[data-app="excel"]');
- if(icon&&stage===0){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();excelIcon.classList.add('is-selected');adminMessage('Так. Це Microsoft Excel. На моніторі відкриється коротка довідка — перегляньте її клавішею Enter.');setHelp('<span><kbd>EXCEL</kbd> завантаження довідки…</span><span><kbd>ESC</kbd> пауза</span>');ensureSlides().then(()=>{if(active&&stage===0)setStage(1)});return}
+ if(!active||launching)return;
+ const icon=e.target.closest('.desktop-icon[data-app="excel"]');
+ if(icon&&stage===0){
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();excelIcon.classList.add('is-selected');
+  adminMessage('Так. Це Microsoft Excel. На моніторі відкриється коротка довідка — перегляньте її клавішею Enter.');
+  setStage(1);return;
+ }
  if(stage>=1&&stage<=4&&e.target.closest('.vidlik-excel-slide-shell')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();setStage(stage+1);return}
  if(icon&&stage===5&&e.detail>=2){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch()}
 },true);
 mon.addEventListener('dblclick',e=>{if(!active||stage!==5||!e.target.closest('.desktop-icon[data-app="excel"]'))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch()},true);
+
 window.addEventListener('keydown',e=>{
  if(!active||launching)return;if(e.key==='Escape')return;
  if(stage>=1&&stage<=4&&e.key==='Enter'){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();setStage(stage+1);return}
  if(stage===5&&e.key==='Enter'&&excelIcon.classList.contains('is-selected')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();launch();return}
  if(stage>=1){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
 },true);
+
 window.addEventListener('vidlik:os-reset',()=>{active=false;completed=false;stage=0;launching=false;removeOverlay();mon.classList.remove('vidlik-excel-onboarding-active');excelIcon.classList.remove('vidlik-excel-icon-focus','is-selected')});
 window.VIDLIK_EXCEL_ONBOARDING={begin,launch,get active(){return active},get stage(){return stage},get completed(){return completed}};
 })();
