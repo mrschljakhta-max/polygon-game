@@ -125,7 +125,7 @@ function launch(){
  if(!active||launching||stage!==4)return;
  launching=true;
  mon.classList.remove('vidlik-excel-onboarding-active');
- excelIcon.classList.remove('vidlik-excel-icon-focus');
+ excelIcon.classList.remove('vidlik-excel-icon-focus','is-selected');
  const root=ensureOverlay();
  root.classList.add('is-visible');
  mon.classList.add('vidlik-excel-launching');
@@ -153,7 +153,16 @@ mon.addEventListener('click',e=>{
  const icon=e.target.closest('.desktop-icon[data-app="excel"]');
  if(!icon)return;
  if(stage===0){
-  setTimeout(()=>{if(active&&stage===0){adminMessage('Так. Це Microsoft Excel. Спочатку розберемося, що саме він робить і як влаштований документ.');setStage(1)}},40);
+  /*
+   * Own the first click completely. The OS desktop may still have minimized
+   * windows in its layer and we do not want its legacy icon handler to decide
+   * whether the onboarding advances. One click means one deterministic action:
+   * select Excel and open the explanation card.
+   */
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  excelIcon.classList.add('is-selected');
+  adminMessage('Так. Це Microsoft Excel. Спочатку розберемося, що саме він робить і як влаштований документ.');
+  setStage(1);
   return;
  }
  if(stage===4&&e.detail>=2){
@@ -183,7 +192,7 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('vidlik:os-reset',()=>{
  active=false;completed=false;stage=0;launching=false;removeOverlay();
  mon.classList.remove('vidlik-excel-onboarding-active');
- excelIcon.classList.remove('vidlik-excel-icon-focus');
+ excelIcon.classList.remove('vidlik-excel-icon-focus','is-selected');
 });
 
 window.VIDLIK_EXCEL_ONBOARDING={begin,launch,get active(){return active},get stage(){return stage},get completed(){return completed}};
