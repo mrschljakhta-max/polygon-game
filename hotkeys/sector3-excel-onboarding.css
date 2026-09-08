@@ -1,7 +1,21 @@
 /* Sector 3 · Episode 5 · gentle Microsoft Excel onboarding */
+/*
+ * When older VIDLIK OS windows are merely minimized they still remain inside
+ * .os-layer. The base OS stylesheet makes that whole layer pointer-active as long
+ * as any .os-window exists, so an invisible minimized window layer can sit over
+ * the desktop and steal clicks from the Excel icon. During onboarding we want the
+ * desktop itself to own pointer input; taskbar controls live outside .os-layer.
+ */
+.monitor-screen.vidlik-excel-onboarding-active .os-layer{
+  pointer-events:none!important;
+}
+.monitor-screen.vidlik-excel-onboarding-active .desktop-icons{
+  pointer-events:auto!important;
+}
 .monitor-screen.vidlik-excel-onboarding-active .desktop-icon[data-app="excel"]{
   position:relative;
   z-index:215!important;
+  pointer-events:auto!important;
   cursor:pointer!important;
   border-color:rgba(92,238,224,.76)!important;
   background:rgba(40,165,153,.16)!important;
