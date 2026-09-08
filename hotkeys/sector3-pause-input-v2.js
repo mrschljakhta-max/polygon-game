@@ -151,6 +151,12 @@ function openControlsFromIcons(){
  if(c?.hidden)tool?.click();
  requestAnimationFrame(()=>requestAnimationFrame(()=>selectSub(0)));
 }
+function resetPauseView(){
+ cancelArmed();
+ clearSubnav();
+ const c=controls(),tool=document.getElementById('vidlikPauseControlsBtn');
+ if(c&&!c.hidden)tool?.click();
+}
 
 // This listener is loaded BEFORE the global Escape router, so pending confirmation
 // can own the first Escape. A second Escape then falls through and resumes the game.
@@ -231,8 +237,8 @@ window.addEventListener('pointerover',e=>{
 },true);
 
 window.addEventListener('vidlik:pause-state',e=>{
- if(!e.detail?.paused){cancelArmed();clearSubnav();return}
- cancelArmed();clearSubnav();selectMain(0,false);
+ if(!e.detail?.paused){resetPauseView();return}
+ resetPauseView();selectMain(0,false);
 });
 
 // CSS for the inline confirmation tooltip. No dialog/card is shown.
