@@ -10,14 +10,6 @@
   const p=new URLSearchParams(location.search);
   window.__VIDLIK_STORY_JUMP_REQUESTED=p.has('storyScene');
   if(window.__VIDLIK_STORY_JUMP_REQUESTED)document.documentElement.classList.add('vidlik-story-jump');
-
-  /*
-   * Earliest Escape bridge for the pre-OS story runtime.
-   * It is registered before every prologue/scene module, so legacy handlers
-   * cannot swallow ESC on Polya's call before the canonical pause router sees it.
-   * Once VIDLIK OS is active, this bridge becomes inert and ESC keeps its
-   * normal context-sensitive OS behaviour.
-   */
   window.addEventListener('keydown',e=>{
     const isEscape=e.key==='Escape'||e.code==='Escape'||e.keyCode===27;
     if(!isEscape||e.repeat)return;
@@ -30,9 +22,7 @@
     const blocked=document.querySelector('.sync-layer.visible,.monitor-sync-overlay.visible,.video.visible.breaking');
     const title=document.getElementById('vidlikPrologueTitle')||document.getElementById('vidlikAct1Title');
     if(!interactive||blocked||title)return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
     router.pause('escape-pre-os-bridge',true);
   },true);
 })();
@@ -56,7 +46,7 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 <link rel="stylesheet" href="sector3-keyboard-tutorial.css?v=20260907-1">
 <link rel="stylesheet" href="sector3-language-tutorial.css?v=20260907-1">
 <link rel="stylesheet" href="sector3-excel-tutorial.css?v=20260907-1">
-<link rel="stylesheet" href="sector3-excel-onboarding.css?v=20260908-2">
+<link rel="stylesheet" href="sector3-excel-onboarding.css?v=20260908-3">
 <link rel="stylesheet" href="sector3-adaptive-visual.css?v=20260907-3">
 <link rel="stylesheet" href="sector3-section-transition.css?v=20260906-1">
 <link rel="stylesheet" href="sector3-pause-router.css?v=20260908-1">
@@ -68,7 +58,6 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
   <main class="scene" id="scene" tabindex="0" aria-label="Заборонений дзвінок">
     <div class="camera" id="camera">
       <img class="desk" src="assets/sector3-prologue/desk.webp" alt="Робочий стіл HOTKI">
-
       <section class="monitor-screen" aria-label="Монітор">
         <img class="monitor-wallpaper" src="assets/sector3-prologue/monitor-wallpaper.webp" alt="">
         <div class="desktop-icons" id="desktopIcons">
@@ -77,7 +66,6 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
           <button class="desktop-icon" type="button" data-app="excel"><img src="assets/sector3-prologue/icon-excel.webp" alt=""><span>Microsoft<br>Excel</span></button>
           <button class="desktop-icon" type="button" data-app="trash"><img src="assets/sector3-prologue/icon-trash.webp" alt=""><span>Кошик</span></button>
         </div>
-
         <div class="monitor-sync-overlay" id="monitorSyncOverlay" aria-hidden="true">
           <div class="monitor-sync-screen">
             <div class="monitor-sync-logo">VIDLIK</div>
@@ -86,10 +74,8 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
             <div class="monitor-sync-percent" id="monitorSyncPercent">0%</div>
           </div>
         </div>
-
         <div class="taskbar"><span class="start-mark">⊞</span><span>VIDLIK OS</span><span class="taskbar-spacer"></span><span id="desktopClock">--:--</span><span>UKR</span></div>
       </section>
-
       <section class="tablet-screen" id="tabletScreen" aria-label="Екран планшета">
         <div class="tablet-layer idle visible" id="idleLayer">
           <img src="assets/sector3-prologue/tablet-lock.webp" alt="Екран блокування VIDLIK">
@@ -107,7 +93,6 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
           <div class="call-progress" id="callProgress"></div>
           <div class="glitch"></div>
         </div>
-
         <div class="tablet-layer admin-layer" id="adminLayer" aria-label="Чат із системним адміністратором VIDLIK">
           <div class="admin-shell">
             <header class="admin-header">
@@ -117,31 +102,22 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
                 <div class="admin-online"><i></i><span>Онлайн</span></div>
               </div>
             </header>
-
             <div class="admin-chat" id="adminChat" aria-live="polite"></div>
-
             <div class="admin-composer" aria-hidden="true">
-              <span class="admin-attach">⌕</span>
-              <span class="admin-placeholder">Напишіть повідомлення...</span>
-              <span class="admin-send">➤</span>
+              <span class="admin-attach">⌕</span><span class="admin-placeholder">Напишіть повідомлення...</span><span class="admin-send">➤</span>
             </div>
             <div class="admin-footer" id="adminFooter">ENTER · ПРОДОВЖИТИ</div>
           </div>
         </div>
-
         <div class="tablet-layer sync-layer" id="syncLayer" aria-label="Синхронізація планшета з робочою станцією">
           <div class="sync-shell" id="syncShell">
-            <div class="sync-logo">VIDLIK</div>
-            <div class="sync-title" id="syncStage">СИНХРОНІЗАЦІЯ</div>
-            <div class="sync-track"><div class="sync-bar" id="syncBar"></div></div>
-            <div class="sync-percent" id="syncPercent">0%</div>
+            <div class="sync-logo">VIDLIK</div><div class="sync-title" id="syncStage">СИНХРОНІЗАЦІЯ</div>
+            <div class="sync-track"><div class="sync-bar" id="syncBar"></div></div><div class="sync-percent" id="syncPercent">0%</div>
           </div>
         </div>
       </section>
     </div>
-
-    <div class="sync-flash-layer" aria-hidden="true"></div>
-    <div class="shade"></div>
+    <div class="sync-flash-layer" aria-hidden="true"></div><div class="shade"></div>
     <div class="keys" id="help"><span><kbd>ENTER</kbd> прийняти / далі</span><span><kbd>ESC</kbd> пауза</span><span><kbd>R</kbd> спочатку</span></div>
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
@@ -151,9 +127,7 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
   document.write('<script src="sector3-prologue-title.js?v=20260907-4"><\/script>');
   document.write('<script src="sector3-prologue-title-copy.js?v=20260908-1"><\/script>');
   document.write('<script src="sector3-prologue-title-external-bg.js?v=20260907-1"><\/script>');
-}else{
-  document.body.classList.remove('prologue-title-pending');
-}
+}else{document.body.classList.remove('prologue-title-pending')}
 </script>
 <script src="sector3-shortcut-normalizer.js?v=20260908-1"></script>
 <script src="sector3-scene1-investigation.js?v=20260908-1"></script>
@@ -173,7 +147,7 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
 <script src="sector3-explorer-keyboard-fixes.js?v=20260907-2"></script>
 <script src="sector3-language-tutorial.js?v=20260907-1"></script>
 <script src="sector3-language-cleanup.js?v=20260907-2"></script>
-<script src="sector3-excel-onboarding.js?v=20260908-2"></script>
+<script src="sector3-excel-onboarding.js?v=20260908-3"></script>
 <script src="sector3-excel-tutorial.js?v=20260907-1"></script>
 <script src="sector3-adaptive-visual.js?v=20260907-4"></script>
 <script src="sector3-story-jump.js?v=20260908-3"></script>
