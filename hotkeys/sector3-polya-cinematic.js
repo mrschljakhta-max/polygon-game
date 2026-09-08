@@ -3,12 +3,11 @@
 if(window.VIDLIK_POLYA_CINEMATIC)return;
 
 const scene=document.getElementById('scene');
-const camera=document.getElementById('camera');
 const chat=document.getElementById('adminChat');
 const help=document.getElementById('help');
 const footer=document.getElementById('adminFooter');
 const header=document.querySelector('.admin-header');
-if(!scene||!camera||!chat||!help||!header)return;
+if(!scene||!chat||!help||!header)return;
 
 let active=false;
 let step=-1;
@@ -28,20 +27,21 @@ const LINES=[
 const style=document.createElement('style');
 style.id='vidlik-polya-cinematic-style';
 style.textContent=`
-.scene.s3-polya-cinematic{background:#020506}
-.scene.s3-polya-cinematic .camera{
-  transform-origin:18.6% 59.5%!important;
-  transform:translate3d(31%,-9%,0) scale(1.62)!important;
-  transition:transform .72s cubic-bezier(.2,.76,.22,1)!important;
+.scene .tablet-screen{
+ transition:left .72s cubic-bezier(.2,.76,.22,1),top .72s cubic-bezier(.2,.76,.22,1),width .72s cubic-bezier(.2,.76,.22,1),height .72s cubic-bezier(.2,.76,.22,1),box-shadow .32s ease!important;
+}
+.scene.s3-polya-cinematic .camera{transform:none!important;transition:none!important}
+.scene.s3-polya-cinematic .tablet-screen{
+ left:36.35%!important;top:7.8%!important;width:27.3%!important;height:84.4%!important;z-index:120!important;
+ box-shadow:0 0 0 1px rgba(85,231,212,.55),0 0 48px rgba(85,231,212,.22),0 28px 90px rgba(0,0,0,.55),inset 0 0 18px rgba(85,231,212,.08)!important
 }
 .scene.s3-polya-cinematic::after{
-  content:'';position:absolute;inset:0;z-index:36;pointer-events:none;
-  background:linear-gradient(90deg,rgba(0,0,0,.20),transparent 42%,rgba(0,0,0,.42));
-  opacity:1;transition:opacity .32s ease
+ content:'';position:absolute;inset:0;z-index:36;pointer-events:none;
+ background:radial-gradient(circle at 50% 50%,transparent 28%,rgba(0,0,0,.20) 62%,rgba(0,0,0,.50));
+ opacity:1;transition:opacity .32s ease
 }
 .scene.s3-polya-cinematic .keys{z-index:520!important}
 .scene.s3-polya-cinematic .pause{z-index:900!important}
-.scene.s3-polya-cinematic .tablet-screen{box-shadow:0 0 0 1px rgba(85,231,212,.42),0 0 34px rgba(85,231,212,.20),inset 0 0 18px rgba(85,231,212,.08)}
 .admin-message.s3-polya-cinematic-owned .admin-bubble{box-shadow:0 0 22px rgba(255,76,98,.08)}
 `;
 document.head.appendChild(style);
@@ -64,22 +64,27 @@ function showNext(){
  if(step<LINES.length-1){
   step++;
   addOwnedMessage(LINES[step]);
-  if(step===LINES.length-1){
-   setHint('повернутись до Excel');
-   footer.textContent='ПОЛЯ · ПЕРЕВІРКА РЕЄСТРУ';
-  }else setHint();
+  if(step===LINES.length-1){setHint('повернутись до Excel');footer.textContent='ПОЛЯ · ПЕРЕВІРКА РЕЄСТРУ'}
+  else setHint();
   return;
  }
  finishWhenReady();
+}
+function removeStoryCurtain(){
+ const curtain=document.getElementById('s3StoryJumpCurtain');
+ if(curtain){curtain.classList.add('is-leaving');setTimeout(()=>curtain.remove(),320)}
+ document.documentElement.classList.remove('s3-story-jump-preparing');
 }
 function begin(){
  if(active)return;
  active=true;step=-1;waitingForTask=false;suppressLegacy=true;
  clearTimeout(releaseTimer);
+ chat.innerHTML='';
  scene.classList.add('s3-polya-cinematic');
  footer.textContent='ПОЛЯ · ЗАХИЩЕНИЙ КАНАЛ';
  setHint();
- setTimeout(()=>{if(active&&step<0)showNext()},420);
+ removeStoryCurtain();
+ setTimeout(()=>{if(active&&step<0)showNext()},520);
 }
 function finishWhenReady(){
  if(!active||waitingForTask)return;
@@ -88,7 +93,7 @@ function finishWhenReady(){
   const t=window.VIDLIK_EXCEL_STORY_TUTORIAL;
   if(!active)return;
   if(t?.active&&t.task===6){finish();return}
-  setTimeout(wait,100);
+  setTimeout(wait,80);
  };
  wait();
 }
@@ -102,17 +107,12 @@ function finish(){
 }
 
 const legacyObserver=new MutationObserver(records=>{
- for(const r of records){
-  for(const n of r.addedNodes){
-   if(!(n instanceof Element))continue;
-   const rows=[];
-   if(n.matches?.('.admin-message.is-polya'))rows.push(n);
-   n.querySelectorAll?.('.admin-message.is-polya').forEach(x=>rows.push(x));
-   for(const row of rows){
-    if(row.classList.contains('s3-polya-cinematic-owned'))continue;
-    if(active||suppressLegacy)row.remove();
-   }
-  }
+ for(const r of records)for(const n of r.addedNodes){
+  if(!(n instanceof Element))continue;
+  const rows=[];
+  if(n.matches?.('.admin-message.is-polya'))rows.push(n);
+  n.querySelectorAll?.('.admin-message.is-polya').forEach(x=>rows.push(x));
+  for(const row of rows){if(row.classList.contains('s3-polya-cinematic-owned'))continue;if(active||suppressLegacy)row.remove()}
  }
 });
 legacyObserver.observe(chat,{childList:true,subtree:true});
@@ -129,13 +129,16 @@ window.addEventListener('keydown',e=>{
  if(!active||e.repeat)return;
  if(e.key==='Escape')return;
  if(e.key==='Enter'){
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();showNext();return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  showNext();
+  requestAnimationFrame(()=>scene.classList.add('s3-polya-cinematic'));
+  return;
  }
  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
 },true);
 
 window.addEventListener('vidlik:os-reset',()=>{
- active=false;waitingForTask=false;suppressLegacy=false;clearTimeout(releaseTimer);scene.classList.remove('s3-polya-cinematic');
+ active=false;waitingForTask=false;suppressLegacy=false;clearTimeout(releaseTimer);scene.classList.remove('s3-polya-cinematic');removeStoryCurtain();
 });
 
 window.VIDLIK_POLYA_CINEMATIC={begin,showNext,finish,get active(){return active},get step(){return step}};
