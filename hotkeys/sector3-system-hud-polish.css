@@ -74,6 +74,24 @@
   font-weight:550!important;
 }
 
+/* HUD hygiene: one semantic hint = one visible item. */
+.scene>.keys>.vidlik-native-esc-hidden,
+.scene>.keys>.vidlik-native-duplicate-hidden{
+  display:none!important;
+}
+
+/* The hint bar is status UI, not an attention target. Adaptive pulse on #help
+   produced a visible flash whenever tutorial text was replaced. */
+.scene>#help.vidlik-adaptive-pulse,
+.scene>#help.vidlik-adaptive-visual-target.vidlik-adaptive-pulse{
+  animation:none!important;
+  filter:none!important;
+}
+.scene>#help>span,
+.scene>#help>span>kbd{
+  animation:none!important;
+}
+
 @media(max-width:760px){
   .vidlik-menu-button{left:9px!important;right:auto!important;top:9px!important}
   .scene>.keys{
