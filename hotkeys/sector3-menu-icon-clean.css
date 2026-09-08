@@ -9,3 +9,51 @@
   -webkit-backdrop-filter:none!important;
   outline:none!important;
 }
+
+.vidlik-menu-button{
+  color:rgba(223,252,248,.82);
+}
+
+.vidlik-menu-button .vidlik-menu-icon{
+  position:relative;
+  transform:scale(1);
+  transform-origin:center;
+  filter:drop-shadow(0 0 0 rgba(85,231,212,0));
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),filter .18s ease,background-color .18s ease,opacity .18s ease;
+}
+
+.vidlik-menu-button:hover:not(:disabled),
+.vidlik-menu-button:focus-visible{
+  color:#77f6e8;
+}
+
+.vidlik-menu-button:hover:not(:disabled) .vidlik-menu-icon,
+.vidlik-menu-button:focus-visible .vidlik-menu-icon{
+  transform:scale(1.14);
+  filter:drop-shadow(0 0 4px rgba(85,231,212,.72)) drop-shadow(0 0 10px rgba(85,231,212,.34));
+  animation:vidlik-menu-icon-hover .42s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.vidlik-menu-button:active:not(:disabled) .vidlik-menu-icon{
+  transform:scale(.96);
+  filter:drop-shadow(0 0 5px rgba(85,231,212,.54));
+}
+
+.vidlik-menu-button.is-open{
+  color:#8ffff0;
+}
+
+.vidlik-menu-button.is-open .vidlik-menu-icon{
+  transform:scale(1.08);
+  filter:drop-shadow(0 0 5px rgba(85,231,212,.68)) drop-shadow(0 0 12px rgba(85,231,212,.24));
+}
+
+@keyframes vidlik-menu-icon-hover{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.18)}
+  100%{transform:scale(1.14)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .vidlik-menu-button .vidlik-menu-icon{animation:none!important;transition:none!important}
+}
