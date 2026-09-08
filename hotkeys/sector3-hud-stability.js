@@ -43,33 +43,25 @@ function protectInnerHTML(el,onWrite){
     onWrite?.();
    }
   });
- }catch(_){/* Older browsers: observer fallback below still stabilizes before paint. */}
+ }catch(_){ }
 }
-
 function scheduleSync(){
  if(scheduled)return;
  scheduled=true;
  queueMicrotask(()=>{scheduled=false;sync()});
 }
-
 function sync(){
  if(syncing)return;
  syncing=true;
  try{
   let own=help.querySelector(':scope > #vidlikEscHint');
-  if(!own){
-   own=document.createElement('span');
-   own.id='vidlikEscHint';
-   help.appendChild(own);
-  }
+  if(!own){own=document.createElement('span');own.id='vidlikEscHint';help.appendChild(own)}
   protectInnerHTML(own,scheduleSync);
-
   for(const span of [...help.querySelectorAll(':scope > span')]){
    if(span===own)continue;
    const first=span.querySelector('kbd');
    span.classList.toggle('vidlik-native-esc-hidden',!!first&&/^ESC$/i.test((first.textContent||'').trim()));
   }
-
   const seen=new Set();
   for(const span of [...help.querySelectorAll(':scope > span')]){
    if(span===own||span.classList.contains('vidlik-native-esc-hidden'))continue;
@@ -78,7 +70,6 @@ function sync(){
    if(seen.has(key))span.classList.add('vidlik-native-duplicate-hidden');
    else{seen.add(key);span.classList.remove('vidlik-native-duplicate-hidden')}
   }
-
   const c=escContext();
   const html=`<kbd>ESC</kbd> ${escapeHtml(c.label)}${c.hold?'<em>· утримувати — пауза</em>':''}`;
   if(own.innerHTML!==html)own.innerHTML=html;
@@ -88,7 +79,6 @@ function sync(){
 protectInnerHTML(help,scheduleSync);
 const observer=new MutationObserver(scheduleSync);
 observer.observe(help,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden']});
-
 ['vidlik:pause-state','vidlik:episode2-ready','vidlik:episode3-ready','vidlik:episode4-ready','vidlik:episode5-ready','vidlik:os-ready','vidlik:os-reset'].forEach(name=>window.addEventListener(name,scheduleSync));
 window.addEventListener('keydown',()=>scheduleSync(),true);
 window.addEventListener('pointerup',()=>scheduleSync(),true);
@@ -96,12 +86,12 @@ window.addEventListener('pointerup',()=>scheduleSync(),true);
 sync();
 window.VIDLIK_HUD_STABILITY={sync};
 
-/* Excel onboarding slides are repository PNGs. Load the path repair after all
-   tutorial modules so any legacy base64 slide source is replaced deterministically. */
-if(!document.querySelector('script[data-vidlik-excel-slide-path-fix]')){
+/* Story beat: Polya interrupts the finished training block. Load after Excel
+   tutorial exists so the module can pace her messages and temporarily own Enter. */
+if(!document.querySelector('script[data-vidlik-polya-cinematic]')){
  const s=document.createElement('script');
- s.src='sector3-excel-slide-path-fix.js?v=20260908-1';
- s.dataset.vidlikExcelSlidePathFix='1';
+ s.src='sector3-polya-cinematic.js?v=20260908-1';
+ s.dataset.vidlikPolyaCinematic='1';
  document.head.appendChild(s);
 }
 })();
