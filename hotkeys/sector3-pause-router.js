@@ -143,7 +143,7 @@ function taskText(api){
  if(f&&f.length<120)return f;
  return'ПОТОЧНИЙ ЕТАП';
 }
-function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]))}
 
 pause.innerHTML=`<section class="vidlik-pause-card" role="dialog" aria-modal="true" aria-labelledby="vidlikPauseTitle">
  <div class="vidlik-pause-eyebrow"><span>VIDLIK · СЕКТОР 03</span><span>МЕНЮ</span></div>
@@ -242,10 +242,17 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{if(e.key==='Escape')clearEscHold()},true);
 window.addEventListener('blur',clearEscHold);
 
-// While the external pause is used for the incoming-call state, it must own all input.
+// Before VIDLIK OS starts the pause can be external. Keep gameplay input blocked,
+// but let the pause skin own its real menu keys (arrows / Enter / R / K / Q).
 window.addEventListener('keydown',e=>{
  if(!externalPaused||syntheticKey)return;
- if(['Escape','Enter',' '].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();requestResume('keyboard');return}
+ if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();requestResume('keyboard');return}
+ if(e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();requestResume('keyboard');return}
+ const k=e.key.toLowerCase();
+ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter'].includes(e.key)||['r','k','q'].includes(k)){
+  // Do not stop propagation: sector3-pause-skin.js handles these keys.
+  return;
+ }
  e.preventDefault();e.stopImmediatePropagation();
 },true);
 
