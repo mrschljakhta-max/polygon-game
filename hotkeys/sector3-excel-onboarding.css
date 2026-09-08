@@ -13,19 +13,21 @@
   letter-spacing:.06em;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.35)
 }
 
-/* The onboarding is not a dialog anymore: it becomes the monitor content. */
+/* During onboarding, the slide becomes the whole monitor — including the taskbar area. */
 .vidlik-excel-onboarding{
-  position:absolute;inset:0 0 8.6%;z-index:210;display:flex;align-items:stretch;justify-content:stretch;
+  position:absolute;inset:0;z-index:210;display:flex;align-items:stretch;justify-content:stretch;
   padding:0;background:#001315;pointer-events:auto;opacity:0;transform:scale(.998);
-  transition:opacity .22s ease,transform .22s ease;overflow:hidden
+  transition:opacity .22s ease,transform .22s ease;overflow:hidden;border-radius:inherit
 }
 .vidlik-excel-onboarding.is-visible{opacity:1;transform:none}
 .vidlik-excel-onboarding.is-leaving{opacity:0;transform:scale(1.004);pointer-events:none}
-.monitor-screen.vidlik-excel-slides-open .desktop-icons{opacity:0;pointer-events:none!important}
-.monitor-screen.vidlik-excel-slides-open .os-layer{opacity:0}
+.monitor-screen.vidlik-excel-slides-open .desktop-icons,
+.monitor-screen.vidlik-excel-slides-open .taskbar{opacity:0;pointer-events:none!important}
+.monitor-screen.vidlik-excel-slides-open .os-layer{opacity:0;pointer-events:none!important}
 
 .vidlik-excel-slide-shell{position:absolute;inset:0;display:grid;place-items:center;background:#001315;cursor:pointer;overflow:hidden}
 .vidlik-excel-slide-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center;user-select:none;-webkit-user-drag:none}
+.vidlik-excel-slide-error{margin:auto;color:#8cded7;font:700 12px/1.4 ui-monospace,Consolas,monospace}
 
 .vidlik-excel-launch-screen{display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,rgba(12,95,84,.36),rgba(1,14,17,.97) 55%)}
 .vidlik-excel-launch-copy{display:grid;gap:10px;text-align:center;color:#dffffb;font-family:"Segoe UI",Arial,sans-serif}
