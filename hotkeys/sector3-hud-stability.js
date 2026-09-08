@@ -56,7 +56,6 @@ function sync(){
  if(syncing)return;
  syncing=true;
  try{
-  /* Tutorial modules own the instructional part. Pause Router owns one ESC item. */
   let own=help.querySelector(':scope > #vidlikEscHint');
   if(!own){
    own=document.createElement('span');
@@ -71,7 +70,6 @@ function sync(){
    span.classList.toggle('vidlik-native-esc-hidden',!!first&&/^ESC$/i.test((first.textContent||'').trim()));
   }
 
-  /* Remove exact duplicates produced by compatibility/tutorial writers. */
   const seen=new Set();
   for(const span of [...help.querySelectorAll(':scope > span')]){
    if(span===own||span.classList.contains('vidlik-native-esc-hidden'))continue;
@@ -87,8 +85,6 @@ function sync(){
  }finally{syncing=false}
 }
 
-/* Skip byte-identical full-bar redraws and restore the owned ESC item in the
-   same microtask whenever a tutorial replaces #help.innerHTML. */
 protectInnerHTML(help,scheduleSync);
 const observer=new MutationObserver(scheduleSync);
 observer.observe(help,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden']});
@@ -99,4 +95,13 @@ window.addEventListener('pointerup',()=>scheduleSync(),true);
 
 sync();
 window.VIDLIK_HUD_STABILITY={sync};
+
+/* Excel onboarding slides are repository PNGs. Load the path repair after all
+   tutorial modules so any legacy base64 slide source is replaced deterministically. */
+if(!document.querySelector('script[data-vidlik-excel-slide-path-fix]')){
+ const s=document.createElement('script');
+ s.src='sector3-excel-slide-path-fix.js?v=20260908-1';
+ s.dataset.vidlikExcelSlidePathFix='1';
+ document.head.appendChild(s);
+}
 })();
