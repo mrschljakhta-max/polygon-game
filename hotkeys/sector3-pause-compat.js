@@ -35,8 +35,8 @@ function addScript(src,attr){
 addStyle('sector3-pause-skin.css?v=20260908-1','data-hotki-pause-skin');
 addScript('sector3-pause-skin.js?v=20260908-1','data-hotki-pause-skin');
 
-// Fidelity patch: removes collisions with the legacy compact controls styles and
-// restores the prototype typography, row geometry and two-colour hover tooltips.
-addStyle('sector3-pause-fidelity.css?v=20260908-1','data-hotki-pause-fidelity');
-addScript('sector3-pause-fidelity.js?v=20260908-1','data-hotki-pause-fidelity');
+// Fidelity patch: restores the approved typography/geometry, smooth left-panel
+// replacement animation and window-level keyboard navigation for the pause menu.
+addStyle('sector3-pause-fidelity.css?v=20260908-2','data-hotki-pause-fidelity');
+addScript('sector3-pause-fidelity.js?v=20260908-2','data-hotki-pause-fidelity');
 })();
