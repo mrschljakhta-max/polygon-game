@@ -14,20 +14,29 @@ window.addEventListener('keydown',e=>{
  });
 },true);
 
-// Load the canonical Sector 3 pause-menu skin. The heavy PNG background is not
-// bundled in the repository by ChatGPT; it is expected at the documented path.
-if(!document.querySelector('link[data-hotki-pause-skin]')){
+function addStyle(href,attr){
+ if(document.querySelector(`link[${attr}]`))return;
  const link=document.createElement('link');
  link.rel='stylesheet';
- link.href='sector3-pause-skin.css?v=20260908-1';
- link.dataset.hotkiPauseSkin='1';
+ link.href=href;
+ link.setAttribute(attr,'1');
  document.head.appendChild(link);
 }
-if(!document.querySelector('script[data-hotki-pause-skin]')){
+function addScript(src,attr){
+ if(document.querySelector(`script[${attr}]`))return;
  const script=document.createElement('script');
- script.src='sector3-pause-skin.js?v=20260908-1';
+ script.src=src;
  script.async=false;
- script.dataset.hotkiPauseSkin='1';
+ script.setAttribute(attr,'1');
  document.head.appendChild(script);
 }
+
+// Canonical pause skin from the approved ZIP prototype.
+addStyle('sector3-pause-skin.css?v=20260908-1','data-hotki-pause-skin');
+addScript('sector3-pause-skin.js?v=20260908-1','data-hotki-pause-skin');
+
+// Fidelity patch: removes collisions with the legacy compact controls styles and
+// restores the prototype typography, row geometry and two-colour hover tooltips.
+addStyle('sector3-pause-fidelity.css?v=20260908-1','data-hotki-pause-fidelity');
+addScript('sector3-pause-fidelity.js?v=20260908-1','data-hotki-pause-fidelity');
 })();
