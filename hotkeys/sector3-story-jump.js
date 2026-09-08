@@ -87,7 +87,7 @@ function ensurePolyaModule(done){
  if(window.VIDLIK_POLYA_CINEMATIC){done();return}
  const existing=document.querySelector('script[data-s3-polya-cinematic]');
  if(existing){existing.addEventListener('load',done,{once:true});return}
- const s=document.createElement('script');s.src='sector3-polya-cinematic.js?v=20260908-2';s.dataset.s3PolyaCinematic='1';s.onload=done;document.head.appendChild(s);
+ const s=document.createElement('script');s.src='sector3-polya-cinematic.js?v=20260908-3';s.dataset.s3PolyaCinematic='1';s.onload=done;document.head.appendChild(s);
 }
 
 function runCheckpoint(OS,excel){
