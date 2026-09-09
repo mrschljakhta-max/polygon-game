@@ -33,13 +33,16 @@ let searchOpen=false;
 let row17=false;
 let endingLine=-1;
 let bootAttempts=0;
+let excelMinimized=false;
+let excelMaximized=false;
+let excelClosed=false;
+let excelTaskBtn=null;
 
 const LINES=[
  'Не закривай файл.',
  'І нічого поки не натискай.',
  'Ти зараз сам у кімнаті?',
  'У реєстрі зверху написано, що тут 267 записів.',
- 'Не вір мені.\nНе вір їм.\nПорахуй сам.',
  'Перейди в клітинку F2. Введи формулу =COUNTA(B2:B269) і натисни Enter.\nCOUNTA рахує непорожні клітинки. Тут ми рахуємо всі заповнені імена у стовпці B.'
 ];
 const ENDING=['Данило Верес.','Мій брат.','Я маю тобі дещо пояснити.'];
@@ -65,6 +68,8 @@ style.textContent=`
 .scene.s3-scene1-focus .keys{z-index:520!important}
 .scene.s3-scene1-focus .pause{z-index:900!important}
 .s3-direct-window{position:absolute!important;left:6%!important;top:5%!important;width:88%!important;height:82%!important;z-index:90!important}
+.s3-direct-window.s3-direct-maximized{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0!important}
+.s3-direct-window.os-minimized,.s3-direct-window.os-window-minimized{display:none!important}
 .s3-direct-window .excel-grid-body{overflow:auto!important}
 .s3-direct-window .s3-found-row .excel-cell{background:#fff3f4!important;color:#8c1726!important;font-weight:800!important}
 .s3-direct-search{position:absolute;right:18px;top:72px;z-index:10;display:flex;gap:8px;align-items:center;padding:8px 10px;background:#fff;border:1px solid #b9c7c2;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:11px}.s3-direct-search[hidden]{display:none}.s3-direct-search strong{min-width:70px;color:#173b31}
@@ -89,6 +94,74 @@ function showAdmin(){
  ['idleLayer','incomingLayer','videoLayer','syncLayer'].forEach(id=>document.getElementById(id)?.classList.remove('visible'));
  document.getElementById('adminLayer')?.classList.add('visible');
 }
+
+let excelWin=null;
+function taskbarHost(){return document.getElementById('osRunningApps')}
+function ensureExcelTaskButton(){
+ const running=taskbarHost();if(!running||excelClosed)return;
+ if(excelTaskBtn?.isConnected)return;
+ const b=document.createElement('button');
+ b.className='os-running-button is-active';
+ b.dataset.directStoryTask='excel-story';
+ b.textContent='Excel · Сектор 3';
+ b.title='TRAINING_SYNC_SECTOR_3.xlsx';
+ b.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  if(!excelWin||excelClosed)return;
+  if(excelMinimized){
+   excelMinimized=false;
+   excelWin.classList.remove('os-minimized','os-window-minimized');
+   b.classList.remove('is-minimized');b.classList.add('is-active');
+  }else{
+   excelMinimized=true;
+   excelWin.classList.add('os-minimized','os-window-minimized');
+   b.classList.add('is-minimized');b.classList.remove('is-active');
+  }
+ });
+ running.appendChild(b);excelTaskBtn=b;
+}
+function restoreDirectExcel(){
+ if(!excelWin)return;
+ excelClosed=false;excelMinimized=false;
+ excelWin.style.display='';
+ excelWin.classList.remove('os-minimized','os-window-minimized');
+ ensureExcelTaskButton();
+ excelTaskBtn?.classList.remove('is-minimized');excelTaskBtn?.classList.add('is-active');
+}
+function bindExcelWindowControls(win){
+ const min=win.querySelector('[data-direct-win="min"]');
+ const max=win.querySelector('[data-direct-win="max"]');
+ const close=win.querySelector('[data-direct-win="close"]');
+ min?.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  excelMinimized=true;
+  win.classList.add('os-minimized','os-window-minimized');
+  ensureExcelTaskButton();
+  excelTaskBtn?.classList.add('is-minimized');excelTaskBtn?.classList.remove('is-active');
+ });
+ max?.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  excelMaximized=!excelMaximized;
+  win.classList.toggle('s3-direct-maximized',excelMaximized);
+  win.classList.toggle('os-maximized',excelMaximized);
+  max.textContent=excelMaximized?'❐':'□';
+  max.title=excelMaximized?'Відновити розмір':'Розгорнути';
+  max.setAttribute('aria-label',max.title);
+ });
+ close?.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  excelClosed=true;excelMinimized=false;
+  win.style.display='none';
+  excelTaskBtn?.remove();excelTaskBtn=null;
+ });
+ win.querySelector('.os-window-titlebar')?.addEventListener('dblclick',e=>{
+  if(e.target.closest('.os-window-actions'))return;
+  e.preventDefault();
+  max?.click();
+ });
+ ensureExcelTaskButton();
+}
+
 function buildExcel(){
  const host=mon.querySelector('.os-layer');if(!host)return null;
  host.querySelector('.os-excel-story-window')?.remove();
@@ -107,13 +180,14 @@ function buildExcel(){
   const hidden=r===17?' style="display:none"':'';
   rows+=`<div class="excel-row register-row" data-row="${r}"${hidden}><div class="excel-row-head">${r}</div>`+cols.map(c=>`<button type="button" class="excel-cell ${r===1?'is-header':''}" data-cell="${c}${r}">${vals(r,c)}</button>`).join('')+'</div>';
  }
- win.innerHTML=`<header class="os-window-titlebar excel-titlebar"><strong><span class="excel-app-mark">X</span> TRAINING_SYNC_SECTOR_3.xlsx — Microsoft Excel</strong></header><div class="os-window-body excel-body"><div class="excel-ribbon"><div class="excel-tabs"><b>Файл</b><span class="is-active">Основне</span><span>Вставлення</span><span>Формули</span><span>Дані</span><i class="excel-save-state">ЗБЕРЕЖЕНО</i></div><div class="excel-tools"><span>Вставити</span><span>Шрифт</span><span>Вирівнювання</span><span>Число</span><span>Σ Автосума</span><strong class="excel-declared">ЗАЯВЛЕНО: 267</strong></div></div><div class="excel-formula-bar"><span class="excel-name-box">F2</span><span class="excel-fx">fx</span><span class="excel-formula-value"></span></div><div class="excel-grid-body">${rows}</div><div class="excel-sheetbar"><button type="button">Вступ</button><button type="button" class="is-active">Реєстр</button><span class="excel-sheet-spacer"></span><span>100%</span></div><div class="s3-direct-search" hidden><span>Знайти</span><strong></strong><em>Enter — знайти</em></div></div>`;
+ win.innerHTML=`<header class="os-window-titlebar excel-titlebar"><strong><span class="excel-app-mark">X</span> TRAINING_SYNC_SECTOR_3.xlsx — Microsoft Excel</strong><span class="os-window-actions"><button type="button" data-direct-win="min" title="Згорнути" aria-label="Згорнути">—</button><button type="button" data-direct-win="max" title="Розгорнути" aria-label="Розгорнути">□</button><button type="button" data-direct-win="close" title="Закрити" aria-label="Закрити">×</button></span></header><div class="os-window-body excel-body"><div class="excel-ribbon"><div class="excel-tabs"><b>Файл</b><span class="is-active">Основне</span><span>Вставлення</span><span>Формули</span><span>Дані</span><i class="excel-save-state">ЗБЕРЕЖЕНО</i></div><div class="excel-tools"><span>Вставити</span><span>Шрифт</span><span>Вирівнювання</span><span>Число</span><span>Σ Автосума</span><strong class="excel-declared">ЗАЯВЛЕНО: 267</strong></div></div><div class="excel-formula-bar"><span class="excel-name-box">F2</span><span class="excel-fx">fx</span><span class="excel-formula-value"></span></div><div class="excel-grid-body">${rows}</div><div class="excel-sheetbar"><button type="button">Вступ</button><button type="button" class="is-active">Реєстр</button><span class="excel-sheet-spacer"></span><span>100%</span></div><div class="s3-direct-search" hidden><span>Знайти</span><strong></strong><em>Enter — знайти</em></div></div>`;
  host.appendChild(win);
  win.querySelector('[data-cell="F2"]')?.classList.add('is-selected');
+ excelClosed=false;excelMinimized=false;excelMaximized=false;
+ bindExcelWindowControls(win);
  return win;
 }
 
-let excelWin=null;
 function formulaBar(){return excelWin?.querySelector('.excel-formula-value')}
 function f2(){return excelWin?.querySelector('[data-cell="F2"]')}
 function searchBox(){return excelWin?.querySelector('.s3-direct-search')}
@@ -169,6 +243,13 @@ function keydown(e){
    Keep the direct listener as a fallback for old cached HTML; the handled flag
    prevents a key from being processed twice. */
 window.VIDLIK_SCENE1_INPUT=keydown;
+
+document.getElementById('desktopIcons')?.addEventListener('dblclick',e=>{
+ const icon=e.target.closest('.desktop-icon[data-app="excel"]');
+ if(!icon||!excelClosed)return;
+ e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+ restoreDirectExcel();
+},true);
 
 function boot(){
  showAdmin();
