@@ -38,8 +38,10 @@
     document.body.appendChild(s);
   };
   if(sector===3){
-    /* Sector 3 owns its story navigator completely. Legacy lesson/page JS is not loaded. */
-    load('/hotkeys/sector3-briefing-override.js?v=20260908-5');
+    /* Route guard registers first, then the Sector 3 story navigator. */
+    load('/hotkeys/sector3-briefing-route-fix.js?v=20260909-1',()=>{
+      load('/hotkeys/sector3-briefing-override.js?v=20260909-1');
+    });
   }else{
     load('/hotkeys/module-briefing.js?v=14',()=>load('/hotkeys/module-briefing-polish.js?v=2'));
   }
