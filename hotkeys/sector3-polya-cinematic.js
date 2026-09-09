@@ -3,11 +3,12 @@
 if(window.VIDLIK_POLYA_CINEMATIC)return;
 
 const scene=document.getElementById('scene');
+const camera=document.getElementById('camera');
 const chat=document.getElementById('adminChat');
 const help=document.getElementById('help');
 const footer=document.getElementById('adminFooter');
 const header=document.querySelector('.admin-header');
-if(!scene||!chat||!help||!footer||!header)return;
+if(!scene||!camera||!chat||!help||!footer||!header)return;
 
 let active=false;
 let step=-1;
@@ -30,21 +31,23 @@ const LINES=[
 const style=document.createElement('style');
 style.id='vidlik-polya-cinematic-style';
 style.textContent=`
-/* Keep the camera exactly where the rest of Sector 3 positioned it. Only the
-   tablet changes geometry, so entering the dialogue cannot shove the scene. */
-.scene .tablet-screen{
- transition:left .72s cubic-bezier(.2,.76,.22,1),top .72s cubic-bezier(.2,.76,.22,1),width .72s cubic-bezier(.2,.76,.22,1),height .72s cubic-bezier(.2,.76,.22,1),box-shadow .32s ease!important;
+/* Canonical Polya focus: zoom the EXISTING physical scene, never resize or clone
+   the tablet. These values reproduce the original call framing: tablet dominant,
+   monitor still visible on the right, environment still readable. */
+.scene .camera{
+  transition:transform .88s cubic-bezier(.22,1,.36,1)!important;
+  will-change:transform;
 }
-.scene.s3-polya-cinematic .tablet-screen{
- left:36.35%!important;top:7.8%!important;width:27.3%!important;height:84.4%!important;z-index:120!important;
- box-shadow:0 0 0 1px rgba(85,231,212,.55),0 0 48px rgba(85,231,212,.22),0 28px 90px rgba(0,0,0,.55),inset 0 0 18px rgba(85,231,212,.08)!important
+.scene.s3-polya-cinematic .camera{
+  transform-origin:18.63% 59.46%!important;
+  transform:translate3d(30.5%,-7.2%,0) scale(1.82)!important;
 }
 .scene.s3-polya-cinematic::after{
- content:'';position:absolute;inset:0;z-index:36;pointer-events:none;
- background:radial-gradient(circle at 50% 50%,transparent 28%,rgba(0,0,0,.16) 62%,rgba(0,0,0,.42));
- opacity:1;transition:opacity .32s ease
+  content:'';position:absolute;inset:0;z-index:36;pointer-events:none;
+  background:radial-gradient(circle at 43% 51%,transparent 34%,rgba(0,0,0,.10) 66%,rgba(0,0,0,.34));
+  opacity:1;transition:opacity .34s ease
 }
-.scene.s3-polya-cinematic .monitor-screen{filter:brightness(.62) saturate(.78);transition:filter .35s ease}
+/* HUD belongs to the viewport, not to the moving camera. */
 .scene.s3-polya-cinematic .keys{z-index:520!important}
 .scene.s3-polya-cinematic .pause{z-index:900!important}
 .admin-message.s3-polya-cinematic-owned .admin-bubble{box-shadow:0 0 22px rgba(255,76,98,.08)}
@@ -108,9 +111,8 @@ function begin(){
  setFooter('ПОЛЯ · ЗАХИЩЕНИЙ КАНАЛ');
  setHint();
  removeStoryCurtain();
- /* Legacy save callbacks can still land during this same second. Strip them
-    before the first player-visible line so Scene 01 truly starts with Polya. */
- setTimeout(()=>{if(active){purgeLegacyChat();if(step<0)showNext()}},650);
+ /* Let the camera settle first; then reveal Polya's first line. */
+ setTimeout(()=>{if(active){purgeLegacyChat();if(step<0)showNext()}},900);
 }
 function finishWhenReady(){
  if(!active||waitingForTask)return;
@@ -118,7 +120,9 @@ function finishWhenReady(){
  const wait=()=>{
   const t=window.VIDLIK_EXCEL_STORY_TUTORIAL;
   if(!active)return;
-  if(t?.active&&t.task===6){finish();return}
+  /* Direct Scene 01 checkpoint is already at task 6. Normal play reaches the
+     same state after save. In both cases return control only when Excel is ready. */
+  if(!t||!t.active||t.task===6){finish();return}
   setTimeout(wait,80);
  };
  wait();
@@ -148,9 +152,6 @@ const legacyObserver=new MutationObserver(records=>{
 });
 legacyObserver.observe(chat,{childList:true,subtree:true});
 
-/* Excel's legacy reconciler continues running underneath the cinematic and can
-   rewrite the bottom help/footer as soon as task 6 becomes active. Keep those
-   surfaces owned by the dialogue until the player explicitly leaves it. */
 const helpObserver=new MutationObserver(applyLockedUi);
 helpObserver.observe(help,{childList:true,subtree:true,characterData:true});
 const footerObserver=new MutationObserver(applyLockedUi);
