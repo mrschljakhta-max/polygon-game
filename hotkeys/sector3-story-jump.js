@@ -6,9 +6,8 @@ const requested=parseInt(params.get('storyScene')||'0',10)||0;
 if(requested!==1)return;
 
 /* Scene 01 direct checkpoint.
- * Important: do NOT replay Episode 05 tutorials here. That old approach fired
- * several tutorial controllers, observers and synthetic key events at once and
- * could freeze the page. Scene 01 now starts from an explicit ready state.
+ * Important: do NOT replay Episode 05 tutorials here. Scene 01 starts from an
+ * explicit ready state and only the physical scene camera is used for Polya focus.
  */
 
 document.body.classList.remove('prologue-title-pending','vidlik-act1-title-active','vidlik-prologue-title-active');
@@ -18,12 +17,13 @@ document.querySelector('.a1-desktop-reveal')?.remove();
 const app=document.querySelector('.app');if(app)app.style.visibility='visible';
 
 const scene=document.getElementById('scene');
+const camera=document.getElementById('camera');
 const mon=document.querySelector('.monitor-screen');
 const chat=document.getElementById('adminChat');
 const footer=document.getElementById('adminFooter');
 const help=document.getElementById('help');
 const header=document.querySelector('.admin-header');
-if(!scene||!mon||!chat||!footer||!help||!header)return;
+if(!scene||!camera||!mon||!chat||!footer||!help||!header)return;
 
 let stage='dialog';
 let line=-1;
@@ -46,9 +46,23 @@ const ENDING=['Данило Верес.','Мій брат.','Я маю тобі 
 const style=document.createElement('style');
 style.id='s3-scene1-direct-style';
 style.textContent=`
-.scene.s3-scene1-focus .tablet-screen{left:36.2%!important;top:7.5%!important;width:27.5%!important;height:84.5%!important;z-index:150!important;transition:left .7s cubic-bezier(.2,.76,.22,1),top .7s cubic-bezier(.2,.76,.22,1),width .7s cubic-bezier(.2,.76,.22,1),height .7s cubic-bezier(.2,.76,.22,1)!important;box-shadow:0 0 0 1px rgba(85,231,212,.5),0 0 50px rgba(85,231,212,.18),0 30px 90px rgba(0,0,0,.55)!important}
-.scene.s3-scene1-focus::after{content:'';position:absolute;inset:0;z-index:35;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 30%,rgba(0,0,0,.18) 64%,rgba(0,0,0,.46));}
-.scene.s3-scene1-focus .keys{z-index:520!important}.scene.s3-scene1-focus .pause{z-index:900!important}
+/* CANONICAL POLYA SHOT.
+   Never resize/move .tablet-screen: it must stay glued to the physical tablet
+   baked into desk.webp. We move the whole camera exactly like the opening call. */
+.scene .camera{
+  transition:transform .88s cubic-bezier(.22,1,.36,1)!important;
+  will-change:transform;
+}
+.scene.s3-scene1-focus .camera{
+  transform-origin:18.63% 59.46%!important;
+  transform:translate3d(30.5%,-7.2%,0) scale(1.82)!important;
+}
+.scene.s3-scene1-focus::after{
+  content:'';position:absolute;inset:0;z-index:35;pointer-events:none;
+  background:radial-gradient(circle at 43% 51%,transparent 35%,rgba(0,0,0,.10) 67%,rgba(0,0,0,.32));
+}
+.scene.s3-scene1-focus .keys{z-index:520!important}
+.scene.s3-scene1-focus .pause{z-index:900!important}
 .s3-direct-window{position:absolute!important;left:6%!important;top:5%!important;width:88%!important;height:82%!important;z-index:90!important}
 .s3-direct-window .excel-grid-body{overflow:auto!important}
 .s3-direct-window .s3-found-row .excel-cell{background:#fff3f4!important;color:#8c1726!important;font-weight:800!important}
@@ -119,13 +133,12 @@ function reveal17(){
 }
 function nextEnding(){
  if(endingLine<ENDING.length-1){endingLine++;msg(ENDING[endingLine]);return}
- // Keep the final line on screen. Scene 02 will be wired from here separately.
  setHint('<span><kbd>ESC</kbd> пауза</span>');
 }
 
 function keydown(e){
  if(e.repeat)return;
- if(e.key==='Escape')return; // Pause Router owns Escape.
+ if(e.key==='Escape')return;
  if(stage==='dialog'){
   if(e.key==='Enter'){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();nextDialog()}
   else if(!e.ctrlKey&&!e.metaKey){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
@@ -154,12 +167,11 @@ function boot(){
  try{window.VIDLIK_OS?.enable?.()}catch(_){}
  const host=mon.querySelector('.os-layer');
  if(!host){setTimeout(boot,50);return}
- // Neutralize any old Scene-01 tutorial state. We do not call Excel tutorial start().
  try{window.VIDLIK_EXCEL_STORY_TUTORIAL?.reset?.()}catch(_){}
  chat.innerHTML='';setHeaderPolya();excelWin=buildExcel();
  footer.textContent='ПОЛЯ · ЗАХИЩЕНИЙ КАНАЛ';
  focusTablet(true);setHint('<span><kbd>ENTER</kbd> наступне повідомлення</span><span><kbd>ESC</kbd> пауза</span>');
- setTimeout(()=>{if(line<0)nextDialog()},650);
+ setTimeout(()=>{if(line<0)nextDialog()},900);
  window.addEventListener('keydown',keydown,true);
 }
 
