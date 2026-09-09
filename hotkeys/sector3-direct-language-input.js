@@ -64,44 +64,107 @@ window.addEventListener('keydown',e=>{
  window.dispatchEvent(synthetic);
 },true);
 
-/* Browser Ctrl+F must never escape from the simulated OS while the story Excel
-   window is active. Scene 01's own handler still receives the event because we
-   only prevent the browser default unless Scene 02 has taken ownership. */
+/* Scene 02: CH 17 becomes a real, explicit Excel investigation step. */
 let scene2SearchActive=false;
 let scene2Search='';
-function scene2Ready(){
- const h=document.getElementById('help');
- return !!h&&/наступний крок розслідування/i.test(h.textContent||'');
+let scene2InstructionInjected=false;
+let scene2Phase='waiting';
+let scene2ResultIndex=-1;
+const SCENE2_RESULT_LINES=[
+ 'Дивись на джерело. Це не зовнішній канал.',
+ 'Сигнал прийшов із самого Сектора 3.',
+ 'І час збігається з днем зникнення Данила.',
+ 'Тепер перевіримо, скільки таких сигналів було.'
+];
+function help(){return document.getElementById('help')}
+function scene2RuntimeReady(){
+ const text=help()?.textContent||'';
+ return /наступний крок розслідування/i.test(text)||scene2Phase==='ready'||scene2Phase==='search'||scene2Phase==='result';
 }
 function searchBox(){return document.querySelector('.s3-direct-window .s3-direct-search')}
+function polyaMsg(text){
+ const chat=document.getElementById('adminChat');if(!chat)return;
+ const now=new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false});
+ const row=document.createElement('div');
+ row.className='admin-message vidlik-tutorial-message excel-story-message is-polya s3-direct-message s3-scene2-message';
+ row.innerHTML='<div class="admin-bubble"><div class="admin-bubble-head"><span class="admin-bubble-name">Поля</span><span class="admin-bubble-time">'+now+'</span></div><p></p></div>';
+ row.querySelector('p').textContent=text;
+ chat.appendChild(row);requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight});
+}
+function ensureScene2Instruction(){
+ if(scene2InstructionInjected||!directWindowActive())return;
+ const h=help();
+ if(!h||!/наступний крок розслідування/i.test(h.textContent||''))return;
+ scene2InstructionInjected=true;scene2Phase='ready';
+ polyaMsg('У системі цей сигнал позначений як CH 17. Знайди його через пошук Excel.');
+ h.innerHTML='<span><kbd>CTRL</kbd> + <kbd>F</kbd> відкрити пошук</span><span>шукати: <b>CH 17</b></span><span><kbd>ESC</kbd> пауза</span>';
+}
 function openScene2Search(){
  const box=searchBox();if(!box)return;
- scene2SearchActive=true;scene2Search='';box.hidden=false;box.dataset.scene2Search='1';
+ scene2Phase='search';scene2SearchActive=true;scene2Search='';
+ box.hidden=false;box.dataset.scene2Search='1';box.classList.remove('s3-search-error');
  const strong=box.querySelector('strong');if(strong)strong.textContent='';
  const label=box.querySelector('span');if(label)label.textContent='Пошук у реєстрі';
- const em=box.querySelector('em');if(em)em.textContent='Enter — знайти';
- const h=document.getElementById('help');
- if(h)h.innerHTML='<span><kbd>ТЕКСТ</kbd> введіть запит для пошуку в Excel</span><span><kbd>ENTER</kbd> знайти</span><span><kbd>ESC</kbd> пауза</span>';
+ const em=box.querySelector('em');if(em)em.textContent='Введіть CH 17 · Enter — знайти';
+ const h=help();if(h)h.innerHTML='<span><kbd>ТЕКСТ</kbd> введіть <b>CH 17</b></span><span><kbd>ENTER</kbd> знайти</span><span><kbd>ESC</kbd> пауза</span>';
 }
+function normalizeQuery(value){return String(value||'').toUpperCase().replace(/\s+/g,'')}
+function ensureSignalResultRow(){
+ const win=directWindow();if(!win)return null;
+ let row=win.querySelector('.s3-signal-source-row');if(row)return row;
+ const grid=win.querySelector('.excel-grid-body');if(!grid)return null;
+ row=document.createElement('div');row.className='excel-row register-row s3-signal-source-row';row.dataset.row='20';
+ const values=['CH 17','NODE S3-LOCAL','ВНУТРІШНІЙ','ДЕНЬ ЗНИКНЕННЯ','АКТИВНИЙ','SOURCE: S3'];
+ row.innerHTML='<div class="excel-row-head">20</div>'+values.map((v,i)=>'<button type="button" class="excel-cell'+(i===0?' is-selected':'')+'" data-cell="'+String.fromCharCode(65+i)+'20">'+v+'</button>').join('');
+ grid.appendChild(row);
+ return row;
+}
+function completeScene2Search(){
+ scene2SearchActive=false;scene2Phase='result';scene2ResultIndex=-1;
+ const box=searchBox();if(box){box.hidden=true;delete box.dataset.scene2Search;box.classList.remove('s3-search-error')}
+ const row=ensureSignalResultRow();
+ if(row){row.classList.add('s3-signal-source-found');setTimeout(()=>row.scrollIntoView({block:'center',behavior:'smooth'}),30)}
+ polyaMsg('Є. CH 17.');
+ const h=help();if(h)h.innerHTML='<span>Знайдено: <b>CH 17</b></span><span><kbd>ENTER</kbd> далі</span><span><kbd>ESC</kbd> пауза</span>';
+}
+function wrongScene2Search(){
+ const box=searchBox();if(box){box.classList.remove('s3-search-error');void box.offsetWidth;box.classList.add('s3-search-error')}
+ const h=help();if(h)h.innerHTML='<span>Не знайдено. Введіть точно: <b>CH 17</b></span><span><kbd>ENTER</kbd> знайти</span><span><kbd>ESC</kbd> пауза</span>';
+}
+function advanceScene2Result(){
+ if(scene2Phase!=='result')return false;
+ if(scene2ResultIndex<SCENE2_RESULT_LINES.length-1){
+  scene2ResultIndex++;polyaMsg(SCENE2_RESULT_LINES[scene2ResultIndex]);
+  const h=help();if(h)h.innerHTML='<span><kbd>ENTER</kbd> далі</span><span><kbd>ESC</kbd> пауза</span>';
+  return true;
+ }
+ scene2Phase='complete';
+ const h=help();if(h)h.innerHTML='<span>КРОК ЗАВЕРШЕНО · джерело <b>CH 17</b> знайдено</span><span><kbd>ESC</kbd> пауза</span>';
+ return true;
+}
+
 window.addEventListener('keydown',e=>{
  const find=(e.ctrlKey||e.metaKey)&&e.code==='KeyF';
  if(find&&directWindowActive()){
   e.preventDefault();
-  if(scene2Ready()){
+  if(scene2RuntimeReady()){
    e.stopPropagation();e.stopImmediatePropagation();openScene2Search();return;
   }
  }
+ if(scene2Phase==='result'&&e.key==='Enter'){
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();advanceScene2Result();return;
+ }
  if(!scene2SearchActive)return;
- if(e.key==='Escape'){scene2SearchActive=false;const box=searchBox();if(box){box.hidden=true;delete box.dataset.scene2Search}return}
+ if(e.key==='Escape'){
+  scene2SearchActive=false;scene2Phase='ready';
+  const box=searchBox();if(box){box.hidden=true;delete box.dataset.scene2Search}
+  return;
+ }
  if(e.key==='Enter'){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-  const h=document.getElementById('help');
-  if(!scene2Search.trim()){
-   if(h)h.innerHTML='<span>Введіть пошуковий запит</span><span><kbd>ESC</kbd> пауза</span>';
-   return;
-  }
-  if(h)h.innerHTML='<span>Пошук Excel активний: <b>'+scene2Search.replace(/[&<>]/g,'')+'</b></span><span><kbd>ESC</kbd> пауза</span>';
-  return;
+  if(!scene2Search.trim()){wrongScene2Search();return}
+  if(normalizeQuery(scene2Search)!=='CH17'){wrongScene2Search();return}
+  completeScene2Search();return;
  }
  if(e.key==='Backspace')scene2Search=scene2Search.slice(0,-1);
  else if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey)scene2Search+=e.key;
@@ -156,14 +219,22 @@ function installCanonicalSceneTitle(){
  .s3ct-hero p{max-width:520px;margin:0 0 35px!important;color:rgba(222,232,236,.60)!important;font:500 clamp(13px,1vw,18px)/1.75 'Segoe UI',Arial,sans-serif!important;letter-spacing:.09em!important;text-transform:uppercase}
  .s3ct-terminal{display:inline-flex;align-items:center;color:rgba(241,246,247,.87);font:500 13px/1 Consolas,monospace;letter-spacing:.08em}.s3ct-terminal span{margin-right:10px;color:#ff263f;font-weight:800}.s3ct-terminal i{width:8px;height:16px;margin-left:5px;background:#ff263f;box-shadow:0 0 10px rgba(255,38,63,.54);animation:s3ctBlink .88s steps(1,end) infinite}
  .s3ct-meta{position:absolute;right:54px;bottom:42px;z-index:14;color:rgba(218,235,238,.42);font:500 9px/1.8 Consolas,monospace;letter-spacing:.26em;text-align:right;text-transform:uppercase}.s3ct-meta span{display:inline-block;width:28px;height:1px;margin-right:10px;vertical-align:middle;background:#ff263f}
+ .s3-direct-search.s3-search-error{animation:s3SearchError .18s linear 2;border-color:#c34858!important;box-shadow:0 0 0 2px rgba(195,72,88,.14),0 8px 24px rgba(0,0,0,.2)!important}
+ .s3-signal-source-row .excel-cell{background:#eefaf8!important;color:#15443c!important;font-weight:700!important}.s3-signal-source-row .excel-cell:first-of-type{color:#8c1726!important}.s3-signal-source-found{animation:s3SignalFound 1.15s cubic-bezier(.22,1,.36,1) both}
+ @keyframes s3SearchError{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+ @keyframes s3SignalFound{0%{filter:brightness(1)}22%{filter:brightness(1.32)}100%{filter:brightness(1)}}
  @keyframes s3ctBlink{0%,46%{opacity:1}47%,100%{opacity:0}}
  @media(max-width:760px){.s3ct-rail,.s3ct-meta{display:none}.s3ct-hero{left:7vw;top:auto;bottom:9vh;width:86vw;transform:none}.s3ct-hero h2{font-size:clamp(36px,10.2vw,60px)!important}.s3ct-bg{background-position:66% center}}
  `;document.head.appendChild(st);
 }
 
-const observer=new MutationObserver(()=>{normalizePolyaMessages();installCanonicalSceneTitle()});
+const observer=new MutationObserver(()=>{normalizePolyaMessages();installCanonicalSceneTitle();ensureScene2Instruction()});
 observer.observe(document.documentElement,{childList:true,subtree:true});
-normalizePolyaMessages();installCanonicalSceneTitle();
+normalizePolyaMessages();installCanonicalSceneTitle();ensureScene2Instruction();
 
-window.VIDLIK_DIRECT_LANGUAGE_INPUT={translate:virtualChar,get language(){return currentLanguage()}};
+window.VIDLIK_DIRECT_LANGUAGE_INPUT={
+ translate:virtualChar,
+ get language(){return currentLanguage()},
+ get scene2Phase(){return scene2Phase}
+};
 })();
