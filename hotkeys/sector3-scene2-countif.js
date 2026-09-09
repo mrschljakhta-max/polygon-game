@@ -127,4 +127,13 @@ setInterval(armContinuation,350);
 armContinuation();
 
 window.VIDLIK_SCENE2_COUNTIF={get phase(){return phase},start:startCountTask};
+
+/* Keep Scene 02 extensions modular: load the next investigation beat only
+   after the tested COUNTIF runtime has registered its handlers. */
+if(!document.querySelector('script[data-s3-scene2-pattern]')){
+ const s=document.createElement('script');
+ s.src='sector3-scene2-pattern.js?v=20260909-1';
+ s.async=false;s.dataset.s3Scene2Pattern='1';
+ document.body.appendChild(s);
+}
 })();
