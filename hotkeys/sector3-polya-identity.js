@@ -4,6 +4,8 @@ if(window.VIDLIK_POLYA_IDENTITY)return;
 
 const POLYA_NAME='Поля';
 const AVATAR='assets/sector3-prologue/polya-01.webp';
+const params=new URLSearchParams(location.search);
+const DIRECT_SCENE_1=(parseInt(params.get('storyScene')||'0',10)||0)===1;
 
 const style=document.createElement('style');
 style.id='vidlik-polya-identity-style';
@@ -54,6 +56,79 @@ function scheduleNormalize(){
   if(scheduled)return;
   scheduled=true;
   requestAnimationFrame(()=>{scheduled=false;normalizeIdentity()});
+}
+
+/* Direct Scene 01 deliberately does not load the old prologue runtime, so it
+   needs two tiny pieces of desktop behavior here: live local time and Excel
+   arrow navigation. Keeping them isolated avoids bringing legacy tutorials
+   back into the checkpoint. */
+function syncDirectClock(){
+  if(!DIRECT_SCENE_1)return;
+  const clock=document.getElementById('desktopClock');
+  if(!clock)return;
+  clock.textContent=new Date().toLocaleTimeString('uk-UA',{
+    hour:'2-digit',minute:'2-digit',hour12:false
+  });
+}
+function directExcelWindow(){
+  if(!DIRECT_SCENE_1)return null;
+  const win=document.querySelector('.s3-direct-window');
+  if(!win||win.style.display==='none'||win.classList.contains('os-minimized')||win.classList.contains('os-window-minimized'))return null;
+  return win;
+}
+function directSelectCell(cell){
+  const win=directExcelWindow();
+  if(!win||!cell)return;
+  win.querySelectorAll('.excel-cell.is-selected').forEach(el=>el.classList.remove('is-selected'));
+  cell.classList.add('is-selected');
+  const address=cell.dataset.cell||'';
+  const box=win.querySelector('.excel-name-box');
+  if(box&&address)box.textContent=address;
+  cell.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function directMoveCell(dx,dy){
+  const win=directExcelWindow();if(!win)return;
+  const current=win.querySelector('.excel-cell.is-selected')||win.querySelector('[data-cell="F2"]')||win.querySelector('.excel-cell[data-cell]');
+  if(!current)return;
+  const m=/^([A-F])(\d+)$/.exec(current.dataset.cell||'');if(!m)return;
+  const cols=['A','B','C','D','E','F'];
+  let ci=cols.indexOf(m[1]);
+  let row=parseInt(m[2],10);
+  ci=Math.max(0,Math.min(cols.length-1,ci+dx));
+  row=Math.max(1,Math.min(19,row+dy));
+  const step=dy===0?0:(dy>0?1:-1);
+  let guard=0;
+  while(guard++<20){
+    const cell=win.querySelector(`[data-cell="${cols[ci]}${row}"]`);
+    const rowEl=cell?.closest('.excel-row');
+    if(cell&&(!rowEl||getComputedStyle(rowEl).display!=='none')){directSelectCell(cell);return}
+    if(!step)return;
+    row+=step;
+    if(row<1||row>19)return;
+  }
+}
+
+if(DIRECT_SCENE_1){
+  syncDirectClock();
+  const directClockTimer=setInterval(syncDirectClock,5000);
+  window.addEventListener('pagehide',()=>clearInterval(directClockTimer),{once:true});
+
+  document.addEventListener('click',e=>{
+    const cell=e.target.closest('.s3-direct-window .excel-cell[data-cell]');
+    if(cell)directSelectCell(cell);
+  },true);
+
+  window.addEventListener('keydown',e=>{
+    if(e.repeat||e.key==='Escape')return;
+    const win=directExcelWindow();if(!win)return;
+    if(document.getElementById('scene')?.classList.contains('s3-scene1-focus'))return;
+    const search=win.querySelector('.s3-direct-search');
+    if(search&&!search.hidden)return;
+    const dirs={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
+    const d=dirs[e.key];if(!d)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    directMoveCell(d[0],d[1]);
+  },true);
 }
 
 normalizeIdentity();
