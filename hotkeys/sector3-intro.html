@@ -151,10 +151,12 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
     await load('sector3-pause-compat.js?v=20260908-4');
 
     if(direct){
-      /* Direct checkpoints are intentionally isolated from every old lesson,
-         keyboard tutorial and investigation observer. */
-      await load('sector3-story-jump.js?v=20260909-8');
+      /* Direct checkpoints stay isolated from old lessons, but still use the
+         real VIDLIK OS language selector. The virtual-layout bridge must be
+         registered before Scene 01 consumes printable key events. */
       await load('sector3-os.js?v=20260906-3');
+      await load('sector3-direct-language-input.js?v=20260909-1');
+      await load('sector3-story-jump.js?v=20260909-8');
       await load('sector3-adaptive-visual.js?v=20260907-4');
       await load('sector3-hud-stability.js?v=20260908-1');
       await load('sector3-polya-identity.js?v=20260909-3');
