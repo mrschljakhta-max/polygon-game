@@ -6,8 +6,8 @@ const requested=parseInt(params.get('storyScene')||'0',10)||0;
 if(requested!==1)return;
 
 /* Scene 01 direct checkpoint.
- * Important: do NOT replay Episode 05 tutorials here. Scene 01 starts from an
- * explicit ready state and only the physical scene camera is used for Polya focus.
+ * Do NOT replay Episode 05 tutorials here. Scene 01 starts from an explicit
+ * ready state and owns its input independently of the legacy lesson chain.
  */
 
 document.body.classList.remove('prologue-title-pending','vidlik-act1-title-active','vidlik-prologue-title-active');
@@ -32,6 +32,7 @@ let search='';
 let searchOpen=false;
 let row17=false;
 let endingLine=-1;
+let bootAttempts=0;
 
 const LINES=[
  'Не закривай файл.',
@@ -47,8 +48,8 @@ const style=document.createElement('style');
 style.id='s3-scene1-direct-style';
 style.textContent=`
 /* CANONICAL POLYA SHOT.
-   Never resize/move .tablet-screen: it must stay glued to the physical tablet
-   baked into desk.webp. We move the whole camera exactly like the opening call. */
+   Never resize/move .tablet-screen: it stays glued to the physical tablet.
+   The whole camera moves exactly like the opening call. */
 .scene .camera{
   transition:transform .88s cubic-bezier(.22,1,.36,1)!important;
   will-change:transform;
@@ -73,12 +74,12 @@ document.head.appendChild(style);
 function now(){return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',hour12:false})}
 function setHeaderPolya(){
  header.classList.add('excel-polya-channel');
- const n=header.querySelector('.admin-header-name');if(n)n.textContent='ПОЛЯ';
+ const n=header.querySelector('.admin-header-name');if(n)n.textContent='Поля';
  const s=header.querySelector('.admin-online span');if(s)s.textContent='захищений канал';
 }
 function msg(text){
  const row=document.createElement('div');row.className='admin-message vidlik-tutorial-message excel-story-message is-polya s3-direct-message';
- row.innerHTML=`<div class="admin-bubble"><div class="admin-bubble-head"><span class="admin-bubble-name">ПОЛЯ</span><span class="admin-bubble-time">${now()}</span></div><p></p></div>`;
+ row.innerHTML=`<div class="admin-bubble"><div class="admin-bubble-head"><span class="admin-bubble-name">Поля</span><span class="admin-bubble-time">${now()}</span></div><p></p></div>`;
  row.querySelector('p').textContent=text;row.querySelector('p').style.whiteSpace='pre-line';chat.appendChild(row);
  requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight});
 }
@@ -119,7 +120,7 @@ function searchBox(){return excelWin?.querySelector('.s3-direct-search')}
 
 function nextDialog(){
  if(line<LINES.length-1){line++;msg(LINES[line]);return}
- stage='formula';focusTablet(false);footer.textContent='ПОЛЯ · ПЕРЕВІРКА РЕЄСТРУ';setHint('<span><kbd>=COUNTA(B2:B269)</kbd> <kbd>ENTER</kbd></span><span><kbd>ESC</kbd> пауза</span>');
+ stage='formula';focusTablet(false);footer.textContent='Поля · ПЕРЕВІРКА РЕЄСТРУ';setHint('<span><kbd>=COUNTA(B2:B269)</kbd> <kbd>ENTER</kbd></span><span><kbd>ESC</kbd> пауза</span>');
 }
 function acceptFormula(){
  const normalized=formula.replace(/\s+/g,'').toUpperCase();
@@ -129,7 +130,7 @@ function acceptFormula(){
 }
 function reveal17(){
  const row=excelWin?.querySelector('[data-row="17"]');if(row){row.style.display='';row.classList.add('s3-found-row');row.scrollIntoView({block:'center'})}
- row17=true;searchOpen=false;searchBox().hidden=true;stage='ending';focusTablet(true);endingLine=-1;msg('Данило Верес.');endingLine=0;footer.textContent='ПОЛЯ · ЗАХИЩЕНИЙ КАНАЛ';setHint('<span><kbd>ENTER</kbd> далі</span><span><kbd>ESC</kbd> пауза</span>');
+ row17=true;searchOpen=false;searchBox().hidden=true;stage='ending';focusTablet(true);endingLine=-1;msg('Данило Верес.');endingLine=0;footer.textContent='Поля · ЗАХИЩЕНИЙ КАНАЛ';setHint('<span><kbd>ENTER</kbd> далі</span><span><kbd>ESC</kbd> пауза</span>');
 }
 function nextEnding(){
  if(endingLine<ENDING.length-1){endingLine++;msg(ENDING[endingLine]);return}
@@ -137,6 +138,8 @@ function nextEnding(){
 }
 
 function keydown(e){
+ if(e.__vidlikScene1Handled)return;
+ try{e.__vidlikScene1Handled=true}catch(_){}
  if(e.repeat)return;
  if(e.key==='Escape')return;
  if(stage==='dialog'){
@@ -162,18 +165,34 @@ function keydown(e){
  if(stage==='ending'&&e.key==='Enter'){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();nextEnding()}
 }
 
+/* The head bridge registers before all legacy tutorials and forwards keys here.
+   Keep the direct listener as a fallback for old cached HTML; the handled flag
+   prevents a key from being processed twice. */
+window.VIDLIK_SCENE1_INPUT=keydown;
+
 function boot(){
  showAdmin();
  try{window.VIDLIK_OS?.enable?.()}catch(_){}
  const host=mon.querySelector('.os-layer');
- if(!host){setTimeout(boot,50);return}
+ if(!host){
+  bootAttempts++;
+  if(bootAttempts<120){setTimeout(boot,50);return}
+  setHint('<span>Не вдалося підготувати Сцену 01. <kbd>R</kbd> повторити</span><span><kbd>ESC</kbd> пауза</span>');
+  return;
+ }
  try{window.VIDLIK_EXCEL_STORY_TUTORIAL?.reset?.()}catch(_){}
- chat.innerHTML='';setHeaderPolya();excelWin=buildExcel();
- footer.textContent='ПОЛЯ · ЗАХИЩЕНИЙ КАНАЛ';
- focusTablet(true);setHint('<span><kbd>ENTER</kbd> наступне повідомлення</span><span><kbd>ESC</kbd> пауза</span>');
- setTimeout(()=>{if(line<0)nextDialog()},900);
- window.addEventListener('keydown',keydown,true);
+ chat.innerHTML='';
+ setHeaderPolya();
+ excelWin=buildExcel();
+ if(!excelWin){setTimeout(boot,80);return}
+ footer.textContent='Поля · ЗАХИЩЕНИЙ КАНАЛ';
+ focusTablet(true);
+ setHint('<span><kbd>ENTER</kbd> наступне повідомлення</span><span><kbd>ESC</kbd> пауза</span>');
+ scene.focus?.({preventScroll:true});
+ window.VIDLIK_SCENE1_READY=true;
+ setTimeout(()=>{if(stage==='dialog'&&line<0)nextDialog()},650);
 }
 
+window.addEventListener('keydown',keydown,true);
 boot();
 })();
