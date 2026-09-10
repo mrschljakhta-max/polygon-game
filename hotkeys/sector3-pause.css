@@ -1,0 +1,35 @@
+/*
+ * Sector 3 pause — canonical stylesheet entry point.
+ *
+ * Phase 1 of the pause refactor keeps the approved visual layers intact while
+ * the JavaScript runtime is consolidated into sector3-pause.js. Keeping these
+ * imports here gives the page one stable stylesheet dependency and lets us fold
+ * the legacy visual layers into this file in a later no-visual-change pass.
+ */
+@import url('sector3-pause-router.css?v=20260908-1');
+@import url('sector3-pause-skin.css?v=20260908-1');
+@import url('sector3-pause-fidelity.css?v=20260908-2');
+
+/* Inline confirmation is now owned by the canonical pause controller. */
+.hotki-pause-scene .hotki-pause-confirm{display:none!important}
+.hotki-pause-scene .hotki-action.hotki-confirm-armed{
+ filter:brightness(1.18) drop-shadow(0 0 .72rem rgba(255,154,82,.52))!important;
+}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm{
+ opacity:1!important;
+ transform:translateX(0)!important;
+ border-color:rgba(255,174,112,.42)!important;
+ background:rgba(7,17,20,.90)!important;
+ color:#f3fbfc!important;
+ box-shadow:0 9px 30px rgba(0,0,0,.28),0 0 20px rgba(255,154,82,.08)!important;
+}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm b{
+ color:#ffad6d!important;
+ margin-left:.55rem!important;
+}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm small{
+ color:#a8cfd3!important;
+ font:600 .86em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+ letter-spacing:.04em!important;
+ text-transform:none!important;
+}
