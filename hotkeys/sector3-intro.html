@@ -10,21 +10,6 @@
   const p=new URLSearchParams(location.search);
   window.__VIDLIK_STORY_JUMP_REQUESTED=p.has('storyScene');
   if(window.__VIDLIK_STORY_JUMP_REQUESTED)document.documentElement.classList.add('vidlik-story-jump');
-  window.addEventListener('keydown',e=>{
-    const isEscape=e.key==='Escape'||e.code==='Escape'||e.keyCode===27;
-    if(!isEscape||e.repeat)return;
-    const router=window.VIDLIK_PAUSE_ROUTER;
-    if(!router||router.paused)return;
-    let osReady=false;
-    try{osReady=!!window.VIDLIK_OS?.getState?.()?.enabled}catch(_){}
-    if(osReady)return;
-    const interactive=document.querySelector('.incoming.visible,.video.visible,.admin-layer.visible');
-    const blocked=document.querySelector('.sync-layer.visible,.monitor-sync-overlay.visible,.video.visible.breaking');
-    const title=document.getElementById('vidlikPrologueTitle')||document.getElementById('vidlikAct1Title');
-    if(!interactive||blocked||title)return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-    router.pause('escape-pre-os-bridge',true);
-  },true);
 })();
 </script>
 <style>
@@ -49,7 +34,7 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 <link rel="stylesheet" href="sector3-excel-onboarding.css?v=20260908-3">
 <link rel="stylesheet" href="sector3-adaptive-visual.css?v=20260907-3">
 <link rel="stylesheet" href="sector3-section-transition.css?v=20260906-1">
-<link rel="stylesheet" href="sector3-pause-router.css?v=20260908-1">
+<link rel="stylesheet" href="sector3-pause.css?v=20260910-1">
 <link rel="stylesheet" href="sector3-menu-icon-clean.css?v=20260908-2">
 <link rel="stylesheet" href="sector3-system-hud-polish.css?v=20260908-3">
 </head>
@@ -146,9 +131,7 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
     if(h)h.innerHTML='<span>ПОМИЛКА ЗАВАНТАЖЕННЯ СЦЕНИ</span><span><kbd>ESC</kbd> назад</span>';
   };
   try{
-    await load('sector3-pause-input-v2.js?v=20260908-3');
-    await load('sector3-pause-router.js?v=20260908-2');
-    await load('sector3-pause-compat.js?v=20260908-4');
+    await load('sector3-pause.js?v=20260910-1');
 
     if(direct){
       /* Direct checkpoints stay isolated from old lessons, but still use the
