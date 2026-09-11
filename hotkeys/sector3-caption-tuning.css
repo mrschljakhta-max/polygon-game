@@ -1,9 +1,0 @@
-/* Sector 3 · Polya subtitle readability tuning */
-.caption p{
-  font-size:8.4px;
-  line-height:1.38;
-  padding:7px 8px;
-}
-.caption b{
-  font-size:5.6px;
-}
