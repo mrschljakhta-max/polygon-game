@@ -24,12 +24,13 @@ const gameplayStyles=Object.freeze([
 ]);
 const manifests=Object.freeze({
  title:Object.freeze(['sector3-transitions.js?v=20260911-1','sector3-prologue.js?v=20260911-2']),
- common:Object.freeze(['sector3-story-router.js?v=20260911-4','sector3-pause.js?v=20260910-1','sector3-input.js?v=20260911-1','sector3-ui.js?v=20260911-1']),
+ common:Object.freeze(['sector3-story-router.js?v=20260911-5','sector3-pause.js?v=20260910-1','sector3-input.js?v=20260911-1','sector3-ui.js?v=20260911-1']),
  direct:Object.freeze(['sector3-os.js?v=20260906-3']),
  normal:Object.freeze([]),
  styles:gameplayStyles
 });
 const loaded=new Set();
+let assetsHydrated=false;
 function isStyle(src){return /\.css(?:[?#]|$)/i.test(src)}
 function load(src){
  if(loaded.has(src))return Promise.resolve(src);
@@ -75,6 +76,18 @@ function load(src){
 }
 async function seq(list){for(const src of list)await load(src)}
 async function loadGameplayStyles(){await seq(gameplayStyles);return gameplayStyles}
+function hydrateGameplayAssets(){
+ if(assetsHydrated)return 0;
+ const nodes=[...document.querySelectorAll('[data-vidlik-src]')];
+ for(const node of nodes){
+  const src=node.getAttribute('data-vidlik-src');
+  if(src&&!node.getAttribute('src'))node.setAttribute('src',src);
+  node.removeAttribute('data-vidlik-src');
+ }
+ assetsHydrated=true;
+ window.dispatchEvent(new CustomEvent('vidlik:gameplay-assets-hydrated',{detail:{count:nodes.length}}));
+ return nodes.length;
+}
 function fail(err){
  console.error('[VIDLIK runtime]',err);document.documentElement.dataset.vidlikRuntime='error';
  const h=document.getElementById('help');if(h)h.innerHTML='<span>ПОМИЛКА ЗАВАНТАЖЕННЯ СЦЕНИ</span><span><kbd>R</kbd> повторити</span><span><kbd>ESC</kbd> назад</span>';
@@ -84,16 +97,20 @@ async function boot(){
  if(boot.promise)return boot.promise;
  boot.promise=(async()=>{
   document.documentElement.dataset.vidlikRuntime='loading';
-  if(direct)document.body.classList.remove('prologue-title-pending');else await seq(manifests.title);
+  if(!direct)await seq(manifests.title);
   await seq(manifests.common);
-  if(direct)await loadGameplayStyles();
-  await seq(manifests[mode]);
+  if(direct){
+   await loadGameplayStyles();
+   hydrateGameplayAssets();
+   await seq(manifests.direct);
+   document.body.classList.remove('prologue-title-pending');
+  }
   document.documentElement.dataset.vidlikRuntime='ready';
   window.dispatchEvent(new CustomEvent('vidlik:runtime-ready',{detail:{mode}}));
   return mode;
  })().catch(err=>{fail(err);throw err});
  return boot.promise;
 }
-window.VIDLIK_RUNTIME={mode,manifests,load,loadGameplayStyles,boot,get loaded(){return[...loaded]}};
+window.VIDLIK_RUNTIME={mode,manifests,load,loadGameplayStyles,hydrateGameplayAssets,boot,get loaded(){return[...loaded]}};
 boot().catch(()=>{});
 })();
