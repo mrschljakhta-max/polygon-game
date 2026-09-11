@@ -4,9 +4,9 @@ if(window.VIDLIK_RUNTIME)return;
 const direct=!!window.__VIDLIK_STORY_JUMP_REQUESTED;
 const mode=direct?'direct':'normal';
 const manifests=Object.freeze({
- title:Object.freeze(['sector3-transitions.js?v=20260911-1','sector3-prologue-title.js?v=20260907-4']),
- common:Object.freeze(['sector3-pause.js?v=20260910-1','sector3-input.js?v=20260911-1','sector3-ui.js?v=20260911-1']),
- direct:Object.freeze(['sector3-os.js?v=20260906-3','sector3-direct-scene2.js?v=20260911-1','sector3-scene2-countif.js?v=20260909-2','sector3-story-jump.js?v=20260909-8','sector3-scene3-official.js?v=20260909-1','sector3-adaptive-visual.js?v=20260907-4','sector3-polya-identity.js?v=20260909-3']),
+ title:Object.freeze(['sector3-transitions.js?v=20260911-1','sector3-prologue.js?v=20260911-1']),
+ common:Object.freeze(['sector3-story-router.js?v=20260911-1','sector3-pause.js?v=20260910-1','sector3-input.js?v=20260911-1','sector3-ui.js?v=20260911-1']),
+ direct:Object.freeze(['sector3-os.js?v=20260906-3']),
  normal:Object.freeze(['sector3-scene1-investigation.js?v=20260908-1','sector3-os.js?v=20260906-3','sector3-os-explorer.js?v=20260911-1','sector3-tutorial-core.js?v=20260911-1','sector3-tutorial.js?v=20260906-4','sector3-files-tutorial.js?v=20260907-3','sector3-keyboard-tutorial.js?v=20260907-4','sector3-language-tutorial.js?v=20260907-1','sector3-excel-onboarding.js?v=20260908-5','sector3-excel-tutorial.js?v=20260907-1','sector3-adaptive-visual.js?v=20260907-4','sector3-polya-cinematic.js?v=20260908-1','sector3-polya-identity.js?v=20260909-3'])
 });
 const loaded=new Set();
@@ -14,9 +14,14 @@ function load(src){
  if(loaded.has(src))return Promise.resolve(src);
  return new Promise((resolve,reject)=>{
   const existing=[...document.scripts].find(s=>s.src&&s.src.endsWith(src));
-  if(existing){loaded.add(src);resolve(src);return}
+  if(existing){
+   if(existing.dataset.vidlikLoaded==='1'){loaded.add(src);resolve(src);return}
+   existing.addEventListener('load',()=>{loaded.add(src);resolve(src)},{once:true});
+   existing.addEventListener('error',()=>reject(new Error('Не вдалося завантажити '+src)),{once:true});
+   return;
+  }
   const s=document.createElement('script');s.src=src;s.async=false;s.dataset.vidlikRuntime='1';
-  s.onload=()=>{loaded.add(src);resolve(src)};
+  s.onload=()=>{s.dataset.vidlikLoaded='1';loaded.add(src);resolve(src)};
   s.onerror=()=>reject(new Error('Не вдалося завантажити '+src));
   document.body.appendChild(s);
  });
