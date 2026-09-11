@@ -111,6 +111,14 @@ async function boot(){
  })().catch(err=>{fail(err);throw err});
  return boot.promise;
 }
+function startAfterInitialLoad(){
+ const start=()=>{
+  document.documentElement.dataset.vidlikInitialLoad='complete';
+  boot().catch(()=>{});
+ };
+ if(document.readyState==='complete')queueMicrotask(start);
+ else window.addEventListener('load',start,{once:true});
+}
 window.VIDLIK_RUNTIME={mode,manifests,load,loadGameplayStyles,hydrateGameplayAssets,boot,get loaded(){return[...loaded]}};
-boot().catch(()=>{});
+startAfterInitialLoad();
 })();
