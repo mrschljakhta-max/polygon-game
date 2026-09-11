@@ -15,7 +15,6 @@
 <style>
 html,body{margin:0;background:#05090c;overflow:hidden}
 body.prologue-title-pending .app{visibility:hidden}
-html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 #vidlikAct1Title .a1-terminal:focus-visible{outline:none!important;outline-offset:0!important}
 </style>
 </head>
@@ -23,14 +22,14 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 <div class="app">
   <main class="scene" id="scene" tabindex="0" aria-label="Заборонений дзвінок">
     <div class="camera" id="camera">
-      <img class="desk" src="assets/sector3-prologue/desk.webp" alt="Робочий стіл HOTKI">
+      <img class="desk" data-vidlik-src="assets/sector3-prologue/desk.webp" alt="Робочий стіл HOTKI" decoding="async">
       <section class="monitor-screen" aria-label="Монітор">
-        <img class="monitor-wallpaper" src="assets/sector3-prologue/monitor-wallpaper.webp" alt="">
+        <img class="monitor-wallpaper" data-vidlik-src="assets/sector3-prologue/monitor-wallpaper.webp" alt="" decoding="async">
         <div class="desktop-icons" id="desktopIcons">
-          <button class="desktop-icon" type="button" data-app="pc"><img src="assets/sector3-prologue/icon-pc.webp" alt=""><span>Цей ПК</span></button>
-          <button class="desktop-icon" type="button" data-app="folder"><img src="assets/sector3-prologue/icon-folder.webp" alt=""><span>Документи</span></button>
-          <button class="desktop-icon" type="button" data-app="excel"><img src="assets/sector3-prologue/icon-excel.webp" alt=""><span>Microsoft<br>Excel</span></button>
-          <button class="desktop-icon" type="button" data-app="trash"><img src="assets/sector3-prologue/icon-trash.webp" alt=""><span>Кошик</span></button>
+          <button class="desktop-icon" type="button" data-app="pc"><img data-vidlik-src="assets/sector3-prologue/icon-pc.webp" alt="" decoding="async"><span>Цей ПК</span></button>
+          <button class="desktop-icon" type="button" data-app="folder"><img data-vidlik-src="assets/sector3-prologue/icon-folder.webp" alt="" decoding="async"><span>Документи</span></button>
+          <button class="desktop-icon" type="button" data-app="excel"><img data-vidlik-src="assets/sector3-prologue/icon-excel.webp" alt="" decoding="async"><span>Microsoft<br>Excel</span></button>
+          <button class="desktop-icon" type="button" data-app="trash"><img data-vidlik-src="assets/sector3-prologue/icon-trash.webp" alt="" decoding="async"><span>Кошик</span></button>
         </div>
         <div class="monitor-sync-overlay" id="monitorSyncOverlay" aria-hidden="true">
           <div class="monitor-sync-screen">
@@ -44,15 +43,15 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
       </section>
       <section class="tablet-screen" id="tabletScreen" aria-label="Екран планшета">
         <div class="tablet-layer idle visible" id="idleLayer">
-          <img src="assets/sector3-prologue/tablet-lock.webp" alt="Екран блокування VIDLIK">
+          <img data-vidlik-src="assets/sector3-prologue/tablet-lock.webp" alt="Екран блокування VIDLIK" decoding="async">
           <div class="lock-overlay"><strong id="lockTime">--:--</strong><span id="lockDate">—</span></div>
         </div>
         <div class="tablet-layer incoming" id="incomingLayer">
-          <img src="assets/sector3-prologue/incoming-call.webp" alt="Вхідний дзвінок від Полі">
+          <img data-vidlik-src="assets/sector3-prologue/incoming-call.webp" alt="Вхідний дзвінок від Полі" decoding="async">
           <button class="accept" id="acceptBtn" type="button" aria-label="Прийняти дзвінок"></button>
         </div>
         <div class="tablet-layer video" id="videoLayer">
-          <img class="polya-frame" id="polyaFrame" src="assets/sector3-prologue/polya-01.webp" alt="Поля під час таємного відеодзвінка">
+          <img class="polya-frame" id="polyaFrame" data-vidlik-src="assets/sector3-prologue/polya-01.webp" alt="Поля під час таємного відеодзвінка" decoding="async">
           <div class="video-shade"></div>
           <div class="call-top"><span><i></i> захищений канал</span><span id="sceneCount">01 / 06</span></div>
           <div class="caption"><b>Поля</b><p id="subtitle"></p></div>
@@ -88,6 +87,6 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
     <div class="pause" id="pause"><div><h2>ПАУЗА</h2><p>Enter / Space — продовжити · R — почати спочатку</p></div></div>
   </main>
 </div>
-<script src="sector3-runtime.js?v=20260911-7"></script>
+<script src="sector3-runtime.js?v=20260911-8"></script>
 </body>
 </html>
