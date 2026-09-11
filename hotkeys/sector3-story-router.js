@@ -41,6 +41,10 @@ function runtime(){
  if(!api?.load)throw new Error('VIDLIK runtime loader unavailable');
  return api;
 }
+async function prepareGameplay(){
+ const api=runtime();
+ if(api.loadGameplayStyles)await api.loadGameplayStyles();
+}
 async function loadRoute(name){
  const list=routes[name];
  if(!list)throw new Error('Unknown story route: '+name);
@@ -53,7 +57,7 @@ async function continuePrologue(){
  if(direct)return current;
  if(routePromise)return routePromise;
  document.body.classList.remove('prologue-title-pending');
- routePromise=loadRoute('prologue-call').finally(()=>{routePromise=null});
+ routePromise=(async()=>{await prepareGameplay();return loadRoute('prologue-call')})().finally(()=>{routePromise=null});
  return routePromise;
 }
 function completePrologueTransition(){
@@ -66,6 +70,7 @@ function completePrologueTransition(){
 }
 async function bootDirect(){
  if(!direct)return null;
+ await prepareGameplay();
  if(requestedScene===1)return loadRoute('direct-scene-01');
  document.documentElement.dataset.vidlikStoryRoute='unsupported';
  window.dispatchEvent(new CustomEvent('vidlik:story-route-error',{detail:{requestedScene,error:'unsupported-checkpoint'}}));
