@@ -10,6 +10,19 @@ let routePromise=null;
 
 const routes=Object.freeze({
  'prologue-call':Object.freeze([
+  'sector3-scene1-investigation.js?v=20260908-1',
+  'sector3-os.js?v=20260906-3',
+  'sector3-os-explorer.js?v=20260911-1',
+  'sector3-tutorial-core.js?v=20260911-1',
+  'sector3-tutorial.js?v=20260906-4',
+  'sector3-files-tutorial.js?v=20260907-3',
+  'sector3-keyboard-tutorial.js?v=20260907-4',
+  'sector3-language-tutorial.js?v=20260907-1',
+  'sector3-excel-onboarding.js?v=20260908-5',
+  'sector3-excel-tutorial.js?v=20260907-1',
+  'sector3-adaptive-visual.js?v=20260907-4',
+  'sector3-polya-cinematic.js?v=20260908-1',
+  'sector3-polya-identity.js?v=20260909-3',
   'sector3-intro.js?v=20260907-prologue2'
  ]),
  'direct-scene-01':Object.freeze([
