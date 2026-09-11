@@ -8,7 +8,7 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -21,69 +21,51 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
 
-      - name: Bisect Sector 3 runtime
+      - name: Verify prologue continue flow
         run: |
-          cat > sector3-bisect.mjs <<'EOF'
+          cat > sector3-flow.mjs <<'EOF'
           import { chromium } from 'playwright';
-
-          const URL='http://127.0.0.1:8000/hotkeys/sector3-intro.html?diag=bisect';
-          const scenarios=[
-            ['after-router','sector3-pause.js'],
-            ['after-pause','sector3-input.js'],
-            ['after-input','sector3-ui.js'],
-            ['after-common','sector3-scene1-investigation.js'],
-            ['after-scene1-investigation','sector3-os.js'],
-            ['after-os','sector3-os-explorer.js'],
-            ['after-os-explorer','sector3-tutorial-core.js'],
-            ['after-tutorial-core','sector3-tutorial.js'],
-            ['after-tutorial','sector3-files-tutorial.js'],
-            ['after-files','sector3-keyboard-tutorial.js'],
-            ['after-keyboard','sector3-language-tutorial.js'],
-            ['after-language','sector3-excel-onboarding.js'],
-            ['after-excel-onboarding','sector3-excel-tutorial.js'],
-            ['after-excel-tutorial','sector3-adaptive-visual.js'],
-            ['after-adaptive','sector3-polya-cinematic.js'],
-            ['after-polya-cinematic','sector3-polya-identity.js'],
-            ['full',null]
-          ];
           const delay=ms=>new Promise(r=>setTimeout(r,ms));
-          const hostTimeout=(promise,ms,fallback)=>Promise.race([promise,new Promise(r=>setTimeout(()=>r(fallback),ms))]);
           const browser=await chromium.launch({channel:'chrome',headless:true,args:['--disable-gpu']});
-
-          for(const [name,block] of scenarios){
-            const context=await browser.newContext();
-            const page=await context.newPage();
-            const errors=[];
-            page.on('pageerror',e=>errors.push('pageerror:'+String(e)));
-            page.on('console',m=>{if(m.type()==='error')errors.push('console:'+m.text())});
-            if(block){
-              await page.route(`**/${block}*`,async route=>{
-                console.log(`[${name}] BLOCK ${route.request().url()}`);
-                await route.abort('failed');
-              });
-            }
-            let dom='unknown';
-            try{
-              dom=await hostTimeout(page.goto(URL,{waitUntil:'domcontentloaded',timeout:5000}).then(()=> 'domcontentloaded').catch(e=>'goto:'+e.message),6500,'HOST_GOTO_TIMEOUT');
-            }catch(e){dom='throw:'+e.message}
-            await delay(1200);
-            const probe=await hostTimeout(page.evaluate(()=>({
-              readyState:document.readyState,
-              runtime:document.documentElement.dataset.vidlikRuntime||null,
-              loaded:window.VIDLIK_RUNTIME?.loaded||[],
-              router:window.VIDLIK_STORY_ROUTER?.current||null,
-              prologue:!!document.getElementById('vidlikPrologueTitle')
-            })).catch(e=>({evalError:e.message})),1800,{HOST_EVAL_TIMEOUT:true});
-            console.log(`RESULT ${name} block=${block||'none'} dom=${dom} probe=${JSON.stringify(probe)} errors=${JSON.stringify(errors)}`);
-            await hostTimeout(context.close(),1500,null);
-          }
+          const page=await browser.newPage();
+          const errors=[];
+          page.on('pageerror',e=>errors.push('pageerror:'+String(e)));
+          page.on('console',m=>{if(m.type()==='error')errors.push('console:'+m.text())});
+          await page.goto('http://127.0.0.1:8000/hotkeys/sector3-intro.html?diag=flow',{waitUntil:'load',timeout:15000});
+          await page.waitForFunction(()=>document.documentElement.dataset.vidlikRuntime==='ready',{timeout:10000});
+          const before=await page.evaluate(()=>({
+            readyState:document.readyState,
+            runtime:document.documentElement.dataset.vidlikRuntime,
+            router:window.VIDLIK_STORY_ROUTER?.current||null,
+            prologue:!!document.getElementById('vidlikPrologueTitle'),
+            button:!!document.getElementById('vidlikPrologueContinue')
+          }));
+          console.log('BEFORE',JSON.stringify(before));
+          await page.locator('#vidlikPrologueContinue').click({timeout:5000});
+          await delay(7000);
+          const after=await page.evaluate(()=>({
+            readyState:document.readyState,
+            runtime:document.documentElement.dataset.vidlikRuntime,
+            router:window.VIDLIK_STORY_ROUTER?.current||null,
+            prologue:!!document.getElementById('vidlikPrologueTitle'),
+            introApi:!!window.VIDLIK_SECTOR3_INTRO,
+            bodyClass:document.body.className,
+            incomingVisible:document.querySelector('.incoming.visible')!==null,
+            videoVisible:document.querySelector('.video.visible')!==null,
+            help:document.getElementById('help')?.innerText||''
+          }));
+          console.log('AFTER',JSON.stringify(after));
+          console.log('ERRORS',JSON.stringify(errors));
+          if(before.runtime!=='ready'||!before.prologue||!before.button)throw new Error('Precondition failed');
+          if(after.prologue)throw new Error('Prologue did not close');
+          if(after.router!=='prologue-call')throw new Error('Story Router did not enter prologue-call');
+          if(errors.length)throw new Error('Browser errors: '+errors.join(' | '));
           await browser.close();
           EOF
-
           python3 -m http.server 8000 >/tmp/sector3-http.log 2>&1 &
           SERVER_PID=$!
           sleep 1
-          node sector3-bisect.mjs
+          node sector3-flow.mjs
           STATUS=$?
           kill $SERVER_PID || true
           exit $STATUS
