@@ -19,11 +19,9 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 </style>
 <link rel="stylesheet" href="sector3-intro.css?v=20260906-2">
 <link rel="stylesheet" href="sector3-incoming-effects.css?v=20260906-2">
-<link rel="stylesheet" href="sector3-caption-tuning.css?v=20260906-1">
 <link rel="stylesheet" href="sector3-admin.css?v=20260906-6">
 <link rel="stylesheet" href="sector3-sync.css?v=20260906-3">
 <link rel="stylesheet" href="sector3-os.css?v=20260906-1">
-<link rel="stylesheet" href="sector3-language-menu-fix.css?v=20260908-1">
 <link rel="stylesheet" href="sector3-os-windows.css?v=20260911-1">
 <link rel="stylesheet" href="sector3-os-explorer.css?v=20260911-1">
 <link rel="stylesheet" href="sector3-tutorial.css?v=20260906-2">
@@ -34,8 +32,7 @@ html.vidlik-story-jump body.prologue-title-pending .app{visibility:visible}
 <link rel="stylesheet" href="sector3-adaptive-visual.css?v=20260907-3">
 <link rel="stylesheet" href="sector3-section-transition.css?v=20260906-1">
 <link rel="stylesheet" href="sector3-pause.css?v=20260911-1">
-<link rel="stylesheet" href="sector3-menu-icon-clean.css?v=20260908-2">
-<link rel="stylesheet" href="sector3-system-hud-polish.css?v=20260908-3">
+<link rel="stylesheet" href="sector3-ui.css?v=20260911-1">
 </head>
 <body class="prologue-title-pending">
 <div class="app">
@@ -132,6 +129,7 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
   try{
     await load('sector3-pause.js?v=20260910-1');
     await load('sector3-input.js?v=20260911-1');
+    await load('sector3-ui.js?v=20260911-1');
 
     if(direct){
       await load('sector3-os.js?v=20260906-3');
@@ -140,7 +138,6 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
       await load('sector3-story-jump.js?v=20260909-8');
       await load('sector3-scene3-official.js?v=20260909-1');
       await load('sector3-adaptive-visual.js?v=20260907-4');
-      await load('sector3-hud-stability.js?v=20260908-1');
       await load('sector3-polya-identity.js?v=20260909-3');
       return;
     }
@@ -155,11 +152,10 @@ if(!window.__VIDLIK_STORY_JUMP_REQUESTED){
     await load('sector3-files-tutorial.js?v=20260907-3');
     await load('sector3-keyboard-tutorial.js?v=20260907-4');
     await load('sector3-language-tutorial.js?v=20260907-1');
-    await load('sector3-language-cleanup.js?v=20260907-2');
     await load('sector3-excel-onboarding.js?v=20260908-5');
     await load('sector3-excel-tutorial.js?v=20260907-1');
     await load('sector3-adaptive-visual.js?v=20260907-4');
-    await load('sector3-hud-stability.js?v=20260908-1');
+    await load('sector3-polya-cinematic.js?v=20260908-1');
     await load('sector3-polya-identity.js?v=20260909-3');
   }catch(err){fail(err)}
 })();
