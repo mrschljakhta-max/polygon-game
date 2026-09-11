@@ -8,7 +8,7 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
 
@@ -16,107 +16,74 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Playwright
+      - name: Install Playwright library
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium
 
-      - name: Run Sector 3 browser diagnostic
+      - name: Bisect Sector 3 runtime
         run: |
-          cat > sector3-smoke.mjs <<'EOF'
+          cat > sector3-bisect.mjs <<'EOF'
           import { chromium } from 'playwright';
 
-          const urls = [
-            ['local', 'http://127.0.0.1:8000/hotkeys/sector3-intro.html?diag=1'],
-            ['live', 'https://poligon-game.com/hotkeys/sector3-intro.html?diag=1&smoke=832']
+          const URL='http://127.0.0.1:8000/hotkeys/sector3-intro.html?diag=bisect';
+          const scenarios=[
+            ['after-router','sector3-pause.js'],
+            ['after-pause','sector3-input.js'],
+            ['after-input','sector3-ui.js'],
+            ['after-common','sector3-scene1-investigation.js'],
+            ['after-scene1-investigation','sector3-os.js'],
+            ['after-os','sector3-os-explorer.js'],
+            ['after-os-explorer','sector3-tutorial-core.js'],
+            ['after-tutorial-core','sector3-tutorial.js'],
+            ['after-tutorial','sector3-files-tutorial.js'],
+            ['after-files','sector3-keyboard-tutorial.js'],
+            ['after-keyboard','sector3-language-tutorial.js'],
+            ['after-language','sector3-excel-onboarding.js'],
+            ['after-excel-onboarding','sector3-excel-tutorial.js'],
+            ['after-excel-tutorial','sector3-adaptive-visual.js'],
+            ['after-adaptive','sector3-polya-cinematic.js'],
+            ['after-polya-cinematic','sector3-polya-identity.js'],
+            ['full',null]
           ];
+          const delay=ms=>new Promise(r=>setTimeout(r,ms));
+          const hostTimeout=(promise,ms,fallback)=>Promise.race([promise,new Promise(r=>setTimeout(()=>r(fallback),ms))]);
+          const browser=await chromium.launch({channel:'chrome',headless:true,args:['--disable-gpu']});
 
-          const browser = await chromium.launch({headless:true});
-
-          for (const [label,url] of urls) {
-            console.log(`\n========== ${label.toUpperCase()} ${url} ==========`);
-            const page = await browser.newPage();
-            const inflight = new Map();
-            const failures = [];
-            const consoleErrors = [];
-            const pageErrors = [];
-
-            page.on('request', req => inflight.set(req.url(), {method:req.method(), type:req.resourceType(), started:Date.now()}));
-            page.on('requestfinished', req => inflight.delete(req.url()));
-            page.on('requestfailed', req => {
-              inflight.delete(req.url());
-              failures.push({url:req.url(), error:req.failure()?.errorText, type:req.resourceType()});
-            });
-            page.on('console', msg => {
-              if (msg.type()==='error') consoleErrors.push(msg.text());
-              console.log(`[console:${msg.type()}] ${msg.text()}`);
-            });
-            page.on('pageerror', err => { pageErrors.push(String(err)); console.log('[pageerror]', String(err)); });
-
-            try {
-              await page.goto(url, {waitUntil:'domcontentloaded', timeout:20000});
-              console.log('DOMContentLoaded reached');
-            } catch (e) {
-              console.log('goto/domcontentloaded failed:', e.message);
+          for(const [name,block] of scenarios){
+            const context=await browser.newContext();
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push('pageerror:'+String(e)));
+            page.on('console',m=>{if(m.type()==='error')errors.push('console:'+m.text())});
+            if(block){
+              await page.route(`**/${block}*`,async route=>{
+                console.log(`[${name}] BLOCK ${route.request().url()}`);
+                await route.abort('failed');
+              });
             }
-
-            const loadResult = await Promise.race([
-              page.waitForLoadState('load', {timeout:12000}).then(()=> 'load').catch(()=> 'timeout'),
-              new Promise(r=>setTimeout(()=>r('timeout'),12500))
-            ]);
-            console.log('window load result:', loadResult);
-
-            await page.waitForTimeout(1500);
-            const before = await page.evaluate(() => ({
-              readyState: document.readyState,
-              runtimeState: document.documentElement.dataset.vidlikRuntime || null,
-              prologue: !!document.getElementById('vidlikPrologueTitle'),
-              router: window.VIDLIK_STORY_ROUTER?.current || null,
-              runtimeLoaded: window.VIDLIK_RUNTIME?.loaded || [],
-              scripts: [...document.scripts].map(s=>({src:s.src, loaded:s.dataset.vidlikLoaded||null, runtime:s.dataset.vidlikRuntime||null})),
-              imgs: [...document.images].filter(i=>!i.complete || !i.naturalWidth).map(i=>({src:i.currentSrc||i.src, complete:i.complete, naturalWidth:i.naturalWidth}))
-            }));
-            console.log('BEFORE CONTINUE', JSON.stringify(before,null,2));
-            console.log('INFLIGHT BEFORE', JSON.stringify([...inflight.entries()].map(([u,v])=>({url:u,...v,ageMs:Date.now()-v.started})),null,2));
-
-            const button = page.locator('#vidlikPrologueContinue');
-            if (await button.count()) {
-              try {
-                await button.click({timeout:5000});
-                console.log('Continue clicked');
-                await page.waitForTimeout(6500);
-              } catch (e) {
-                console.log('Continue click failed:', e.message);
-              }
-            } else {
-              console.log('Continue button missing');
-            }
-
-            const after = await page.evaluate(() => ({
-              readyState: document.readyState,
-              runtimeState: document.documentElement.dataset.vidlikRuntime || null,
-              prologue: !!document.getElementById('vidlikPrologueTitle'),
-              router: window.VIDLIK_STORY_ROUTER?.current || null,
-              runtimeLoaded: window.VIDLIK_RUNTIME?.loaded || [],
-              bodyClass: document.body.className,
-              help: document.getElementById('help')?.innerText || null
-            }));
-            console.log('AFTER CONTINUE', JSON.stringify(after,null,2));
-            console.log('INFLIGHT AFTER', JSON.stringify([...inflight.entries()].map(([u,v])=>({url:u,...v,ageMs:Date.now()-v.started})),null,2));
-            console.log('REQUEST FAILURES', JSON.stringify(failures,null,2));
-            console.log('CONSOLE ERRORS', JSON.stringify(consoleErrors,null,2));
-            console.log('PAGE ERRORS', JSON.stringify(pageErrors,null,2));
-            await page.close();
+            let dom='unknown';
+            try{
+              dom=await hostTimeout(page.goto(URL,{waitUntil:'domcontentloaded',timeout:5000}).then(()=> 'domcontentloaded').catch(e=>'goto:'+e.message),6500,'HOST_GOTO_TIMEOUT');
+            }catch(e){dom='throw:'+e.message}
+            await delay(1200);
+            const probe=await hostTimeout(page.evaluate(()=>({
+              readyState:document.readyState,
+              runtime:document.documentElement.dataset.vidlikRuntime||null,
+              loaded:window.VIDLIK_RUNTIME?.loaded||[],
+              router:window.VIDLIK_STORY_ROUTER?.current||null,
+              prologue:!!document.getElementById('vidlikPrologueTitle')
+            })).catch(e=>({evalError:e.message})),1800,{HOST_EVAL_TIMEOUT:true});
+            console.log(`RESULT ${name} block=${block||'none'} dom=${dom} probe=${JSON.stringify(probe)} errors=${JSON.stringify(errors)}`);
+            await hostTimeout(context.close(),1500,null);
           }
-
           await browser.close();
           EOF
 
           python3 -m http.server 8000 >/tmp/sector3-http.log 2>&1 &
           SERVER_PID=$!
           sleep 1
-          node sector3-smoke.mjs
+          node sector3-bisect.mjs
           STATUS=$?
           kill $SERVER_PID || true
           exit $STATUS
