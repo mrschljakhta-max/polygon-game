@@ -1,35 +1,116 @@
 /*
- * Sector 3 pause — canonical stylesheet entry point.
- *
- * Phase 1 of the pause refactor keeps the approved visual layers intact while
- * the JavaScript runtime is consolidated into sector3-pause.js. Keeping these
- * imports here gives the page one stable stylesheet dependency and lets us fold
- * the legacy visual layers into this file in a later no-visual-change pass.
+ * Sector 3 pause — canonical stylesheet.
+ * Consolidated from legacy router/skin/fidelity layers on 2026-09-11.
  */
-@import url('sector3-pause-router.css?v=20260908-1');
-@import url('sector3-pause-skin.css?v=20260908-1');
-@import url('sector3-pause-fidelity.css?v=20260908-2');
 
-/* Inline confirmation is now owned by the canonical pause controller. */
+:root{--pause-cyan:#55e7d4;--pause-cyan-soft:rgba(85,231,212,.18);--pause-ink:#eef8f7;--pause-muted:#8fa8a5;--pause-red:#ff5c70;--hotki-pause-cyan:#bff8ff;--hotki-pause-cyan2:#72dce8;--hotki-pause-orange:#ff9a52}
+.vidlik-menu-button{position:absolute;right:18px;top:18px;z-index:680;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:10px;background:linear-gradient(180deg,rgba(5,22,25,.90),rgba(2,10,12,.92));color:#dffcf8;box-shadow:0 12px 34px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(10px);cursor:pointer;transition:background .18s ease,box-shadow .18s ease,transform .18s ease,opacity .18s ease}
+.vidlik-menu-button:hover:not(:disabled),.vidlik-menu-button:focus-visible{background:linear-gradient(180deg,rgba(8,33,35,.96),rgba(3,15,17,.96));box-shadow:0 12px 34px rgba(0,0,0,.38),0 0 22px rgba(85,231,212,.14);outline:none}
+.vidlik-menu-button:active:not(:disabled){transform:translateY(1px)}
+.vidlik-menu-button:disabled{opacity:.28;cursor:default}
+.vidlik-menu-button.is-open{background:rgba(7,35,35,.96);box-shadow:0 0 28px rgba(85,231,212,.16)}
+.vidlik-menu-icon{display:block;width:23px;height:23px;background:currentColor;-webkit-mask:url('assets/ui/menu-2.svg') center/contain no-repeat;mask:url('assets/ui/menu-2.svg') center/contain no-repeat}
+
+.pause#pause{z-index:650;display:grid;place-items:center;padding:5.5%;background:radial-gradient(circle at 50% 38%,rgba(7,31,33,.40),rgba(0,4,6,.82) 66%),rgba(0,4,6,.72);backdrop-filter:blur(13px) saturate(.72);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s .2s}
+.pause#pause.visible{opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s}
+.pause#pause>.vidlik-pause-card{width:min(620px,78%);max-height:86%;overflow:auto;padding:28px 30px 24px;border:1px solid rgba(85,231,212,.24);border-radius:16px;background:linear-gradient(145deg,rgba(5,23,25,.97),rgba(2,11,13,.98));box-shadow:0 28px 85px rgba(0,0,0,.60),inset 0 1px rgba(255,255,255,.05);text-align:left;position:relative}
+.vidlik-pause-card:before{content:"";position:absolute;left:0;top:0;width:88px;height:1px;background:linear-gradient(90deg,var(--pause-cyan),transparent);box-shadow:0 0 13px rgba(85,231,212,.36)}
+.vidlik-pause-eyebrow{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:9px;color:#72bbb4;font:700 9px/1.2 ui-monospace,Cascadia Code,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase}
+.vidlik-pause-eyebrow span:last-child{color:#567d79;letter-spacing:.10em}
+.vidlik-pause-card h2{margin:0 0 22px;color:var(--pause-ink);font-size:clamp(27px,2.25vw,38px);font-weight:760;letter-spacing:.015em;text-transform:uppercase}
+.vidlik-pause-hierarchy{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+.vidlik-pause-story-row{display:grid;grid-template-columns:82px 1fr;align-items:center;gap:13px;min-height:40px;padding:8px 11px;border:1px solid rgba(105,184,176,.13);border-radius:8px;background:rgba(2,12,14,.46)}
+.vidlik-pause-story-row span{color:#5d8e89;font:700 8px/1 ui-monospace,Cascadia Code,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+.vidlik-pause-story-row strong{color:#dff5f2;font-size:12px;font-weight:680;letter-spacing:.025em}
+.vidlik-pause-task{margin:0 0 20px;padding:11px 13px;border-left:2px solid rgba(85,231,212,.72);background:rgba(85,231,212,.045)}
+.vidlik-pause-task span{display:block;margin-bottom:4px;color:#568c87;font:700 8px/1 ui-monospace,Cascadia Code,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+.vidlik-pause-task strong{display:block;color:#f1fbfa;font-size:11px;line-height:1.45;font-weight:650}
+.vidlik-pause-primary{width:100%;min-height:46px;border:1px solid rgba(104,255,238,.66);border-radius:9px;background:linear-gradient(180deg,#28d8c6,#109c92);color:#001615;font-weight:850;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 10px 28px rgba(18,189,174,.12)}
+.vidlik-pause-primary:hover,.vidlik-pause-primary:focus-visible{filter:brightness(1.08);outline:none;box-shadow:0 10px 32px rgba(18,189,174,.20)}
+.vidlik-pause-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.vidlik-pause-actions button,.vidlik-pause-controls-toggle{min-height:39px;padding:0 12px;border:1px solid rgba(94,148,143,.26);border-radius:8px;background:rgba(6,22,23,.86);color:#bed3d0;font-size:10px;font-weight:700;text-align:left;cursor:pointer;transition:.16s ease}
+.vidlik-pause-actions button:hover,.vidlik-pause-actions button:focus-visible,.vidlik-pause-controls-toggle:hover,.vidlik-pause-controls-toggle:focus-visible{border-color:rgba(85,231,212,.52);color:#effbf9;background:rgba(8,31,31,.94);outline:none}
+.vidlik-pause-actions .is-danger:hover,.vidlik-pause-actions .is-danger:focus-visible{border-color:rgba(255,92,112,.46);color:#ffdce1;background:rgba(45,10,16,.52)}
+.vidlik-pause-controls-toggle{width:100%;margin-top:8px;display:flex;align-items:center;justify-content:space-between;text-align:left}
+.vidlik-pause-controls-toggle i{font-style:normal;color:#5c9993}
+.vidlik-pause-controls{margin-top:8px;padding:11px 12px;border:1px solid rgba(95,154,148,.15);border-radius:8px;background:rgba(0,8,10,.42)}
+.vidlik-pause-controls[hidden]{display:none}
+.vidlik-pause-controls div{display:flex;align-items:center;gap:10px;min-height:29px;color:#91aaa7;font-size:9px;line-height:1.35}
+.vidlik-pause-controls kbd{min-width:76px;padding:4px 6px;border:1px solid rgba(85,231,212,.24);border-radius:5px;background:#071719;color:#d8faf5;text-align:center;font:700 8px/1 ui-monospace,Cascadia Code,Consolas,monospace}
+.vidlik-pause-controls .pause-menu-key{min-width:76px;display:inline-flex;align-items:center;justify-content:center;color:#d8faf5}
+.vidlik-pause-controls .pause-menu-key .vidlik-menu-icon{width:17px;height:17px}
+.vidlik-pause-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:13px;border-top:1px solid rgba(85,231,212,.10);color:#567a76;font:600 8px/1.3 ui-monospace,Cascadia Code,Consolas,monospace;letter-spacing:.06em}
+.vidlik-pause-footer kbd{color:#b6d8d3}
+.vidlik-native-esc-hidden{display:none!important}
+#vidlikEscHint{display:inline-flex;align-items:center;gap:4px}
+#vidlikEscHint em{font-style:normal;color:#607e7b;font-weight:500}
+html.vidlik-runtime-paused .scene>.camera,html.vidlik-runtime-paused .scene>.shade,html.vidlik-runtime-paused .scene>.sync-flash-layer,html.vidlik-runtime-paused .scene>.keys{animation-play-state:paused!important}
+html.vidlik-runtime-paused .scene>.camera *,html.vidlik-runtime-paused .scene>.shade *,html.vidlik-runtime-paused .scene>.sync-flash-layer *,html.vidlik-runtime-paused .scene>.keys *{animation-play-state:paused!important}
+
+/* Approved pause artwork and four action slots. */
+.pause#pause.hotki-pause-v2{z-index:650!important;display:grid!important;place-items:center!important;padding:0!important;background:#02080b url('assets/sector3-pause/pause-background.png') center/100% 100% no-repeat!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:hidden}
+.pause#pause.hotki-pause-v2::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 48%,transparent 0 40%,rgba(0,0,0,.12) 83%,rgba(0,0,0,.24) 100%);z-index:1}
+.pause#pause.hotki-pause-v2>.hotki-pause-scene{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;overflow:hidden!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important;z-index:2}
+.pause#pause.hotki-pause-v2>.hotki-pause-scene::before{display:none!important}
+.hotki-pause-scene>.vidlik-pause-eyebrow,.hotki-pause-scene>#vidlikPauseTitle,.hotki-pause-scene>.vidlik-pause-hierarchy,.hotki-pause-scene>.vidlik-pause-task,.hotki-pause-scene>.vidlik-pause-footer{display:none!important}
+.hotki-pause-scene>.vidlik-pause-actions{display:contents!important}
+.hotki-pause-scene>#vidlikPauseSector{display:none!important}
+.hotki-pause-scene .hotki-action{--y:23.66%;--icon:url('assets/sector3-pause/play.svg');position:absolute!important;left:49.88%!important;top:var(--y)!important;translate:-50% -50%!important;width:6.15%!important;min-width:0!important;height:auto!important;min-height:0!important;aspect-ratio:1!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:var(--icon) center/46% 46% no-repeat!important;color:transparent!important;font-size:0!important;text-indent:-9999px!important;box-shadow:none!important;outline:none!important;cursor:pointer!important;z-index:7!important;filter:drop-shadow(0 0 .32rem rgba(123,231,242,.28));transition:transform .18s ease,filter .18s ease,opacity .18s ease!important;-webkit-tap-highlight-color:transparent}
+.hotki-pause-scene .hotki-reload{--y:39.85%;--icon:url('assets/sector3-pause/reload.svg')}
+.hotki-pause-scene .hotki-tool{--y:56.30%;--icon:url('assets/sector3-pause/tool.svg')}
+.hotki-pause-scene .hotki-exit{--y:73.01%;--icon:url('assets/sector3-pause/exit.svg')}
+.hotki-pause-scene .hotki-action::before{content:"";position:absolute;inset:9%;border-radius:50%;background:radial-gradient(circle,rgba(113,225,238,.08),rgba(113,225,238,0) 68%);opacity:0;transition:opacity .18s ease,box-shadow .18s ease}
+.hotki-pause-scene .hotki-action:hover,.hotki-pause-scene .hotki-action:focus-visible,.hotki-pause-scene .hotki-action.kbd-selected{transform:scale(1.07)!important;filter:brightness(1.15) drop-shadow(0 0 .52rem rgba(143,240,249,.48))}
+.hotki-pause-scene .hotki-action:hover::before,.hotki-pause-scene .hotki-action:focus-visible::before,.hotki-pause-scene .hotki-action.kbd-selected::before{opacity:1;box-shadow:0 0 1.5rem rgba(109,226,240,.16),inset 0 0 1rem rgba(255,158,88,.07)}
+.hotki-pause-scene .hotki-action:active{transform:scale(.97)!important}
+.hotki-pause-scene.hotki-controls-open .hotki-tool{filter:brightness(1.16) drop-shadow(0 0 .72rem rgba(255,154,82,.52))}
+
+/* Story context. */
+.hotki-pause-context{position:absolute;left:7.9%;top:50%;translate:0 -50%;width:36.7%;z-index:5;display:grid;gap:clamp(18px,2.15vh,28px);pointer-events:none;text-shadow:0 2px 16px rgba(0,0,0,.64);opacity:1!important;visibility:visible!important;transform:translateX(0)!important;filter:blur(0)!important;transition:opacity .28s ease .06s,transform .28s ease .06s,filter .28s ease .06s,visibility 0s!important}
+.hotki-pause-context::before,.hotki-controls-context::before{content:"";position:absolute;left:-5.5%;top:-9%;bottom:-9%;width:112%;z-index:-1;background:linear-gradient(90deg,rgba(1,11,16,.40) 0%,rgba(1,11,16,.23) 58%,rgba(1,11,16,0) 100%);filter:blur(16px);opacity:.74}
+.hotki-context-entry{position:relative;min-height:52px}
+.hotki-context-kicker{display:flex;align-items:center;gap:10px;width:100%;color:#73e2ed;font:600 clamp(9px,.74vw,13px)/1.15 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.24em;text-transform:uppercase;white-space:nowrap;opacity:.94}
+.hotki-context-kicker::after{content:"";flex:1 1 auto;min-width:32px;height:1px;margin-left:2px;background:linear-gradient(90deg,rgba(111,230,241,.68),rgba(111,230,241,.12) 74%,transparent);box-shadow:0 0 9px rgba(91,220,233,.20)}
+.hotki-context-signal{width:4px;height:4px;border-radius:50%;background:#83edf6;box-shadow:0 0 10px rgba(105,235,246,.78);flex:0 0 auto}
+.hotki-context-value{margin-top:8px;color:rgba(241,252,253,.95);font-size:clamp(15px,1.47vw,27px);font-weight:440;line-height:1.18;letter-spacing:.115em;text-transform:uppercase;max-width:96%}
+.hotki-context-entry.is-compact .hotki-context-value{font-size:clamp(14px,1.24vw,23px);line-height:1.28;letter-spacing:.075em}
+.hotki-context-entry.is-task{margin-top:4px;padding-left:2px}
+.hotki-context-entry.is-task::before{content:"";position:absolute;left:-2.9%;top:3px;width:10px;height:10px;border:2px solid rgba(112,232,243,.78);border-radius:50%;box-shadow:0 0 0 5px rgba(92,220,232,.07),0 0 16px rgba(86,224,237,.30)}
+.hotki-context-entry.is-task .hotki-context-kicker{color:#89f1f7}
+.hotki-context-entry.is-task .hotki-context-value{font-size:clamp(13px,1.18vw,21px);font-weight:520;letter-spacing:.055em;color:#f0fbfc}
+.hotki-pause-scene.hotki-controls-open .hotki-pause-context{opacity:0!important;visibility:hidden!important;transform:translateX(-18px)!important;filter:blur(3px)!important;transition:opacity .22s ease,transform .22s ease,filter .22s ease,visibility 0s linear .22s!important}
+
+/* Controls panel — final fidelity rules folded in. */
+.hotki-pause-scene .hotki-controls-context{position:absolute!important;left:7.9%!important;top:50%!important;translate:0 -50%!important;width:36.7%!important;z-index:6!important;display:grid!important;gap:clamp(10px,1.3vh,16px)!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;pointer-events:none!important;text-shadow:0 2px 16px rgba(0,0,0,.64)!important;opacity:0!important;visibility:hidden!important;transform:translateX(-18px)!important;filter:blur(3px)!important;box-shadow:none!important;color:inherit!important;font-size:inherit!important;transition:opacity .28s ease,transform .28s ease,filter .28s ease,visibility 0s linear .28s!important}
+.hotki-pause-scene .hotki-controls-context[hidden]{display:grid!important;opacity:0!important;visibility:hidden!important;transform:translateX(-18px)!important;filter:blur(3px)!important;transition:opacity .22s ease,transform .22s ease,filter .22s ease,visibility 0s linear .22s!important}
+.hotki-pause-scene.hotki-controls-open .hotki-controls-context:not([hidden]){display:grid!important;opacity:1!important;visibility:visible!important;transform:translateX(0)!important;filter:blur(0)!important;transition:opacity .28s ease .06s,transform .28s ease .06s,filter .28s ease .06s,visibility 0s!important}
+.hotki-pause-scene .hotki-controls-heading{display:flex!important;align-items:center!important;gap:12px!important;min-height:0!important;margin:0 0 8px!important;padding:0!important;color:#eefcfd!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:clamp(22px,2.05vw,38px)!important;font-weight:690!important;line-height:1!important;letter-spacing:.105em!important;text-transform:uppercase!important}
+.hotki-pause-scene .hotki-controls-heading::after{content:""!important;flex:1!important;height:1px!important;background:linear-gradient(90deg,rgba(111,230,241,.68),rgba(111,230,241,.08),transparent)!important;box-shadow:0 0 9px rgba(91,220,233,.20)!important}
+.hotki-pause-scene .hotki-control-line{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:22px!important;min-height:clamp(38px,5vh,52px)!important;margin:0!important;padding:0 0 0 2px!important;border:0!important;border-bottom:1px solid rgba(111,230,241,.14)!important;border-radius:0!important;background:transparent!important;color:inherit!important;font-size:inherit!important}
+.hotki-pause-scene .hotki-control-line:last-child{border-bottom:0!important}
+.hotki-pause-scene .hotki-control-label{display:block!important;color:rgba(240,251,252,.95)!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:clamp(13px,1.12vw,20px)!important;font-weight:500!important;line-height:1.2!important;letter-spacing:.045em!important;text-align:left!important;transition:transform .16s ease,color .16s ease,text-shadow .16s ease!important}
+.hotki-pause-scene .hotki-control-key{display:block!important;min-width:clamp(42px,4.2vw,68px)!important;margin:0!important;padding:.58em .75em!important;border:0!important;border-left:1px solid rgba(111,230,241,.40)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:#ffae70!important;font:700 clamp(10px,.78vw,14px)/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;letter-spacing:.08em!important;text-align:center!important;text-transform:uppercase!important;position:relative!important;transition:transform .16s ease,color .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease!important}
+.hotki-pause-scene .hotki-control-key::before{content:""!important;position:absolute!important;left:-3px!important;top:50%!important;width:5px!important;height:5px!important;border-radius:50%!important;translate:0 -50%!important;background:#83edf6!important;box-shadow:0 0 10px rgba(105,235,246,.72)!important}
+.hotki-pause-scene .hotki-control-key.kbd-sub-selected{color:#ffab69!important;border:1px solid rgba(145,226,236,.22)!important;background:rgba(2,15,20,.78)!important;-webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important;border-radius:8px!important;box-shadow:0 9px 30px rgba(0,0,0,.24),0 0 18px rgba(116,229,240,.11),inset 0 0 16px rgba(255,154,82,.035)!important;transform:translateX(-4px) scale(1.045)!important}
+.hotki-pause-scene .hotki-control-key.kbd-sub-selected::before{left:-4px!important;background:#c4fbff!important;box-shadow:0 0 12px rgba(125,239,248,.88)!important}
+.hotki-pause-scene .hotki-control-line.kbd-sub-row .hotki-control-label{color:#f3feff!important;transform:translateX(5px)!important;text-shadow:0 0 14px rgba(111,230,241,.22),0 2px 16px rgba(0,0,0,.7)!important}
+.hotki-pause-scene .hotki-controls-context.hotki-subnav-active .hotki-control-line.is-info{opacity:.62!important}
+
+/* Native tooltips + inline confirmation state. */
+.hotki-pause-scene .hotki-action::after{display:none!important;content:none!important}
+.hotki-pause-scene .hotki-native-tooltip{position:absolute!important;left:calc(100% + 15px)!important;top:50%!important;translate:0 -50%!important;min-width:max-content!important;padding:.52rem .72rem!important;border:1px solid rgba(145,226,236,.19)!important;background:rgba(2,15,20,.74)!important;-webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important;border-radius:8px!important;color:#d7f6fa!important;font:600 clamp(10px,.72vw,14px)/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;text-indent:0!important;white-space:nowrap!important;opacity:0!important;transform:translateX(-6px)!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important;box-shadow:0 9px 30px rgba(0,0,0,.22)!important}
+.hotki-pause-scene .hotki-native-tooltip b{color:#ffab69!important;font-weight:650!important;margin-left:.45rem!important}
+.hotki-pause-scene .hotki-action:hover .hotki-native-tooltip,.hotki-pause-scene .hotki-action:focus-visible .hotki-native-tooltip,.hotki-pause-scene .hotki-action.kbd-selected .hotki-native-tooltip{opacity:1!important;transform:translateX(0)!important}
 .hotki-pause-scene .hotki-pause-confirm{display:none!important}
-.hotki-pause-scene .hotki-action.hotki-confirm-armed{
- filter:brightness(1.18) drop-shadow(0 0 .72rem rgba(255,154,82,.52))!important;
-}
-.hotki-pause-scene .hotki-native-tooltip.is-confirm{
- opacity:1!important;
- transform:translateX(0)!important;
- border-color:rgba(255,174,112,.42)!important;
- background:rgba(7,17,20,.90)!important;
- color:#f3fbfc!important;
- box-shadow:0 9px 30px rgba(0,0,0,.28),0 0 20px rgba(255,154,82,.08)!important;
-}
-.hotki-pause-scene .hotki-native-tooltip.is-confirm b{
- color:#ffad6d!important;
- margin-left:.55rem!important;
-}
-.hotki-pause-scene .hotki-native-tooltip.is-confirm small{
- color:#a8cfd3!important;
- font:600 .86em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
- letter-spacing:.04em!important;
- text-transform:none!important;
-}
+.hotki-pause-scene .hotki-action.hotki-confirm-armed{filter:brightness(1.18) drop-shadow(0 0 .72rem rgba(255,154,82,.52))!important}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm{opacity:1!important;transform:translateX(0)!important;border-color:rgba(255,174,112,.42)!important;background:rgba(7,17,20,.90)!important;color:#f3fbfc!important;box-shadow:0 9px 30px rgba(0,0,0,.28),0 0 20px rgba(255,154,82,.08)!important}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm b{color:#ffad6d!important;margin-left:.55rem!important}
+.hotki-pause-scene .hotki-native-tooltip.is-confirm small{color:#a8cfd3!important;font:600 .86em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;letter-spacing:.04em!important;text-transform:none!important}
+
+.hotki-pause-scene.hotki-entering{animation:hotkiPauseEnter .36s ease both}
+@keyframes hotkiPauseEnter{from{opacity:0;filter:blur(5px);transform:scale(1.01)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+
+@media(max-width:760px){.vidlik-menu-button{right:9px;top:9px;width:38px;height:38px;border-radius:8px}.vidlik-menu-icon{width:20px;height:20px}.pause#pause{padding:4%}.pause#pause>.vidlik-pause-card{width:90%;padding:20px 18px 17px;max-height:90%}.vidlik-pause-card h2{margin-bottom:14px}.vidlik-pause-story-row{grid-template-columns:64px 1fr}.vidlik-pause-actions{grid-template-columns:1fr}.vidlik-pause-footer{align-items:flex-start;flex-direction:column}}
+@media(max-width:900px),(max-height:560px){.hotki-pause-context,.hotki-pause-scene .hotki-controls-context{left:5.5%!important;width:39%!important;gap:10px!important}.hotki-context-entry{min-height:40px}.hotki-context-value{margin-top:5px}.hotki-context-kicker{letter-spacing:.17em}.hotki-pause-scene .hotki-control-line{min-height:32px!important}.hotki-pause-scene .hotki-controls-heading{margin-bottom:3px!important}}
+@media(max-width:800px){.hotki-pause-scene .hotki-action{width:7%!important}}
+@media(prefers-reduced-motion:reduce){.hotki-pause-scene *, .hotki-pause-scene *::before,.hotki-pause-scene *::after{transition:none!important;animation:none!important}}
