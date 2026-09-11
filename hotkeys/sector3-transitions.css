@@ -55,3 +55,6 @@
 @keyframes vidlikSectionPromptPulse{0%,100%{opacity:.62}50%{opacity:1}}
 @media(max-width:720px){.vidlik-section-title{font-size:clamp(26px,8vw,44px)}.vidlik-section-next .vidlik-section-title{font-size:clamp(34px,10vw,58px)}.vidlik-section-subtitle{max-width:88vw;line-height:1.45}}
 @media(prefers-reduced-motion:reduce){.vidlik-section-transition,.vidlik-section-panel.is-active,.vidlik-section-panel.is-out,.vidlik-section-content,.vidlik-section-transition.is-switching .vidlik-section-scan,.vidlik-section-enter{animation:none!important}.vidlik-section-transition,.vidlik-section-panel.is-active,.vidlik-section-enter{opacity:1}}
+
+/* Prologue boot optimization: use the 15 KB WebP instead of the 2.43 MB PNG. */
+#vidlikPrologueTitle .vpt-bg{background-image:url('assets/sector3-prologue/prologue-title-bg.webp')!important}
