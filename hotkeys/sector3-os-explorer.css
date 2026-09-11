@@ -1,0 +1,45 @@
+/* VIDLIK OS · Explorer canonical visual states */
+.os-file-pane,
+.os-sidebar,
+.os-file-list{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(71,183,174,.78) rgba(4,18,20,.82);
+}
+.os-file-pane::-webkit-scrollbar,
+.os-sidebar::-webkit-scrollbar,
+.os-file-list::-webkit-scrollbar{width:7px;height:7px}
+.os-file-pane::-webkit-scrollbar-track,
+.os-sidebar::-webkit-scrollbar-track,
+.os-file-list::-webkit-scrollbar-track{
+  background:rgba(3,15,17,.9);
+  border-left:1px solid rgba(83,214,203,.08);
+}
+.os-file-pane::-webkit-scrollbar-thumb,
+.os-sidebar::-webkit-scrollbar-thumb,
+.os-file-list::-webkit-scrollbar-thumb{
+  min-height:30px;
+  border:1px solid rgba(111,236,224,.18);
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(67,177,169,.92),rgba(38,113,111,.92));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 0 8px rgba(75,218,205,.08);
+}
+.os-file-pane::-webkit-scrollbar-thumb:hover,
+.os-sidebar::-webkit-scrollbar-thumb:hover,
+.os-file-list::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,rgba(86,216,204,.96),rgba(46,139,134,.96));
+}
+.os-file-pane::-webkit-scrollbar-corner,
+.os-sidebar::-webkit-scrollbar-corner,
+.os-file-list::-webkit-scrollbar-corner{background:#041214}
+
+.os-file-item{transition:opacity .14s ease,filter .14s ease,background .14s ease,border-color .14s ease}
+.os-file-item.os-file-cut-pending{opacity:.42;filter:saturate(.52) brightness(.92)}
+.os-file-item.os-file-cut-pending .os-file-name i,
+.os-file-item.os-file-cut-pending .os-file-name b,
+.os-file-item.os-file-cut-pending>span{opacity:.82}
+.os-file-item.os-file-cut-pending.selected{
+  background:rgba(66,194,184,.09);
+  border-color:rgba(91,229,216,.18);
+}
+
+@media(prefers-reduced-motion:reduce){.os-file-item{transition:none}}
