@@ -10,19 +10,6 @@ let routePromise=null;
 
 const routes=Object.freeze({
  'prologue-call':Object.freeze([
-  'sector3-scene1-investigation.js?v=20260908-1',
-  'sector3-os.js?v=20260906-3',
-  'sector3-os-explorer.js?v=20260911-1',
-  'sector3-tutorial-core.js?v=20260911-1',
-  'sector3-tutorial.js?v=20260906-4',
-  'sector3-files-tutorial.js?v=20260907-3',
-  'sector3-keyboard-tutorial.js?v=20260907-4',
-  'sector3-language-tutorial.js?v=20260907-1',
-  'sector3-excel-onboarding.js?v=20260908-5',
-  'sector3-excel-tutorial.js?v=20260907-1',
-  'sector3-adaptive-visual.js?v=20260907-4',
-  'sector3-polya-cinematic.js?v=20260908-1',
-  'sector3-polya-identity.js?v=20260909-3',
   'sector3-intro.js?v=20260907-prologue2'
  ]),
  'direct-scene-01':Object.freeze([
@@ -41,11 +28,6 @@ function runtime(){
  if(!api?.load)throw new Error('VIDLIK runtime loader unavailable');
  return api;
 }
-async function prepareGameplay(){
- const api=runtime();
- if(api.loadGameplayStyles)await api.loadGameplayStyles();
- api.hydrateGameplayAssets?.();
-}
 async function loadRoute(name){
  const list=routes[name];
  if(!list)throw new Error('Unknown story route: '+name);
@@ -57,12 +39,8 @@ async function loadRoute(name){
 async function continuePrologue(){
  if(direct)return current;
  if(routePromise)return routePromise;
- routePromise=(async()=>{
-  await prepareGameplay();
-  const route=await loadRoute('prologue-call');
-  document.body.classList.remove('prologue-title-pending');
-  return route;
- })().finally(()=>{routePromise=null});
+ document.body.classList.remove('prologue-title-pending');
+ routePromise=loadRoute('prologue-call').finally(()=>{routePromise=null});
  return routePromise;
 }
 function completePrologueTransition(){
@@ -75,12 +53,7 @@ function completePrologueTransition(){
 }
 async function bootDirect(){
  if(!direct)return null;
- await prepareGameplay();
- if(requestedScene===1){
-  const route=await loadRoute('direct-scene-01');
-  document.body.classList.remove('prologue-title-pending');
-  return route;
- }
+ if(requestedScene===1)return loadRoute('direct-scene-01');
  document.documentElement.dataset.vidlikStoryRoute='unsupported';
  window.dispatchEvent(new CustomEvent('vidlik:story-route-error',{detail:{requestedScene,error:'unsupported-checkpoint'}}));
  return null;
