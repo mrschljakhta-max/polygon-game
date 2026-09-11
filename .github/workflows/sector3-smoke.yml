@@ -1,0 +1,122 @@
+name: Sector 3 smoke diagnostic
+
+on:
+  push:
+    branches:
+      - diagnostic/sector3-smoke-20260911
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium
+
+      - name: Run Sector 3 browser diagnostic
+        run: |
+          cat > /tmp/sector3-smoke.mjs <<'EOF'
+          import { chromium } from 'playwright';
+
+          const urls = [
+            ['local', 'http://127.0.0.1:8000/hotkeys/sector3-intro.html?diag=1'],
+            ['live', 'https://poligon-game.com/hotkeys/sector3-intro.html?diag=1&smoke=832']
+          ];
+
+          const browser = await chromium.launch({headless:true});
+
+          for (const [label,url] of urls) {
+            console.log(`\n========== ${label.toUpperCase()} ${url} ==========`);
+            const page = await browser.newPage();
+            const inflight = new Map();
+            const failures = [];
+            const consoleErrors = [];
+            const pageErrors = [];
+
+            page.on('request', req => inflight.set(req.url(), {method:req.method(), type:req.resourceType(), started:Date.now()}));
+            page.on('requestfinished', req => inflight.delete(req.url()));
+            page.on('requestfailed', req => {
+              inflight.delete(req.url());
+              failures.push({url:req.url(), error:req.failure()?.errorText, type:req.resourceType()});
+            });
+            page.on('console', msg => {
+              if (msg.type()==='error') consoleErrors.push(msg.text());
+              console.log(`[console:${msg.type()}] ${msg.text()}`);
+            });
+            page.on('pageerror', err => { pageErrors.push(String(err)); console.log('[pageerror]', String(err)); });
+
+            try {
+              await page.goto(url, {waitUntil:'domcontentloaded', timeout:20000});
+              console.log('DOMContentLoaded reached');
+            } catch (e) {
+              console.log('goto/domcontentloaded failed:', e.message);
+            }
+
+            const loadResult = await Promise.race([
+              page.waitForLoadState('load', {timeout:12000}).then(()=> 'load').catch(()=> 'timeout'),
+              new Promise(r=>setTimeout(()=>r('timeout'),12500))
+            ]);
+            console.log('window load result:', loadResult);
+
+            await page.waitForTimeout(1500);
+            const before = await page.evaluate(() => ({
+              readyState: document.readyState,
+              runtimeState: document.documentElement.dataset.vidlikRuntime || null,
+              prologue: !!document.getElementById('vidlikPrologueTitle'),
+              router: window.VIDLIK_STORY_ROUTER?.current || null,
+              runtimeLoaded: window.VIDLIK_RUNTIME?.loaded || [],
+              scripts: [...document.scripts].map(s=>({src:s.src, loaded:s.dataset.vidlikLoaded||null, runtime:s.dataset.vidlikRuntime||null})),
+              imgs: [...document.images].filter(i=>!i.complete || !i.naturalWidth).map(i=>({src:i.currentSrc||i.src, complete:i.complete, naturalWidth:i.naturalWidth}))
+            }));
+            console.log('BEFORE CONTINUE', JSON.stringify(before,null,2));
+            console.log('INFLIGHT BEFORE', JSON.stringify([...inflight.entries()].map(([u,v])=>({url:u,...v,ageMs:Date.now()-v.started})),null,2));
+
+            const button = page.locator('#vidlikPrologueContinue');
+            if (await button.count()) {
+              try {
+                await button.click({timeout:5000});
+                console.log('Continue clicked');
+                await page.waitForTimeout(6500);
+              } catch (e) {
+                console.log('Continue click failed:', e.message);
+              }
+            } else {
+              console.log('Continue button missing');
+            }
+
+            const after = await page.evaluate(() => ({
+              readyState: document.readyState,
+              runtimeState: document.documentElement.dataset.vidlikRuntime || null,
+              prologue: !!document.getElementById('vidlikPrologueTitle'),
+              router: window.VIDLIK_STORY_ROUTER?.current || null,
+              runtimeLoaded: window.VIDLIK_RUNTIME?.loaded || [],
+              bodyClass: document.body.className,
+              help: document.getElementById('help')?.innerText || null
+            }));
+            console.log('AFTER CONTINUE', JSON.stringify(after,null,2));
+            console.log('INFLIGHT AFTER', JSON.stringify([...inflight.entries()].map(([u,v])=>({url:u,...v,ageMs:Date.now()-v.started})),null,2));
+            console.log('REQUEST FAILURES', JSON.stringify(failures,null,2));
+            console.log('CONSOLE ERRORS', JSON.stringify(consoleErrors,null,2));
+            console.log('PAGE ERRORS', JSON.stringify(pageErrors,null,2));
+            await page.close();
+          }
+
+          await browser.close();
+          EOF
+
+          python3 -m http.server 8000 >/tmp/sector3-http.log 2>&1 &
+          SERVER_PID=$!
+          sleep 1
+          node /tmp/sector3-smoke.mjs
+          STATUS=$?
+          kill $SERVER_PID || true
+          exit $STATUS
