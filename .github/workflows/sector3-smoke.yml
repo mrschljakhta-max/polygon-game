@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Sector 3 browser diagnostic
         run: |
-          cat > /tmp/sector3-smoke.mjs <<'EOF'
+          cat > sector3-smoke.mjs <<'EOF'
           import { chromium } from 'playwright';
 
           const urls = [
@@ -116,7 +116,7 @@ jobs:
           python3 -m http.server 8000 >/tmp/sector3-http.log 2>&1 &
           SERVER_PID=$!
           sleep 1
-          node /tmp/sector3-smoke.mjs
+          node sector3-smoke.mjs
           STATUS=$?
           kill $SERVER_PID || true
           exit $STATUS
